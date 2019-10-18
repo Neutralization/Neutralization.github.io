@@ -167,6 +167,8 @@ set LANG=zh_CN.UTF8
 
 * Cygwin有个已知问题，Ctrl+方向键没有绑定操作，需要手动添加，方法是编辑`~/.inputrc`添加两行内容`"\e[1;5C": forward-word`和`"\e[1;5D": backward-word`。[参考3]
 
+* 如果之前已经生成了SSH KEY的话，需要手动复制到`C:\cygwin64\<user name>\home`或者直接制定ssh key才能让git识别到。
+
 ## EOF
 
 [参考1]:https://conemu.github.io/en/CygwinStartDir.html "cygwin, mingw, ConEmu and start up directory"
