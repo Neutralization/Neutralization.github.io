@@ -305,3 +305,39 @@ done
 
 ## EOF
 清晰度选择我觉得就真的没必要了吧.jpg
+
+但是jq毕竟是个第三方工具，难道真的不能用awk/sed来解析json吗？
+
+可以，但没必要。
+
+但今天就尝试一次，用awk和sed组合，替换掉jq的工作：
+
+```bash
+# 获取cids
+cids=`curl -sL -H "Cookie: "$cookies $pagelist | sed 's/[{,}]/\n/g' | awk -F: '/"cid"/ {print $2}'`
+
+# 获取视频标题
+title=`curl -sL -H "Cookie: "$cookies 'https://api.bilibili.com/x/web-interface/view?aid='$aid | sed -e 's/[{}]//g' -e 's/,"/\n"/g' | awk -F: '/"title"/ {print $2}' | sed -e 's/"//g' -e 's/[/?!.*|:]/-/g'`
+
+# 是否是DASH
+dash=`echo $json | sed -e 's/[{}]//g' -e 's/,"/\n"/g' | awk '/"dash"/'`
+
+# 是否是FLV
+durl=`echo $json | sed -e 's/[{}]//g' -e 's/,"/\n"/g' | awk '/"durl"/'`
+
+if [ "$dash" != "" ]
+then
+    # 视频 DASH
+    vp=`echo $json | sed -e 's/[{}]//g' -e 's/,"/\n"/g' -e 's/\]//g' | awk '/"video"/,/"audio"/' | awk '/"baseUrl"/' | sed -e 's/"baseUrl"://g' -e 's/"//g' -e 's/\u0026/\&/g' -e 's/\\\\//g' | awk 'NR==1'`
+
+    # 音频 DASH
+    ap=`echo $json | sed -e 's/[{}]//g' -e 's/,"/\n"/g' -e 's/\]//g' | awk '/"audio"/,/""/' | awk '/"baseUrl"/' | sed -e 's/"baseUrl"://g' -e 's/"//g' -e 's/\u0026/\&/g' -e 's/\\\\//g' | awk 'NR==1'`
+
+elif [ "$durl" != "" ]
+then
+    # FLV 视频
+    flvs=`echo $json | sed -e 's/[{}]//g' -e 's/,"/\n"/g' -e 's/\]//g' | awk '/"url"/' | sed -e 's/"url"://g' -e 's/"//g' -e 's/\u0026/\&/g' -e 's/\\\\//g'`
+else
+    echo -e "->Error: Video not found!\n"
+fi
+```
