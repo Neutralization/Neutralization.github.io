@@ -43,7 +43,7 @@ pwa:
 # ---------------
 highlight_theme: ocean
 
-code_word_wrap: true
+code_word_wrap: false
 
 # Nav settings
 # see the icon_name in fontawesome website.

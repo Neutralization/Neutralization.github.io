@@ -1,7 +1,7 @@
 ---
 title: 哔哩哔哩下载工具 二
 date: 2019-04-30 18:21:00
-s: bilibili-downloader
+s: bilibili-downloader-2
 categories:
 - 爬虫
 tags:
