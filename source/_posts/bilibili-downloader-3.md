@@ -80,7 +80,7 @@ aid=`echo $1 | sed -e 's/.*av//g' -e 's/[a-zA-Z?/].*//g'`
 Shell脚本中声明变量时等号前后都不能有空格，使用变量时在变量前加上`$`
 ```bash
 pagelist='https://api.bilibili.com/x/player/pagelist?aid='$aid'&jsonp=jsonp'
-cids=`curl -sL -H "Cookie: "$cookies $pagelist | jq -r '.data[].cid'`
+cids=`curl -sL $pagelist | jq -r '.data[].cid'`
 ```
 
 这里的cids只是一个包含空格分隔的字符串`123 234 345`，为了让Shell正确计数，把它转为数组
