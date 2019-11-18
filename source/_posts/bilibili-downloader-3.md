@@ -18,7 +18,7 @@ tags:
 
 cURL 这个工具太过强大，我也不知道该怎么去解释它比较好。几乎所有的网络访问，上传下载，都能够使用cURL来完成。
 
-也难怪诸如Chrome和Firefox等浏览器，会支持复制网络访问为cURL。而其实我也一直依靠这个功能，通过[https://curl.trillworks.com/](https://curl.trillworks.com/)来快速的写我的python爬虫。
+也难怪诸如Chrome和Firefox等浏览器，会支持复制网络访问为cURL。而其实我也一直依靠这个功能，通过[https://curl.trillworks.com/](https://curl.trillworks.com/)来快速写我的python爬虫。
 
 大部分的工作都可以直接靠右键复制为cURL来完成，所以只需要简单的查看下cURL的说明，便于进行一些小的修改就行。
 
@@ -189,7 +189,7 @@ aria2c --header="Cookie: "$cookies
 ## 完整代码
 
 ```bash
-#!/bin/bash
+#!/bin/sh
 IFS=$'\n'
 if [ $# -eq 0 ]
 then

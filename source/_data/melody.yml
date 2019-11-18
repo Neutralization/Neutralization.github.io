@@ -17,7 +17,7 @@
 menu:
   Home: /
   Archives: /archives
-  Tags: /tags
+  #Tags: /tags
   #Categories: /categories
   #XXX: /xxx
 
@@ -104,7 +104,7 @@ scripts:
   - /js/fancybox.js
   - /js/sidebar.js
   - /js/copy.js
-  - /js/fireworks.js
+  #- /js/fireworks.js
   - /js/transition.js
   - /js/scroll.js
   - /js/head.js
