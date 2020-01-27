@@ -15,13 +15,13 @@ tags:
 
 ## 安装WSL
 
+安装WSL并没有想象中的复杂。进入控制面板->程序和功能->启用或关闭Windows功能，勾选`适用于Linux的Windows子系统`，等待安装完毕，然后重启系统。
+<!-- more -->
 <center>{% asset_img "Snipaste_2020-01-25_19-14-26.png" "适用于Linux的Windows子系统" %}</center>
 
-安装WSL并没有想象中的复杂。进入控制面板->程序和功能->启用或关闭Windows功能，勾选`适用于Linux的Windows子系统`，等待安装完毕，然后重启系统。
+重启完毕，开始菜单选择MicrosoftStore，搜索linux就能够找到可供使用的linux发行版，我这里选择了Ubuntu18.04LTS。
 
 <center>{% asset_img "Snipaste_2020-01-25_02-08-03.png" "MicrosoftStore" %}</center>
-
-重启完毕，开始菜单选择MicrosoftStore，搜索linux就能够找到可供使用的linux发行版，我这里选择了Ubuntu18.04LTS。
 
 应用安装完毕后，启动应用会要求设定基础的用户名和密码，接着，一个可供使用的WSL就准备就绪了。
 
