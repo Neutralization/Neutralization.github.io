@@ -31,7 +31,7 @@ tags:
 
 为了保持crontab常驻，需要一些措施。这里参考了[Schedule Tasks Using Crontab on Windows 10 with WSL](https://blog.snowme34.com/post/schedule-tasks-using-crontab-on-windows-10-with-wsl/index.html)的方法，建立一个crontab服务的Windows启动项，每次系统启动后在后台常驻。
 
-首先进入WSL，修改sudoer，避免每次启动crontab服务是需要输入密码确认：
+首先进入WSL，修改sudoer，避免每次启动crontab服务时需要输入密码确认：
 
 > sudo visudo
 

@@ -1,5 +1,5 @@
 ---
-title: 让电脑来一场π(圆周率)的飞花令
+title: 来一场圆周率的飞花令
 date: 2019-11-26 16:21:04
 s: auto-feihualing
 categories:
@@ -10,9 +10,7 @@ tags:
 - π
 ---
 
-逛微博看到了一些有意思的东西，山东卫视《国学小名士》第三季的节目，进行了一场π(圆周率)的飞花令。
-
-又把内心关于中华文化的自豪感给点燃了起来。
+逛微博看到了一些有意思的东西：山东卫视《国学小名士》第三季的节目，进行了一场π(圆周率)的飞花令。
 
 节目里选手们接到了小数点后204位，那，能不能更长一点？
 <!-- more -->
@@ -20,13 +18,13 @@ tags:
 
 首先需要有足够多的古诗词储备，不然程序生成的时候耗光弹药就显得非常尴尬了。
 
-非常感谢能有[chinese-poetry](https://github.com/chinese-poetry/chinese-poetry)这样好的开源项目，积累了大量的已经结构化的数据方便调用。
+非常感谢[chinese-poetry](https://github.com/chinese-poetry/chinese-poetry)这样的开源项目，积累了大量的已经结构化的数据方便调用。
 
-测试阶段暂时只用宋诗作为基础数据。
+测试阶段只用宋诗作为基础数据。
 
 ## 算法逻辑
 
-逻辑其实很简单：我们从结构化的诗词中，找出所有包含中文数字的词句进行汇总，然后按小数点后迭代π值取对应的诗词就行。
+逻辑很简单粗暴：我们从结构化的诗词中，找出所有包含中文数字的词句进行汇总，然后按小数点后位数迭代π值随机取对应的诗词就行。
 
 整理诗词数据：
 ```python
@@ -65,7 +63,6 @@ for file in files:
                          '{}\n\t\t\t\t{}/{}'.format(y, x['author'], x['title'])
                     ]
 
-# print(result)
 with open('step.json', 'w', encoding='utf-8-sig') as f:
     f.write(json.dumps(result, ensure_ascii=False))
 ```

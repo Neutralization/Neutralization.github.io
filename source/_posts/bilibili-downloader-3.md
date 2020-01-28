@@ -53,7 +53,7 @@ jq解析JSON数据非常的便捷，比如获取分P数据时：
   ]
 }
 ```
-↑ jq的另一个作用就是格式化json数据，比如上面的代码就是通过`echo result.json | jq .`自动格式化出来的。
+↑ jq的另一个作用就是格式化json数据，比如上面的代码就是通过`cat result.json | jq .`自动格式化出来的。
 
 要取得分P的cid，我们可以：
 `curl -sL 'https://api.bilibili.com/x/player/pagelist?aid=42038790&jsonp=jsonp' | jq -r '.data[0].cid'`

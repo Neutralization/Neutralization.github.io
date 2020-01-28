@@ -29,7 +29,7 @@ tags:
 > ffprobe.exe -v error -select_streams v:0 -show_entries stream=codec_name \ 
 >            -of default=nokey=1:noprint_wrappers=1 v.m4s >> ./t.txt 
 
-## ffmpeg concat合并flv
+## ffmpeg合并flv
 
 ffmpeg的问题主要出现在合并flv上，dash视频倒没有什么问题。
 
@@ -68,7 +68,7 @@ ffmpeg的命令写成：
 
 单个任务的话就用上面的方式，然后开启多进程同时执行多个任务。但是这样又遇到了新的问题：
 
-## 尝试多进程和pyinstaller的坑
+### 尝试多进程和pyinstaller的坑
 
 因为最后要打包成exe给其他人用，毕竟没必要让每个人都装一个python环境来跑脚本。
 
