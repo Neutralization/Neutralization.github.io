@@ -18,13 +18,13 @@ tags:
 
 首先需要有足够多的古诗词储备，不然程序生成的时候耗光弹药就显得非常尴尬了。
 
-非常感谢[chinese-poetry](https://github.com/chinese-poetry/chinese-poetry)这样的开源项目，积累了大量的已经结构化的数据方便调用。
+非常感谢[chinese-poetry](https://github.com/chinese-poetry/chinese-poetry)这样的开源项目，积累了大量的已经结构化的古诗词数据。
 
-测试阶段只用宋诗作为基础数据。
+这里只用宋词部分的数据。
 
 ## 算法逻辑
 
-逻辑很简单粗暴：我们从结构化的诗词中，找出所有包含中文数字的词句进行汇总，然后按小数点后位数迭代π值随机取对应的诗词就行。
+逻辑很简单粗暴：找出所有包含中文数字的词句进行汇总，然后按小数点后位数迭代π值随机取对应的诗词就行。
 
 整理诗词数据：
 ```python
@@ -69,7 +69,7 @@ with open('step.json', 'w', encoding='utf-8-sig') as f:
 
 ## π值计算
 
-无脑剽窃了一下别人的代码：http://z-rui.github.io/post/2015/06/pi-digits/
+无脑套用了一下别人的代码：http://z-rui.github.io/post/2015/06/pi-digits/
 
 ```python
 def pidigits():
@@ -81,7 +81,7 @@ def pidigits():
             q * (5 * i - 2) + r - y * t), t * u, u + 54 * (i + 1), i + 1
 ```
 
-只需要不停迭代 pidigits() 就能得到后一位小数数值。
+不停迭代 pidigits() 就能得到后一位小数数值。
 
 ## 开始飞花令
 

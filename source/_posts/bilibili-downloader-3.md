@@ -13,7 +13,7 @@ tags:
 ---
 
 有生之年我最后居然是用Shell来填了分P的TODO……
-
+<!-- more -->
 ## cURL - 命令行下的文件传输工具
 
 cURL 这个工具太过强大，我也不知道该怎么去解释它比较好。几乎所有的网络访问，上传下载，都能够使用cURL来完成。
@@ -23,7 +23,7 @@ cURL 这个工具太过强大，我也不知道该怎么去解释它比较好。
 大部分的工作都可以直接靠右键复制为cURL来完成，所以只需要简单的查看下cURL的说明，便于进行一些小的修改就行。
 
 然后开始对照之前写的python脚本的逻辑，一步步转成Shell脚本。
-<!-- more -->
+
 ## jq - 命令行下的JSON处理工具
 
 B站API接口的各种返回数据以JSON为主，直接靠awk/sed手撸解析是一件很痛苦的事。所以我们需要用上jq这个工具减轻负担。
@@ -70,7 +70,7 @@ jq解析JSON数据非常的便捷，比如获取分P数据时：
 
 再后面我们会更多的用到sed。`(Flag)`
 
-## Shell脚本的编写
+## 编写Shell脚本
 
 `$1` 代表了命令行传给脚本的第一个参数，使用场景类似 `bash download.sh av42038790`
 通过sed，我们可以兼容 `bash download.sh https://www.bilibili.com/video/av42038790?from=search&seid=3037567923943401758` 的链接模式。
@@ -141,7 +141,7 @@ then
     rm *.flv
     rm ./merge_$cid.txt
 ```
-## shift - 支持传递多个参数
+## 使用shift
 
 shift命令的作用是左移参数，举例来说，如果我们传给脚本3个参数a,b,c，脚本接收到的参数为：
 ```bash
@@ -173,7 +173,7 @@ do
     shift
 done
 ```
-## Cookies - 记得加上饼干
+## 记得加上Cookies
 
 要获得高清源必须在访问API时加上Cookies，cURL要做到这点很简单。
 

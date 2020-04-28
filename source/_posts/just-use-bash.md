@@ -9,11 +9,11 @@ tags:
 - bash
 ---
 
---> jojo，python的能力是有极限的
+--> jojo，python的能力是有极限的。
 
 --> 我从短暂的人生当中学到一件事......
 
---> 越是玩弄爬虫，就越会发现python的能力是有极限的......
+--> 越是玩弄代码，就越会发现python的不足......
 
 --> 除非超越python。
 
@@ -24,19 +24,19 @@ tags:
 <!-- more -->
 ## 起因
 
-原因其实很简单，工作上需要后台导入些数据。
+原因其实很简单，工作上需要使用后台导入些数据。
 
 吭哧吭哧把原始数据整理完，搞成csv了，点个“导入”，给我来了个报错：
 
 * 单次导入只支持1000条
 
-崽啊，9102年末了，我csv里面可有近百万条数据，你跟我说一次1000？我不下班啦？
+崽啊，9102年末了，我csv里面近百万条数据，你跟我说一次1000？我不下班啦？
 
 然而优秀的底层员工是不会抱怨这些事情的，行吧，我自己切表总行了吧。
 
 ## 尝试python切割
 
-嘴上喊着不下班了，实际上也没有这么赶时间，就先用python瞎糊了一个：
+先用python瞎糊了一个：
 
 ```python
 datas = {}
@@ -51,9 +51,9 @@ for k,v in datas.items():
         f.write(''.join(v))
 ```
 
-凑合着先用了，顺便再写了个脚本自动导入到后台，先把工作做完了。
+凑合着用了，顺便再写了个脚本把切好的文件自动导入到后台，把工作做完了。
 
-但是回过头了，贤者时间了，就开始嫌弃python不够快了。
+但是回过头了，就开始嫌弃python不够快了。
 
 虽然很明显原因在于我（毕竟瞎糊凑合用），想看能不能更快一点。
 
@@ -91,13 +91,13 @@ for k,v in datas.items():
 
 但这样还是需要自己手打需要切割的文件名，不够爽。尝试把代码再变长一点：
 
-> ls | grep .csv$ | sed 's/.csv//' | xargs -n1 -I file split -l 1000 file.csv -d -a 3 file__ && ls | grep __ | xargs -n1 -I file mv file file.csv
+> ls | grep .csv$ | sed 's/.csv//g' | xargs -n1 -I file split -l 1000 file.csv -d -a 3 file__ && ls | grep __ | xargs -n1 -I file mv file file.csv
 
 以管道命令分割解释一下：
 
 1. `ls` 列出当前目录下所有文件和子目录
 2. `grep .csv$` 筛选扩展名是csv的所有文件
-3. `sed 's/.csv//'` 去除扩展名，只留文件名
+3. `sed 's/.csv//g'` 去除扩展名，只留文件名
 4. `xargs -n1 -I file split -l 1000 file.csv -d -a 3 file__` 切割所有的文件
 5. `ls` 列出当前目录下所有文件和子目录
 6. `grep __` 筛选文件名包含`__`的文件（上一步切割好的文件）
@@ -107,4 +107,4 @@ for k,v in datas.items():
 
 ## EOF
 
-尝试在windows上（Cmder+Github自带了这部分命令）做类似的操作，发现远没有在虚拟机（Ubuntu）里执行快，垃圾微软.jpg
+尝试在windows上（Cmder+Github）做类似的操作，发现远没有在虚拟机（Ubuntu）里执行快，垃圾微软.jpg

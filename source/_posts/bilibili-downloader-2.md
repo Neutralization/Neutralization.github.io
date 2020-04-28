@@ -11,7 +11,7 @@ tags:
 ---
 
 主要解决一些之前遇到的坑，填一些留下的TODO。
-
+<!-- more -->
 ## Vegas不支持HEVC编码
 
 思路很简单，对下载下来的`m4s`先读一遍编码，看是不是HEVC格式的，如果是就在转码的时候用`libx264`编码，不是就粗暴的copy视频流。
@@ -23,8 +23,6 @@ tags:
 因为之前很少接触视频转码，也没什么机会用ffmpeg。在判断HEVC编码这一步的时候，想着用类似`ffmpeg -args | find "stream"`的方式来取得视频编码。
 
 可能是环境问题，没成功，而且还要另写正则匹配文本有些麻烦。查了一下改用ffprobe。
-
-<!-- more -->
 
 > ffprobe.exe -v error -select_streams v:0 -show_entries stream=codec_name \ 
 >            -of default=nokey=1:noprint_wrappers=1 v.m4s >> ./t.txt 

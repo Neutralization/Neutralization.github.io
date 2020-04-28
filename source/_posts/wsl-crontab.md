@@ -9,14 +9,14 @@ tags:
 - crontab
 ---
 
-有些python脚本任务对于树莓派来说还是负担太重了。毕竟性能上的极限摆在那里，也不能靠一个小小的pi承担太多。
+有些python脚本任务对于树莓派来说还是负担太重了。毕竟性能上限摆在那里，也不能靠一个小小的pi承担太多。
 
-也借此机会正好尝试一下WSL(Windows Subsystem for Linux).
-
+借此机会正好尝试一下WSL(Windows Subsystem for Linux).
+<!-- more -->
 ## 安装WSL
 
 安装WSL并没有想象中的复杂。进入控制面板->程序和功能->启用或关闭Windows功能，勾选`适用于Linux的Windows子系统`，等待安装完毕，然后重启系统。
-<!-- more -->
+
 <center>{% asset_img "Snipaste_2020-01-25_19-14-26.png" "适用于Linux的Windows子系统" %}</center>
 
 重启完毕，开始菜单选择MicrosoftStore，搜索linux就能够找到可供使用的linux发行版，我这里选择了Ubuntu18.04LTS。
@@ -35,7 +35,7 @@ tags:
 
 > sudo visudo
 
-在文件中加入
+在文件末尾加入
 
 > %sudo ALL=NOPASSWD: /etc/init.d/cron start
 
@@ -43,7 +43,7 @@ tags:
 
 > C:\Windows\System32\wsl.exe sudo /etc/init.d/cron start
 
-这样我们就能够保证crontab在每次Windows启动后都能在后台常驻了。一切正常的话重启Windows后我们能在任务管理器看到一个名称为cron的任务。
+这样我们就能够保证crontab在每次Windows启动后常驻后台了。一切正常的话重启Windows，在任务管理器能看到一个名称为cron的进程。
 
 <center>{% asset_img "Snipaste_2020-01-25_19-16-06.png" "任务管理器" %}</center>
 
@@ -51,6 +51,6 @@ tags:
 
 剩下的操作和在linux里使用crontab没有区别，唯一需要注意的是文件的路径。
 
-在WSL中，Windows的C盘被挂载在`/mnt/c`目录下，D\E\F等类似，需要注意修改文件路径。
+在WSL中，Windows的C盘被挂载在`/mnt/c`目录下，D\E\F以此类推，需要注意对应修改。
 
 ## EOF

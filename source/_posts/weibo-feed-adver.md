@@ -9,15 +9,15 @@ tags:
 - Python
 ---
 
-注册了个新的小号，专门为了看看都是什么牛鬼蛇神在微博里推送信息流广告，尝试抓取一下。
+微博注册了个小号，为了看看都是什么牛鬼蛇神在微博里推送信息流广告，尝试抓取一下。
 
 虽然有[YAWF（Yet Another Weibo Filter）](https://github.com/tiansh/yaofang)这样好用的脚本可以屏蔽广告，但屏蔽了就看不到了。
-
+<!-- more -->
 ## 找到API接口
 
 F12切换到Network，在首页刷新页面，筛选捕捉到api接口`https://weibo.com/aj/mblog/fsearch`。
 
-新建标签页直接访问，去掉不必要的参数（包括一堆用来指定上下文区间和已读分界线的id），只留下必要的部分。
+新建标签页访问，去掉不必要的参数（包括一堆用来指定上下文区间和已读分界线的id），只留下必要的部分。
 
 然后直接上代码开始爬取内容：
 
@@ -41,8 +41,8 @@ params = (
 response = requests.get('https://weibo.com/aj/mblog/fsearch',
                         headers=headers, params=params)
 ```
-<!-- more -->
-返回内容是json结构，在`data`字段里存放了页面内容，用lxml库解析，保存html进行下一步。
+
+返回数据是json结构，在`data`字段里存放了页面内容，这里用lxml库解析，保存html文件进行下一步。
 
 ```python
 import json
@@ -65,7 +65,7 @@ with open('feed.html', 'w', encoding='utf-8-sig') as f:
 
 获取此节点的xpath：`"//div[@feedtype]//a[@action-history='rec=1']/@action-data"`
 
-结合用正则表达式提取链接：
+结合正则表达式提取链接：
 
 ```python
 import re
@@ -87,11 +87,11 @@ for link in links:
 
 ## 自动更新cookie
 
-高频率的访问可能会造成微博提示帐号异常，时间久了cookie也会过期，需要自动重新登录获取cookie。
+高频率的连续访问可能会造成微博提示帐号异常，而且运行时间久了cookie也会过期，需要自动重新登录获取cookie。
 
-好在微博的自动登录轮子很多，不用自己另写。cookie过期的判断就比较粗暴了，如果读取返回的json抛出异常，就可以认为是cookie过期造成的。
+微博的自动登录轮子很多，不用自己另写。cookie过期的判断就比较粗暴了，如果读取返回的json抛出异常，就可以认为是cookie过期造成的。
 
-测试发现，不带cookie的api访问是会返回正常的json数据的（但不包含html内容）。
+另外测试发现，不带cookie的api访问是会返回正常的json数据的（但不包含html内容）。
 
 ```python
 import os

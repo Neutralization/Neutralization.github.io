@@ -9,10 +9,10 @@ tags:
 - crontab
 ---
 
-因为树莓派用了官方系统，原本在Arch上利用[KMSCON](https://wiki.archlinux.org/index.php/KMSCON)来回显中文字符的方式变得遥不可及了，沉痛悼念。
+因为树莓派用了官方系统，原本在Arch上利用[KMSCON](https://wiki.archlinux.org/index.php/KMSCON)来回显中文字符的方式不可行了，沉痛悼念。
 
-不会编译是罪魁祸首，然而日子还是要过，该做的事情还是要做。
-
+不会编译是罪魁祸首，而且包依赖关系看得头大，实在不想自己解决。
+<!-- more -->
 ## 前情提要
 
 因为tty设备不支持CJK字符，原本crontab任务只要重定向输出到`KMSCON`模拟的pts设备上就能正常显示中文，现在不得不回归起点。
@@ -25,7 +25,7 @@ tags:
 然后`KMSCON`的编译依赖实在有点多，在debian内的包名又都不一样。本来就只会按照教程 `./configure`、`make`、`make install`三步走的我实在是应付不来。
 
 结果只能当`KMSCON`从来不存在，在图形界面寻找解决办法。
-<!-- more -->
+
 ## 变通法
 
 搜索之后发现的确有从终端弹图形界面的方式，只需要指定显示设备就行了：
@@ -45,3 +45,4 @@ tags:
 再把剩下的定时脚本输出全部重定向到 `/dev/pts/0` 就行了
 
 ## EOF
+感觉还是会有回到Arch的一天，Arch真香。
