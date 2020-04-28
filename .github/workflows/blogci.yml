@@ -27,9 +27,8 @@ jobs:
         sed -i "s/GPAGES_TOKEN/$GPAGES_TOKEN/g" ./_config.yml
 
     - name: Hexo
-      - name: Hexo
-        run: |
-          npm install hexo
-          npm install
-          npx hexo clean
-          npx hexo g -d
+      run: |
+        npm install hexo
+        npm install
+        npx hexo clean
+        npx hexo g -d
