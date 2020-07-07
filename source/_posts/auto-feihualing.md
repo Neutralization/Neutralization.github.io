@@ -3,7 +3,7 @@ title: 来一场圆周率的飞花令
 date: 2019-11-26 16:21:04
 s: auto-feihualing
 categories:
-- python
+- 杂记
 tags:
 - python
 - poetry
