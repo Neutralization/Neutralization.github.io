@@ -5,9 +5,9 @@ s: win10-ssh-rsync-scp
 categories:
 - 爬虫
 tags:
-- Windows
-- SSH
-- WSL
+- windows
+- ssh
+- wsl
 - rsync
 - scp
 ---

@@ -6,7 +6,7 @@ categories:
 - 爬虫
 tags:
 - bilibili
-- Shell
+- shell
 - awk
 - sed
 - curl

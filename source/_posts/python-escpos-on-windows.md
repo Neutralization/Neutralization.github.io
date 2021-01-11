@@ -5,7 +5,7 @@ s: python-escpos-on-windows
 categories:
 - 杂记
 tags:
-- Windows
+- windows
 - python
 ---
 

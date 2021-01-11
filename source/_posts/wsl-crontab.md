@@ -5,7 +5,7 @@ date: 2020-01-25 02:01:30
 categories:
 - 杂记
 tags:
-- WSL
+- wsl
 - crontab
 ---
 
