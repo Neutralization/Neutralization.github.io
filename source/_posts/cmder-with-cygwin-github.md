@@ -1,12 +1,12 @@
 ---
 title: 配置Cmder整合Cygwin与Github
-s: cmder-with-cygwin-github
 date: 2019-10-19 05:08:09
+s: cmder-with-cygwin-github
 categories:
 - 杂记
 tags:
-- cmder
 - bash
+- cmder
 - cygwin
 ---
 

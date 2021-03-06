@@ -1,12 +1,12 @@
 ---
 title: Windows使用WSL配置crontab定时任务
-s: wsl-crontab
 date: 2020-01-25 02:01:30
+s: wsl-crontab
 categories:
 - 杂记
 tags:
-- wsl
 - crontab
+- wsl
 ---
 
 有些python脚本任务对于树莓派来说还是负担太重了。毕竟性能上限摆在那里，也不能靠一个小小的pi承担太多。

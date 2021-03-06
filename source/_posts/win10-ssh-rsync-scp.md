@@ -5,11 +5,11 @@ s: win10-ssh-rsync-scp
 categories:
 - 爬虫
 tags:
-- windows
-- ssh
-- wsl
 - rsync
 - scp
+- ssh
+- windows
+- wsl
 ---
 
 疫情期间在家工作一直使用公司的VPN，于是在公司电脑开了共享用来传输文件。但不知道为什么，公司->家方向传文件很顺畅，反方向传文件时就经常会出现进度条走到末尾就停住，要多等一段时间才能传输结束的问题。

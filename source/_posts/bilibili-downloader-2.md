@@ -6,8 +6,8 @@ categories:
 - 爬虫
 tags:
 - bilibili
-- python
 - pyinstaller
+- python
 ---
 
 主要解决一些之前遇到的坑，填一些留下的TODO。

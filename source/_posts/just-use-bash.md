@@ -1,12 +1,12 @@
 ---
 title: jojo，python的能力是有极限的
-s: just-use-bash
 date: 2019-10-18 12:18:24
+s: just-use-bash
 categories:
 - 杂记
 tags:
-- python
 - bash
+- python
 ---
 
 --> jojo，python的能力是有极限的。

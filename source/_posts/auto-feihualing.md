@@ -5,8 +5,8 @@ s: auto-feihualing
 categories:
 - 杂记
 tags:
-- python
 - poetry
+- python
 - π
 ---
 

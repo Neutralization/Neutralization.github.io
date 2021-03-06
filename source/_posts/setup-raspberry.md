@@ -1,7 +1,7 @@
 ---
 title: 从零开始 Raspberry Pi
-s: setup-raspberry
 date: 2018-12-08 00:20:00
+s: setup-raspberry
 categories:
 - 杂记
 tags:

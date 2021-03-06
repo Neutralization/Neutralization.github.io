@@ -5,8 +5,8 @@ s: python-escpos-on-windows
 categories:
 - 杂记
 tags:
-- windows
 - python
+- windows
 ---
 
 通过使用 python-escpos 库，就可以和常见的USB热敏打印机通信来进行打印，不再赘述具体方法。

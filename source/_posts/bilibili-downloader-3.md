@@ -5,11 +5,11 @@ s: bilibili-downloader-3
 categories:
 - 爬虫
 tags:
-- bilibili
-- shell
 - awk
-- sed
+- bilibili
 - curl
+- sed
+- shell
 ---
 
 有生之年我最后居然是用Shell来填了分P的TODO……
