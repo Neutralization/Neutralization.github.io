@@ -79,7 +79,7 @@ export LANG=zh_CN.UTF-8
 
 > apt-cyg install chere
 
-然后还是编辑`~/.bashrc`，追加内容：[参考 1]
+然后还是编辑`~/.bashrc`，追加内容：[参考1]
 
 ```~/.bashrc
 if [ -n "${ConEmuWorkDir}" ]; then
@@ -107,7 +107,7 @@ none / cygdrive binary 0 0
 
 打开 Cmder，右键选择`Settings`，选择`Startup`->`Tasks`。
 
-点击'+'号添加新的 Task，`Task Name`填一个能区分出是 Cygwin 的，比如`Cygwin::bash`，`Task parameters`填写`/icon C:\cygwin64\Cygwin-Terminal.ico`，在`Commands`中填写`set CHERE_INVOKING=1 & C:\cygwin64\Cygwin.bat -c "/bin/xhere /bin/bash.exe --login -i '%V'"`[参考 2]
+点击'+'号添加新的 Task，`Task Name`填一个能区分出是 Cygwin 的，比如`Cygwin::bash`，`Task parameters`填写`/icon C:\cygwin64\Cygwin-Terminal.ico`，在`Commands`中填写`set CHERE_INVOKING=1 & C:\cygwin64\Cygwin.bat -c "/bin/xhere /bin/bash.exe --login -i '%V'"`[参考2]
 
 然后勾选上`Default task for new console`和`Taskbar jump lists`。回到`Startup`，选择`Specified named task`->`Cygwin::bash`。
 
@@ -166,7 +166,7 @@ set LANG=zh_CN.UTF8
 
 -   Cmder 可以作为 Sublime Text 的终端来使用，Sublime 安装 Terminal 插件，设置终端路径为 Cmder 安装路径即可。默认呼出终端的快捷键是 Ctrl+Shift+T。
 
--   Cygwin 有个已知问题，Ctrl+方向键没有绑定操作，需要手动添加，方法是编辑`~/.inputrc`添加两行内容`"\e[1;5C": forward-word`和`"\e[1;5D": backward-word`。[参考 3]
+-   Cygwin 有个已知问题，Ctrl+方向键没有绑定操作，需要手动添加，方法是编辑`~/.inputrc`添加两行内容`"\e[1;5C": forward-word`和`"\e[1;5D": backward-word`。[参考3]
 
 -   如果之前已经生成了 SSH KEY 的话，需要手动复制到`C:\cygwin64\home\<user name>\.ssh`或者直接指定 ssh key 才能让 git 识别到。
 
