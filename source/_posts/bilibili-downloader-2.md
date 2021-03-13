@@ -1,39 +1,40 @@
 ---
 title: 哔哩哔哩下载工具 二
 date: 2019-04-30 18:21:00
-s: bilibili-downloader-2
 categories:
-- 爬虫
+    - 爬虫
 tags:
-- bilibili
-- pyinstaller
-- python
+    - bilibili
+    - pyinstaller
+    - python
 ---
 
-主要解决一些之前遇到的坑，填一些留下的TODO。
-<!-- more -->
-## Vegas不支持HEVC编码
+主要解决一些之前遇到的坑，填一些留下的 TODO。
 
-思路很简单，对下载下来的`m4s`先读一遍编码，看是不是HEVC格式的，如果是就在转码的时候用`libx264`编码，不是就粗暴的copy视频流。
+<!-- more -->
+
+## Vegas 不支持 HEVC 编码
+
+思路很简单，对下载下来的`m4s`先读一遍编码，看是不是 HEVC 格式的，如果是就在转码的时候用`libx264`编码，不是就粗暴的 copy 视频流。
 
 暂时不打算加上判断其他视频流格式的代码，遇到再说。
 
-### 通过ffprobe判断编码
+### 通过 ffprobe 判断编码
 
-因为之前很少接触视频转码，也没什么机会用ffmpeg。在判断HEVC编码这一步的时候，想着用类似`ffmpeg -args | find "stream"`的方式来取得视频编码。
+因为之前很少接触视频转码，也没什么机会用 ffmpeg。在判断 HEVC 编码这一步的时候，想着用类似`ffmpeg -args | find "stream"`的方式来取得视频编码。
 
-可能是环境问题，没成功，而且还要另写正则匹配文本有些麻烦。查了一下改用ffprobe。
+可能是环境问题，没成功，而且还要另写正则匹配文本有些麻烦。查了一下改用 ffprobe。
 
-> ffprobe.exe -v error -select_streams v:0 -show_entries stream=codec_name \ 
->            -of default=nokey=1:noprint_wrappers=1 v.m4s >> ./t.txt 
+> ffprobe.exe -v error -select_streams v:0 -show_entries stream=codec_name \
+> -of default=nokey=1:noprint_wrappers=1 v.m4s >> ./t.txt
 
-## ffmpeg合并flv
+## ffmpeg 合并 flv
 
-ffmpeg的问题主要出现在合并flv上，dash视频倒没有什么问题。
+ffmpeg 的问题主要出现在合并 flv 上，dash 视频倒没有什么问题。
 
 采用`-f concat -i file.list`的方式合并遇到了路径问题。因为听取了建议“下载的文件最好单独放个目录，直接下在脚本根目录就会很乱”。
 
-所有的文件都下载在了子文件夹里，比如`./down`。在下载flv分段的时候，文件的目录结构就类似：
+所有的文件都下载在了子文件夹里，比如`./down`。在下载 flv 分段的时候，文件的目录结构就类似：
 
 > ..
 > ffmpeg.exe
@@ -42,55 +43,55 @@ ffmpeg的问题主要出现在合并flv上，dash视频倒没有什么问题。
 > /down/part1.flv
 > /down/part2.flv
 
-ffmpeg的命令写成：
+ffmpeg 的命令写成：
 
 > ffmpeg -safe 0 -hide_banner -f concat -i ./down/file.list -c copy ./down/finish.mp4
 
-问题来了，file.list里该怎么写，我原本以为应该是：
+问题来了，file.list 里该怎么写，我原本以为应该是：
 
 > file './down/part1.flv'
 > file './down/part2.flv'
 > file './down/part3.flv'
 
-然而这样ffmpeg会报错找不到文件，根据错误信息里提示的文件路径，应该改成
+然而这样 ffmpeg 会报错找不到文件，根据错误信息里提示的文件路径，应该改成
 
 > file 'part1.flv'
 > file 'part2.flv'
 > file 'part3.flv'
 
-看来file.list里的根目录是file.list所在目录。
+看来 file.list 里的根目录是 file.list 所在目录。
 
 ## 通过子进程加速下载
 
-音频和视频同时下载。因为原本用os.system的方式会阻塞，改用subprocess.Popen子进程，然后在ffmpeg合并前阻塞两个子进程，确保下载完毕再进行合并。
+音频和视频同时下载。因为原本用 os.system 的方式会阻塞，改用 subprocess.Popen 子进程，然后在 ffmpeg 合并前阻塞两个子进程，确保下载完毕再进行合并。
 
 单个任务的话就用上面的方式，然后开启多进程同时执行多个任务。但是这样又遇到了新的问题：
 
-### 尝试多进程和pyinstaller的坑
+### 尝试多进程和 pyinstaller 的坑
 
-因为最后要打包成exe给其他人用，毕竟没必要让每个人都装一个python环境来跑脚本。
+因为最后要打包成 exe 给其他人用，毕竟没必要让每个人都装一个 python 环境来跑脚本。
 
-在打包过程中发现，虽然py脚本能够正确执行，但是打包完成的exe反而变成了一个fork炸弹，会无限的产生子进程直到让系统宕机。
+在打包过程中发现，虽然 py 脚本能够正确执行，但是打包完成的 exe 反而变成了一个 fork 炸弹，会无限的产生子进程直到让系统宕机。
 
-如是三次之后Google了一下，pyinstaller和multiprocessing相性不合，使用mulitprocessing.Process和mulitprocessing.Pool的代码在pyinstaller编译后就会出现这个问题。
+如是三次之后 Google 了一下，pyinstaller 和 multiprocessing 相性不合，使用 mulitprocessing.Process 和 mulitprocessing.Pool 的代码在 pyinstaller 编译后就会出现这个问题。
 
-给出的解决方法只适用于python2版本，而我用的是python3.7，摊手。
+给出的解决方法只适用于 python2 版本，而我用的是 python3.7，摊手。
 
-### 改用threading绕过问题
+### 改用 threading 绕过问题
 
 既然不能用多进程，那就用多线程好了。
 
-而且实际上我也的确是先用的threading库，遇到了问题才想的用multiprocessing。
+而且实际上我也的确是先用的 threading 库，遇到了问题才想的用 multiprocessing。
 
-原因是threading的场合，我编译exe完成，测试的时候想直接关闭窗口，发现做不到。
+原因是 threading 的场合，我编译 exe 完成，测试的时候想直接关闭窗口，发现做不到。
 
-结论而且这不算什么问题，比起fork炸弹要可接受的多了，而且一个下载工具，本来就没有必要在中途退出。
+结论而且这不算什么问题，比起 fork 炸弹要可接受的多了，而且一个下载工具，本来就没有必要在中途退出。
 
-最后上了线程池`from multiprocessing.dummy import Pool as ThreadPool`，幸好这样并不会和pyinstaller冲突。
+最后上了线程池`from multiprocessing.dummy import Pool as ThreadPool`，幸好这样并不会和 pyinstaller 冲突。
 
 ## 放弃写配置文件
 
-计划把ffmpeg和aria2c的配置单独存文件的来着，想想又要增加代码量，而且几乎不会去动这些配置，还是作罢了。
+计划把 ffmpeg 和 aria2c 的配置单独存文件的来着，想想又要增加代码量，而且几乎不会去动这些配置，还是作罢了。
 
 硬编码不也挺好么.jpg
 
@@ -273,8 +274,9 @@ if __name__ == '__main__':
 ```
 
 ## TODO
-* ~~部分视频的视频流是HEVC编码而不是x264，Windows读不出MP4缩略图，考虑要不要判断自动转码。~~
-* ~~aria2和ffmpeg的参数单独存文件方便修改，不然每次都要重新编译exe。~~
-* 分P选择和清晰度选择
+
+-   ~~部分视频的视频流是 HEVC 编码而不是 x264，Windows 读不出 MP4 缩略图，考虑要不要判断自动转码。~~
+-   ~~aria2 和 ffmpeg 的参数单独存文件方便修改，不然每次都要重新编译 exe。~~
+-   分 P 选择和清晰度选择
 
 ## EOF
