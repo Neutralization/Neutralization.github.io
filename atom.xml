@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>H⁺ + OH⁻ → H₂O</title>
+  <icon>https://naizi.moe/icon.png</icon>
+  
+  <link href="https://naizi.moe/atom.xml" rel="self"/>
+  
+  <link href="https://naizi.moe/"/>
+  <updated>2021-03-23T18:25:14.649Z</updated>
+  <id>https://naizi.moe/</id>
+  
+  <author>
+    <name>Neutralized</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>圆周率里的麻将</title>
+    <link href="https://naizi.moe/2021/03/16/mahjong-in-pai/"/>
+    <id>https://naizi.moe/2021/03/16/mahjong-in-pai/</id>
+    <published>2021-03-16T16:25:57.000Z</published>
+    <updated>2021-03-23T18:25:14.649Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;2 月的时候，群友看 VTB 直播雀魂，发现主播为了防止互动的时候窥屏看到手牌，PS 了一张看起来像手牌的图来挡住真实的手牌。&lt;/p&gt;
+&lt;p&gt;群友受此启发，纷纷讨论自己也要这么玩，PS 各种役种的牌扮老虎，比如大家都喜欢的国士无双：&lt;/p&gt;
+&lt;center&gt;&lt;img data-src=&quot;/2021/03/16/mahjong-in-pai/19m19p19s1234567z_1p.png&quot; class=&quot;&quot;&gt;&lt;/center&gt;
+
+&lt;p&gt;大家云集响应，因为之前正好写过&lt;a href=&quot;https://github.com/Neutralization/majsoul-generator&quot;&gt;生成器&lt;/a&gt;，趁此机会我就说群友要啥我就帮群友 PS，都可以做。后来群友觉得正经的役没意思，想搞点不一样的，说要搞个圆周率。这就有意思了。话题很自然的转到了那能不能胡牌的问题上，因为只有数字，先默认牌型是清一色，一试，发现小数点后最开始的14位数字就真的能凑成一副胡牌：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;3.&lt;code&gt;14159265358979&lt;/code&gt; -&amp;gt; 234 678 555 999 11&lt;/p&gt;
+&lt;/blockquote&gt;</summary>
+    
+    
+    
+    <category term="DIY" scheme="https://naizi.moe/categories/DIY/"/>
+    
+    
+    <category term="π" scheme="https://naizi.moe/tags/%CF%80/"/>
+    
+    <category term="麻将" scheme="https://naizi.moe/tags/%E9%BA%BB%E5%B0%86/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>自动化制作周刊哔哩哔哩排行榜</title>
+    <link href="https://naizi.moe/2021/03/06/auto-bilibili-ranking/"/>
+    <id>https://naizi.moe/2021/03/06/auto-bilibili-ranking/</id>
+    <published>2021-03-06T18:50:25.000Z</published>
+    <updated>2021-03-23T18:25:14.645Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;总结一下周刊哔哩哔哩排行榜制作流程自动化过程中遇到的一些问题。&lt;/p&gt;
+&lt;p&gt;之前的周刊制作过程中，组员各自领取不同部分的制作任务，每一部分的内容格式包含在不同的 yml 文件中。&lt;/p&gt;
+&lt;p&gt;通常先把 yml 中的 av 号取出，去下载对应的视频到本地，然后人工浏览选择实际制作时选取的片段，记录下片段的开始时间，修改 yml 中的对应字段。然后上传修改完成的 yml，转换成之后导入 Vegas 时需要的 xml 文件。&lt;/p&gt;
+&lt;p&gt;由于旧流程的局限性，没有考虑到视频尺寸的适配，因此在导入 Vegas 后，往往要手动对齐所有视频。另外由于不同部分的效果不一致（比如是否有过渡场景），也没有在 yml 中进行区分，往往还要再手动调整。工作量本质不大，但其实都是可以进行优化的场景。&lt;/p&gt;
+&lt;p&gt;早几年的时候一直听说 Adobe After Effects 脚本如何如何强大，表达式如何如何好用。怎奈 javascript 从未接触，一直没能下决心去了解。这次也算是终于下了决心，开始了 AE 自动化制作周刊之路。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="杂记" scheme="https://naizi.moe/categories/%E6%9D%82%E8%AE%B0/"/>
+    
+    
+    <category term="bilibili" scheme="https://naizi.moe/tags/bilibili/"/>
+    
+    <category term="ffmpeg" scheme="https://naizi.moe/tags/ffmpeg/"/>
+    
+    <category term="javascript" scheme="https://naizi.moe/tags/javascript/"/>
+    
+    <category term="powershell" scheme="https://naizi.moe/tags/powershell/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>试做了一个明日方舟的小夜灯</title>
+    <link href="https://naizi.moe/2021/01/11/arknight-lamp/"/>
+    <id>https://naizi.moe/2021/01/11/arknight-lamp/</id>
+    <published>2021-01-11T16:32:09.000Z</published>
+    <updated>2021-03-23T18:25:14.645Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;之前也有在尝试用 3D 打印做奇怪的东西，建模一直在用的是 AutoDesk 家的线上工具&lt;a href=&quot;https://www.tinkercad.com/&quot;&gt;Tinkercad&lt;/a&gt;，属于那种拖拖拽拽就能拼出差不多模型的工具，还挺好用。&lt;/p&gt;
+&lt;p&gt;这次尝试做小夜灯，原本是打算做成游戏关卡结算时的三星标志，后来想了想，为了更显而易见的突出方舟元素，用了游戏里医疗干员的标志。主要因为医疗干员的标志几何对称性很好，估摸着可以偷懒。&lt;/p&gt;
+&lt;p&gt;软件用了同事推荐的&lt;a href=&quot;https://www.openscad.org/&quot;&gt;OpenSCAD&lt;/a&gt;，通过代码的方式来进行建模。我基本上是一边查文档一边写，很容易就上手找到需要的功能写出来了。&lt;/p&gt;
+&lt;p&gt;除了没有代码自动格式化这一点略有不习惯，代码逻辑支持实体的交并补操作，渲染后可以意见导出 stl 格式文档进行后续打印工作，实在是方便的很。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="DIY" scheme="https://naizi.moe/categories/DIY/"/>
+    
+    
+    <category term="3D print" scheme="https://naizi.moe/tags/3D-print/"/>
+    
+    <category term="openscad" scheme="https://naizi.moe/tags/openscad/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Python 使用 USB 热敏打印机</title>
+    <link href="https://naizi.moe/2020/07/07/python-escpos-on-windows/"/>
+    <id>https://naizi.moe/2020/07/07/python-escpos-on-windows/</id>
+    <published>2020-07-07T13:17:37.000Z</published>
+    <updated>2021-03-23T18:25:14.653Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;通过使用 python-escpos 库，就可以和常见的 USB 热敏打印机通信来进行打印，不再赘述具体方法。&lt;/p&gt;
+&lt;p&gt;但是 python-escpos 库并不是为 Windows</summary>
+        
+      
+    
+    
+    
+    <category term="杂记" scheme="https://naizi.moe/categories/%E6%9D%82%E8%AE%B0/"/>
+    
+    
+    <category term="python" scheme="https://naizi.moe/tags/python/"/>
+    
+    <category term="windows" scheme="https://naizi.moe/tags/windows/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Windows 10 使用 OpenSSH + Rsync/SCP 同步文件</title>
+    <link href="https://naizi.moe/2020/05/03/win10-ssh-rsync-scp/"/>
+    <id>https://naizi.moe/2020/05/03/win10-ssh-rsync-scp/</id>
+    <published>2020-05-03T07:22:10.000Z</published>
+    <updated>2021-03-23T18:25:14.665Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;疫情期间在家工作一直使用公司的 VPN，于是在公司电脑开了共享用来传输文件。但不知道为什么，公司-&amp;gt;家方向传文件很顺畅，反方向传文件时就经常会出现进度条走到末尾就停住，要多等一段时间才能传输结束的问题。&lt;/p&gt;
+&lt;p&gt;虽然可以考虑用 OneDrive 这类网盘来进行同步，但这样的同步不够实时，而且毕竟要从三方服务器绕一圈，上传速度波动也很大。&lt;/p&gt;
+&lt;p&gt;想到既然 Windows 10 支持了 OpenSSH，家里和公司电脑又都装了 WSL，也许可以用 rsync/scp 来解决这个问题。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="爬虫" scheme="https://naizi.moe/categories/%E7%88%AC%E8%99%AB/"/>
+    
+    
+    <category term="windows" scheme="https://naizi.moe/tags/windows/"/>
+    
+    <category term="rsync" scheme="https://naizi.moe/tags/rsync/"/>
+    
+    <category term="scp" scheme="https://naizi.moe/tags/scp/"/>
+    
+    <category term="ssh" scheme="https://naizi.moe/tags/ssh/"/>
+    
+    <category term="wsl" scheme="https://naizi.moe/tags/wsl/"/>
+    
+  </entry>
+  
+</feed>
