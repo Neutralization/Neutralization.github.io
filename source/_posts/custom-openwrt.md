@@ -95,7 +95,7 @@ tags:
 
     UnblockNeteaseMusic 依赖 `libustream-openssl`，但是 OpenWrt v21.02 版本的 NanoPi R2S 架构依赖 `libustream-wolfssl`，直接编译会发生冲突，需要替换 `Makefile` 中的依赖。
 
-    > **sed** -i s/libustream-openssl/libustream-wolfssl/g package/luci-app-unblockneteasemusic/Makefile
+    > **sed** -i s/libustream-openssl/libustream-wolfssl/g luci-app-unblockneteasemusic/Makefile
 
 5. 一些个人配置, 利用[UCI](https://openwrt.org/docs/guide-user/base-system/uci)
 
@@ -337,6 +337,10 @@ tags:
 编译生成的镜像文件路径为 `~/openwrt/bin/targets/rockchip/armv8/openwrt-rockchip-armv8-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz`
 
 ## 收尾工作
+
+opkg 安装部分官方包的时候会提示 Kernel 版本不对`kernel is not compatible`，这是因为自己编译的 kernel 指纹和官方不一致造成的，[替换成官方指纹即可](https://github.com/iyuangang/openwrt/issues/8#issuecomment-605431578)，目前 kernel 版本是`5.4.143-1-fb881fbbae69f30da18e7c6eb01310c1`
+
+> **sed** -i s/`编译的kernel hash`/fb881fbbae69f30da18e7c6eb01310c1/g /usr/lib/opkg/status
 
 编译 python 的主要目的还是为了利用 crontab 跑一些简单的脚本，比如[原神签到小助手](https://www.yindan.me/tutorial/genshin-impact-helper.html)
 
