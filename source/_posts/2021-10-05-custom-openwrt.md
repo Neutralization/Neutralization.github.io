@@ -12,7 +12,7 @@ tags:
 
 1. 安装 WSL，不再赘述。
 
-2. [移除 WSL 环境变量中包含的 Windows 路径](https://openwrt.org/docs/guide-developer/build-system/wsl)，为编译做准备。
+2. [移除 WSL 环境变量中包含的 Windows 路径](https://openwrt.org/docs/guide-developer/build-system/wsl#setting_up_path)，为编译做准备。
 
     打开 WSL 终端，新建`/etc/wsl.conf`文件，输入如下内容并保存。
 
@@ -97,7 +97,7 @@ tags:
 
     > **sed** -i s/libustream-openssl/libustream-wolfssl/g luci-app-unblockneteasemusic/Makefile
 
-5. 一些个人配置, 利用[UCI](https://openwrt.org/docs/guide-user/base-system/uci)
+5. [一些个人配置](https://openwrt.org/docs/guide-developer/uci-defaults#integrating_custom_settings) 参考[The UCI system](https://openwrt.org/docs/guide-user/base-system/uci)
 
     > **nano** ~/openwrt/package/base-files/files/etc/uci-defaults/99_custom
 
@@ -330,9 +330,9 @@ tags:
 
 3. 执行编译
 
-    > cd ~/openwrt/  
-    > make -j8 download  
-    > make -j8
+    > **cd** ~/openwrt/  
+    > **make** -j8 download  
+    > **make** -j8
 
 编译生成的镜像文件路径为 `~/openwrt/bin/targets/rockchip/armv8/openwrt-rockchip-armv8-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz`
 
