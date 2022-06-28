@@ -26,25 +26,29 @@ tags:
 3. 更新系统
 
     > **sudo** apt update  
-    > **sudo** apt dist-upgrade -y
+    > **sudo** apt full-upgrade -y
 
 4. [准备编译工具](https://openwrt.org/docs/guide-developer/build-system/install-buildsystem#debianubuntu)
 
-    > **sudo** apt install build-essential ccache ecj fastjar file g++ gawk \\\
-    > gettext git java-propose-classpath libelf-dev libncurses5-dev \\\
-    > libncursesw5-dev libssl-dev python python2.7-dev python3 unzip wget \\\
-    > python3-distutils python3-setuptools python3-dev rsync subversion \\\
-    > swig time xsltproc zlib1g-dev
+    > **sudo** apt install -y ack antlr3 asciidoc autoconf automake \\\
+    autopoint binutils bison build-essential bzip2 ccache cmake cpio \\\
+    curl device-tree-compiler fastjar flex gawk gettext gcc-multilib \\\
+    g++-multilib git gperf haveged help2man intltool libc6-dev-i386 \\\
+    libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev \\\
+    libncurses5-dev libncursesw5-dev libreadline-dev libssl-dev libtool \\\
+    lrzsz mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf \\\
+    python2.7 python3 python3-pip qemu-utils rsync scons squashfs-tools \
+    subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
 
 <!-- more -->
 
 ## 克隆仓库
 
-1. 下载 [OpenWrt](https://openwrt.org/docs/guide-developer/build-system/use-buildsystem) 源码
+1. 下载 OpenWrt 源码（更改为[LEDE](https://github.com/coolsnowwolf/lede)）
 
     ```bash
     cd ~
-    git clone https://git.openwrt.org/openwrt/openwrt.git openwrt
+    git clone https://github.com/coolsnowwolf/lede openwrt
     cd openwrt
     git pull
     git checkout v21.02.0
@@ -64,44 +68,11 @@ tags:
     git branch --set-upstream-to=origin/master master
     ```
 
-3. 下载 [UnblockNeteaseMusic](https://github.com/UnblockNeteaseMusic/luci-app-unblockneteasemusic) 源码
+3. 修改路由IP地址
 
     ```bash
-    cd ~/openwrt/package/
-    git clone https://github.com/UnblockNeteaseMusic/luci-app-unblockneteasemusic.git
-    ```
-
-    ~~UnblockNeteaseMusic 依赖 `libustream-openssl`，但是 OpenWrt v21.02 版本的 NanoPi R2S 架构依赖 `libustream-wolfssl`，直接编译会发生冲突，需要替换 `Makefile` 中的依赖。~~
-
-    仓库已经更新会自动解决依赖问题了。
-
-4. [一些个人配置](https://openwrt.org/docs/guide-developer/uci-defaults#integrating_custom_settings) 参考[The UCI system](https://openwrt.org/docs/guide-user/base-system/uci)
-
-    > **nano** ~/openwrt/package/base-files/files/etc/uci-defaults/99_custom
-
-    ```bash
-    uci -q batch << EOI
-    set network.lan.ipaddr='192.168.2.1'
-    set network.@device[2].macaddr='b8:27:eb:48:f8:30'
-    set network.@device[2].ipv6='0'
-    del network.wan6
-    commit network
-    set dhcp.lan.force='1'
-    set dhcp.lan.ra_flags='none'
-    del dhcp.lan.ra
-    del dhcp.lan.ra_slaac
-    del dhcp.lan.dhcpv6
-    commit dhcp
-    set system.@system[0]=system
-    set system.@system[0].hostname='WTF'
-    set system.@system[0].timezone='CST-8'
-    set system.@system[0].zonename='Asia/Shanghai'
-    set system.@system[0].ttylogin='0'
-    set system.@system[0].log_size='64'
-    set system.@system[0].log_proto='udp'
-    set system.@system[0].urandom_seed='0'
-    commit system
-    ```
+   > sed -i 's/192.168.1.1/192.168.2.1/g' package/base-files/files/bin/config_generate
+   ```
 
 ## 开始编译
 
@@ -124,8 +95,6 @@ tags:
     > **make defconfig**  
     > **make menuconfig**
 
-    OpenClash 依赖 `dnsmasq-full`，要取消 `dnsmasq` 后勾选 `dnsmasq-full`
-
     ```menuconfig
     Target System  --->
         (X) Rockchip
@@ -139,45 +108,23 @@ tags:
         [*] GZip images
         (128) Kernel partition size (in MB)
         (2048) Root filesystem partition size (in MB)
-    Base system  --->
-        < > dnsmasq
-        <*> dnsmasq-full
-    Languages  --->
-        Python  --->
-            <*> python-pip-conf
-            <*> python3
-            <*> python3-aiohttp
-            <*> python3-lxml
-            <*> python3-pip
-            <*> python3-pyotp
-            <*> python3-requests
+    Kernel modules  --->
+        Cryptographic API modules  --->
+            ALL
     LuCI  --->
-        1. Collections  --->
-            <*> luci-ssl
-        2. Modules  --->
-            [*] Minify Lua sources
             Translations  --->
-                <*> Chinese Simplified (zh_Hans)
+                <*> Simplified Chinese (zh-cn)
             <*> luci-compat
         3. Applications  --->
             <*> luci-app-openclash
-            <*> luci-app-unblockneteasemusic
+            <*> luci-app-turboacc
+            <*> luci-app-unblockmusic
+            [*] UnblockNeteaseMusic NodeJS Version
             <*> luci-app-wireguard
-    Multimedia  --->
-        <*> ffmpeg
-    Network  --->
-        Version Control Systems  --->
-            <*> git-http
+            <*> luci-app-zerotier
     Utilities  --->
-        Compression  --->
-            <*> unzip
         Editors  --->
-            <*> nano
-        <*> gawk
-        <*> grep
-        <*> sed
-        <*> whereis
-        <*> which
+            <*> nano-full
     ```
 
 3. 执行编译
@@ -186,20 +133,16 @@ tags:
     > **make** -j8 download  
     > **make** -j8
 
-编译生成的镜像文件路径为 `~/openwrt/bin/targets/rockchip/armv8/openwrt-rockchip-armv8-friendlyarm_nanopi-r2s-squashfs-sysupgrade.img.gz`
+编译生成的镜像文件在 `~/openwrt/bin/targets/rockchip/armv8/` 路径下
 
 ## 收尾工作
 
-opkg 安装部分官方包的时候会提示 Kernel 版本不对`kernel is not compatible`，这是因为自己编译的 kernel 指纹和官方不一致造成的，[替换成官方指纹即可](https://github.com/iyuangang/openwrt/issues/8#issuecomment-605431578)，目前 kernel 版本是`5.4.143-1-fb881fbbae69f30da18e7c6eb01310c1`
+opkg 安装部分官方包的时候会提示 Kernel 版本不对`kernel is not compatible`，这是因为自己编译的 kernel 指纹和官方不一致造成的，[替换成官方指纹即可](https://github.com/iyuangang/openwrt/issues/8#issuecomment-605431578)，比如目前 kernel 版本是`5.4.143-1-fb881fbbae69f30da18e7c6eb01310c1`
 
 > **sed** -i s/`编译的kernel hash`/fb881fbbae69f30da18e7c6eb01310c1/g /usr/lib/opkg/status
-
-编译 python 的主要目的还是为了利用 crontab 跑一些简单的脚本，比如[原神签到小助手](https://www.yindan.me/tutorial/genshin-impact-helper.html)
-
-编译 ffmpeg 则是为了跑 youtube 下载工具 [yt-dlp](https://github.com/yt-dlp/yt-dlp)，结合 [Rclone](https://rclone.org/) 定时存档订阅的 youtube 频道更新。
 
 ## EOF
 
 编译 run 了一万年，再不写点什么记下来，下次编译根本记不住了.jpg
 
-后来参考学习了 [使用 GitHub Actions 云编译 OpenWrt](https://p3terx.com/archives/build-openwrt-with-github-actions.html) 利用 Github Action 进行编译，再也不用面对奇怪的环境问题了。
+后来参考学习了 P3TERX 的 [这篇文章](https://p3terx.com/archives/build-openwrt-with-github-actions.html) 利用 Github Action 进行编译，并且按照 [LEDE的这个PR](https://github.com/coolsnowwolf/lede/pull/7796) 打开了缓存工具链，再也不用面对奇怪的环境问题和该参数重编又是四、五个小时的窘境了。
