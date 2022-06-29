@@ -12,7 +12,7 @@ tags:
 
 群友受此启发，纷纷讨论自己也要这么玩，PS 各种役种的牌扮老虎，比如大家都喜欢的国士无双：
 
-<center>{% asset_img "19m19p19s1234567z_1p.png"%}</center>
+![国士无双](/2021-03-17-mahjong-in-pai/19m19p19s1234567z_1p.png)
 
 大家云集响应，因为之前正好写过[生成器](https://github.com/Neutralization/majsoul-generator)，趁此机会我就说群友要啥我就帮群友 PS，都可以做。后来群友觉得正经的役没意思，想搞点不一样的，说要搞个圆周率。这就有意思了。话题很自然的转到了那能不能胡牌的问题上，因为只有数字，先默认牌型是清一色，一试，发现小数点后最开始的14位数字就真的能凑成一副胡牌：
 
@@ -42,4 +42,4 @@ tags:
 
 最后回顾下一切的开端：
 
-<center>{% asset_img "screenshot.jpg"%}</center>
+![开端](/2021-03-17-mahjong-in-pai/screenshot.jpg)

@@ -267,4 +267,4 @@ if __name__ == '__main__':
 
 ## EOF
 
-<center>{% asset_img "2019-10-02_20-38.gif" "gugugu" %}</center>
+![gugugu](/2019-10-02-memobird-rss/2019-10-02_20-38.gif)
