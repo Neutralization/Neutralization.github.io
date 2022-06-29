@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>wsl on H⁺ + OH⁻ → H₂O</title><link>https://naizi.moe/tags/wsl/</link><description>Recent content in wsl on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 05 Oct 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://naizi.moe/tags/wsl/atom.xml" rel="self" type="application/rss+xml"/><item><title>OpenWrt 折腾笔记</title><link>https://naizi.moe/2021/10/05/openwrt-%E6%8A%98%E8%85%BE%E7%AC%94%E8%AE%B0/</link><pubDate>Tue, 05 Oct 2021 00:00:00 +0000</pubDate><guid>https://naizi.moe/2021/10/05/openwrt-%E6%8A%98%E8%85%BE%E7%AC%94%E8%AE%B0/</guid><description>&lt;h2 id="准备工作">准备工作&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>安装 WSL，不再赘述。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;a class="link" href="https://openwrt.org/docs/guide-developer/build-system/wsl#setting_up_path" target="_blank" rel="noopener"
+>移除 WSL 环境变量中包含的 Windows 路径&lt;/a>，为编译做准备。&lt;/p>
+&lt;p>打开 WSL 终端，新建&lt;code>/etc/wsl.conf&lt;/code>文件，输入如下内容并保存。&lt;/p>
+&lt;pre tabindex="0">&lt;code class="language-conf" data-lang="conf">[interop]
+appendWindowsPath = false
+&lt;/code>&lt;/pre>&lt;p>然后执行&lt;code>wsl --shutdown&lt;/code>，再重新启动 wsl，执行&lt;code>echo ${PATH}&lt;/code>检查是否含有 Windows 路径。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>更新系统&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;strong>sudo&lt;/strong> apt update&lt;br>
+&lt;strong>sudo&lt;/strong> apt full-upgrade -y&lt;/p>
+&lt;/blockquote>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;a class="link" href="https://openwrt.org/docs/guide-developer/build-system/install-buildsystem#debianubuntu" target="_blank" rel="noopener"
+>准备编译工具&lt;/a>&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;strong>sudo&lt;/strong> apt install -y ack antlr3 asciidoc autoconf automake \&lt;br>
+autopoint binutils bison build-essential bzip2 ccache cmake cpio \&lt;br>
+curl device-tree-compiler fastjar flex gawk gettext gcc-multilib \&lt;br>
+g++-multilib git gperf haveged help2man intltool libc6-dev-i386 \&lt;br>
+libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev \&lt;br>
+libncurses5-dev libncursesw5-dev libreadline-dev libssl-dev libtool \&lt;br>
+lrzsz mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf \&lt;br>
+python2.7 python3 python3-pip qemu-utils rsync scons squashfs-tools \&lt;br>
+subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev&lt;/p>
+&lt;/blockquote>
+&lt;/li>
+&lt;/ol>
+&lt;!-- raw HTML omitted -->
+&lt;h2 id="克隆仓库">克隆仓库&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>下载 OpenWrt 源码（更改为&lt;a class="link" href="https://github.com/coolsnowwolf/lede" target="_blank" rel="noopener"
+>LEDE&lt;/a>）&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>cd ~
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git clone https://github.com/coolsnowwolf/lede openwrt
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cd openwrt
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git pull
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>下载 &lt;a class="link" href="https://github.com/vernesong/OpenClash" target="_blank" rel="noopener"
+>OpenClash&lt;/a> 源码&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>cd ~/openwrt/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>mkdir package/luci-app-openclash
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cd package/luci-app-openclash
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git init
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git remote add origin https://github.com/vernesong/OpenClash.git
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git config core.sparsecheckout true
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>echo &lt;span style="color:#e6db74">&amp;#34;luci-app-openclash&amp;#34;&lt;/span> &amp;gt;&amp;gt; .git/info/sparse-checkout
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git pull --depth &lt;span style="color:#ae81ff">1&lt;/span> origin master
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git branch --set-upstream-to&lt;span style="color:#f92672">=&lt;/span>origin/master master
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>修改路由IP地址&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&amp;gt; sed -i &lt;span style="color:#e6db74">&amp;#39;s/192.168.1.1/192.168.2.1/g&amp;#39;&lt;/span> package/base-files/files/bin/config_generate
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ol>
+&lt;h2 id="开始编译">开始编译&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>更新 feeds&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;strong>cd&lt;/strong> ~/openwrt/&lt;br>
+./scripts/feeds update -a&lt;br>
+./scripts/feeds install -a&lt;/p>
+&lt;/blockquote>
+&lt;/li>
+&lt;li>
+&lt;p>选择编译内容&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;strong>cd&lt;/strong> ~/openwrt/&lt;br>
+&lt;strong>make defconfig&lt;/strong>&lt;br>
+&lt;strong>make menuconfig&lt;/strong>&lt;br>
+./scripts/diffconfig.sh &amp;gt; diffconfig&lt;/p>
+&lt;/blockquote>
+&lt;p>diffconfig 后期可用于更新镜像时导入&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;strong>cp&lt;/strong> diffconfig ~/openwrt/.config&lt;br>
+&lt;strong>make defconfig&lt;/strong>&lt;br>
+&lt;strong>make menuconfig&lt;/strong>&lt;/p>
+&lt;/blockquote>
+&lt;pre tabindex="0">&lt;code class="language-menuconfig" data-lang="menuconfig">Target System ---&amp;gt;
+(X) Rockchip
+Subtarget ---&amp;gt;
+(X) RK33xx boards (64 bit)
+Target Profile ---&amp;gt;
+(X) FriendlyARM NanoPi R2S
+Target Images ---&amp;gt;
+[*] ext4
+[*] squashfs
+[*] GZip images
+(128) Kernel partition size (in MB)
+(2048) Root filesystem partition size (in MB)
+Kernel modules ---&amp;gt;
+Cryptographic API modules ---&amp;gt;
+ALL
+LuCI ---&amp;gt;
+2. Modules ---&amp;gt;
+Translations ---&amp;gt;
+&amp;lt;*&amp;gt; Simplified Chinese (zh-cn)
+&amp;lt;*&amp;gt; luci-compat
+3. Applications ---&amp;gt;
+&amp;lt;*&amp;gt; luci-app-openclash
+&amp;lt;*&amp;gt; luci-app-turboacc
+&amp;lt;*&amp;gt; luci-app-unblockmusic
+[*] UnblockNeteaseMusic NodeJS Version
+&amp;lt;*&amp;gt; luci-app-wireguard
+&amp;lt;*&amp;gt; luci-app-zerotier
+4. Themes ---&amp;gt;
+&amp;lt;*&amp;gt; luci-theme-argon
+Utilities ---&amp;gt;
+Editors ---&amp;gt;
+&amp;lt;*&amp;gt; nano-full
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>执行编译&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;strong>cd&lt;/strong> ~/openwrt/&lt;br>
+&lt;strong>make&lt;/strong> -j8 download&lt;br>
+&lt;strong>make&lt;/strong> -j8&lt;/p>
+&lt;/blockquote>
+&lt;/li>
+&lt;/ol>
+&lt;p>编译生成的镜像文件在 &lt;code>~/openwrt/bin/targets/rockchip/armv8/&lt;/code> 路径下&lt;/p>
+&lt;h2 id="收尾工作">收尾工作&lt;/h2>
+&lt;p>opkg 安装部分官方包的时候会提示 Kernel 版本不对&lt;code>kernel is not compatible&lt;/code>，这是因为自己编译的 kernel 指纹和官方不一致造成的，&lt;a class="link" href="https://github.com/iyuangang/openwrt/issues/8#issuecomment-605431578" target="_blank" rel="noopener"
+>替换成官方指纹即可&lt;/a>。&lt;/p>
+&lt;p>比如目前 kernel 版本是&lt;code>5.4.143-1-fb881fbbae69f30da18e7c6eb01310c1&lt;/code>&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;strong>sed&lt;/strong> -i s/&lt;code>编译的kernel hash&lt;/code>/fb881fbbae69f30da18e7c6eb01310c1/g /usr/lib/opkg/status&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="eof">EOF&lt;/h2>
+&lt;p>编译 run 了一万年，再不写点什么记下来，下次编译根本记不住了.jpg&lt;/p>
+&lt;p>后来参考学习了 P3TERX 的 &lt;a class="link" href="https://p3terx.com/archives/build-openwrt-with-github-actions.html" target="_blank" rel="noopener"
+>这篇文章&lt;/a> 利用 Github Action 进行编译，并且按照 &lt;a class="link" href="https://github.com/coolsnowwolf/lede/pull/7796" target="_blank" rel="noopener"
+>LEDE的这个PR&lt;/a> 打开了缓存工具链，再也不用面对奇怪的环境问题和该参数重编又是四、五个小时的窘境了。&lt;/p></description></item><item><title>Windows 10 使用 OpenSSH + Rsync/SCP 同步文件</title><link>https://naizi.moe/2020/05/03/windows-10-%E4%BD%BF%E7%94%A8-openssh--rsync/scp-%E5%90%8C%E6%AD%A5%E6%96%87%E4%BB%B6/</link><pubDate>Sun, 03 May 2020 00:00:00 +0000</pubDate><guid>https://naizi.moe/2020/05/03/windows-10-%E4%BD%BF%E7%94%A8-openssh--rsync/scp-%E5%90%8C%E6%AD%A5%E6%96%87%E4%BB%B6/</guid><description>&lt;p>疫情期间在家工作一直使用公司的 VPN，于是在公司电脑开了共享用来传输文件。但不知道为什么，公司-&amp;gt;家方向传文件很顺畅，反方向传文件时就经常会出现进度条走到末尾就停住，要多等一段时间才能传输结束的问题。&lt;/p>
+&lt;p>虽然可以考虑用 OneDrive 这类网盘来进行同步，但这样的同步不够实时，而且毕竟要从三方服务器绕一圈，上传速度波动也很大。&lt;/p>
+&lt;p>想到既然 Windows 10 支持了 OpenSSH，家里和公司电脑又都装了 WSL，也许可以用 rsync/scp 来解决这个问题。&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;h2 id="安装-openssh-server">安装 OpenSSH Server&lt;/h2>
+&lt;p>Windows 10(1809)虽然自带了 OpenSSH 的 Server 和 Client，但默认并没有安装。&lt;/p>
+&lt;p>参照&lt;a class="link" href="https://docs.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse" target="_blank" rel="noopener"
+>Microsoft 的文档&lt;/a>给两台电脑都安装 OpenSSH：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-PowerShell" data-lang="PowerShell">&lt;span style="display:flex;">&lt;span>Get-WindowsCapability -Online | ? Name &lt;span style="color:#f92672">-like&lt;/span> &lt;span style="color:#e6db74">&amp;#39;OpenSSH*&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># This should return the following output:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Name &lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> OpenSSH.Client~~~~0.0.1.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>State &lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> NotPresent
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Name &lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> OpenSSH.Server~~~~0.0.1.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>State &lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> NotPresent
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Install the OpenSSH Client&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Install the OpenSSH Server&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Both of these should return the following output:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Path &lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Online &lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> True
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>RestartNeeded &lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> False
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Start-Service sshd
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># OPTIONAL but recommended:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Set-Service -Name sshd -StartupType &lt;span style="color:#e6db74">&amp;#39;Automatic&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Confirm the Firewall rule is configured. It should be created automatically by setup.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Get-NetFirewallRule -Name *ssh*
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># There should be a firewall rule named &amp;#34;OpenSSH-Server-In-TCP&amp;#34;, which should be enabled&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># If the firewall does not exist, create one&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>New-NetFirewallRule -Name sshd -DisplayName &lt;span style="color:#e6db74">&amp;#39;OpenSSH Server (sshd)&amp;#39;&lt;/span> -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>这时候就可以从其中一台电脑向另一台发起 SSH 连接了。&lt;/p>
+&lt;h2 id="生成-ssh-密钥并部署">生成 SSH 密钥并部署&lt;/h2>
+&lt;p>考虑到之后计划使用 rsync 传输，与 Linux 类似，我们可以使用密钥登陆的方式来避免每次都要输入密码。&lt;/p>
+&lt;p>先设定作为 Client 的电脑：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-PowerShell" data-lang="PowerShell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 提示输入生成密钥的文件名，这里假设是 client_rsa&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ssh-keygen
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 启动ssh-agent服务&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Get-Service -Name ssh-agent | Set-Service -StartupType &lt;span style="color:#e6db74">&amp;#39;Automatic&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Start-Service ssh-agent
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 导入密钥&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ssh-add client_rsa
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>先通过密码登录的方式 SSH 连接到 Server 的电脑上：（注意替换成自己的 server_user 和 client_user）&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-PowerShell" data-lang="PowerShell">&lt;span style="display:flex;">&lt;span>ssh server_user@Server_ip
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>mkdir C:\Users\server_user\.ssh\
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>scp C:\Users\client_user\.ssh\client_rsa.pub server_user@Server_ip&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>C:\Users\server_user\.ssh\authorized_keys
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>退出 SSH 会话，然后重新连接，这时应该已经不需要再输入密码了。&lt;/p>
+&lt;p>设置到这里的时候踩到一个坑：如果 SSH 登录的 Server 用户是管理员身份的话，&lt;code>authorized_keys&lt;/code>需要存到&lt;code>C:\ProgramData\ssh\administrators_authorized_keys&lt;/code>这个位置。&lt;/p>
+&lt;p>不然的话此时 SSH 登录仍然会要求密码。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-PowerShell" data-lang="PowerShell">&lt;span style="display:flex;">&lt;span>ssh server_user@Server_ip
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>scp C:\Users\client_user\.ssh\client_rsa.pub server_user@Server_ip&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>C:\ProgramData\ssh\administrators_authorized_keys
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 修正ACL权限&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$acl = Get-Acl C:\ProgramData\ssh\administrators_authorized_keys
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$acl.SetAccessRuleProtection($true, $false)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$administratorsRule = New-Object system.security.accesscontrol.filesystemaccessrule(&lt;span style="color:#e6db74">&amp;#34;Administrators&amp;#34;&lt;/span>,&lt;span style="color:#e6db74">&amp;#34;FullControl&amp;#34;&lt;/span>,&lt;span style="color:#e6db74">&amp;#34;Allow&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$systemRule = New-Object system.security.accesscontrol.filesystemaccessrule(&lt;span style="color:#e6db74">&amp;#34;SYSTEM&amp;#34;&lt;/span>,&lt;span style="color:#e6db74">&amp;#34;FullControl&amp;#34;&lt;/span>,&lt;span style="color:#e6db74">&amp;#34;Allow&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$acl.SetAccessRule($administratorsRule)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$acl.SetAccessRule($systemRule)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$acl | Set-Acl
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>之后对调 Client 和 Server 的身份再做一次同样的事情就可以了。&lt;/p>
+&lt;h2 id="进入-wsl-部署-rsync">进入 WSL 部署 rsync&lt;/h2>
+&lt;p>只用 scp 存在着一定的局限性，若要使用 rsync 则需要依靠 WSL 了。&lt;/p>
+&lt;p>依旧从 Client 开始设置：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>cd ~/.ssh
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cp /mnt/c/Users/client_user/.ssh/client_rsa ./client_rsa
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cp /mnt/c/Users/client_user/.ssh/client_rsa.pub ./client_rsa.pub
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>chmod &lt;span style="color:#ae81ff">600&lt;/span> client_rsa
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>转到 Server 上：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>cd ~/.ssh
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cp /mnt/c/Users/server_user/.ssh/authorized_keys ./authorized_keys
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>假设 Client 的 D 盘有个 testfile 的文件，测试 rsync：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># --rsync-path=&amp;#34;wsl rsync&amp;#34; 用来指示Server通过wsl启动rsync环境&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>rsync -rtuv -e &lt;span style="color:#e6db74">&amp;#34;ssh -i ~/.ssh/client_rsa&amp;#34;&lt;/span> /mnt/d/testfile server_user@Server_ip:/mnt/d/ --rsync-path&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;wsl rsync&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果一切正常，应该不会提示输入密码，然后你能在 Server 的 D 盘看到这个文件。&lt;/p>
+&lt;p>同样，对调 Client 和 Server 的身份再设定一次就可以双向操作了。&lt;/p>
+&lt;h2 id="eof">EOF&lt;/h2></description></item><item><title>Windows使用WSL配置crontab定时任务</title><link>https://naizi.moe/2020/01/25/windows%E4%BD%BF%E7%94%A8wsl%E9%85%8D%E7%BD%AEcrontab%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/</link><pubDate>Sat, 25 Jan 2020 00:00:00 +0000</pubDate><guid>https://naizi.moe/2020/01/25/windows%E4%BD%BF%E7%94%A8wsl%E9%85%8D%E7%BD%AEcrontab%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/</guid><description>&lt;p>有些 python 脚本任务对于树莓派来说还是负担太重了。毕竟性能上限摆在那里，也不能靠一个小小的 pi 承担太多。&lt;/p>
+&lt;p>借此机会正好尝试一下 WSL(Windows Subsystem for Linux).&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;h2 id="安装-wsl">安装 WSL&lt;/h2>
+&lt;p>安装 WSL 并没有想象中的复杂。进入控制面板-&amp;gt;程序和功能-&amp;gt;启用或关闭 Windows 功能，勾选&lt;code>适用于Linux的Windows子系统&lt;/code>，等待安装完毕，然后重启系统。&lt;/p>
+&lt;p>&lt;img src="https://naizi.moe/2020-01-25-wsl-crontab/Snipaste_2020-01-25_19-14-26.png"
+loading="lazy"
+alt="适用于Linux的Windows子系统"
+>&lt;/p>
+&lt;p>重启完毕，开始菜单选择 MicrosoftStore，搜索 linux 就能够找到可供使用的 linux 发行版，我这里选择了 Ubuntu18.04LTS。&lt;/p>
+&lt;p>&lt;img src="https://naizi.moe/2020-01-25-wsl-crontab/Snipaste_2020-01-25_02-08-03.png"
+loading="lazy"
+alt="MicrosoftStore"
+>&lt;/p>
+&lt;p>应用安装完毕后，启动应用会要求设定基础的用户名和密码，接着，一个可供使用的 WSL 就准备就绪了。&lt;/p>
+&lt;h2 id="确保-crontab-服务">确保 crontab 服务&lt;/h2>
+&lt;p>由于 WSL 并不会默认启动，而且当运行中的 WSL 的最后一个 bash 关闭后，就相当于关闭了整个子系统，那我们的 crontab 也就直接去世了。&lt;/p>
+&lt;p>为了保持 crontab 常驻，需要一些措施。这里参考了&lt;a class="link" href="https://blog.snowme34.com/post/schedule-tasks-using-crontab-on-windows-10-with-wsl/index.html" target="_blank" rel="noopener"
+>Schedule Tasks Using Crontab on Windows 10 with WSL&lt;/a>的方法，建立一个 crontab 服务的 Windows 启动项，每次系统启动后在后台常驻。&lt;/p>
+&lt;p>首先进入 WSL，修改 sudoer，避免每次启动 crontab 服务时需要输入密码确认：&lt;/p>
+&lt;blockquote>
+&lt;p>sudo visudo&lt;/p>
+&lt;/blockquote>
+&lt;p>在文件末尾加入&lt;/p>
+&lt;blockquote>
+&lt;p>%sudo ALL=NOPASSWD: /etc/init.d/cron start&lt;/p>
+&lt;/blockquote>
+&lt;p>然后保存文件。回到 Windows，Win+R 打开运行，输入&lt;code>shell:startup&lt;/code>打开启动文件夹，右键新建快捷方式，目标输入：&lt;/p>
+&lt;blockquote>
+&lt;p>C:\Windows\System32\wsl.exe sudo /etc/init.d/cron start&lt;/p>
+&lt;/blockquote>
+&lt;p>这样我们就能够保证 crontab 在每次 Windows 启动后常驻后台了。一切正常的话重启 Windows，在任务管理器能看到一个名称为 cron 的进程。&lt;/p>
+&lt;p>&lt;img src="https://naizi.moe/2020-01-25-wsl-crontab/Snipaste_2020-01-25_19-16-06.png"
+loading="lazy"
+alt="任务管理器"
+>&lt;/p>
+&lt;h2 id="使用-crontab">使用 crontab&lt;/h2>
+&lt;p>剩下的操作和在 linux 里使用 crontab 没有区别，唯一需要注意的是文件的路径。&lt;/p>
+&lt;p>在 WSL 中，Windows 的 C 盘被挂载在&lt;code>/mnt/c&lt;/code>目录下，D\E\F 以此类推，需要注意对应修改。&lt;/p>
+&lt;h2 id="eof">EOF&lt;/h2></description></item></channel></rss>

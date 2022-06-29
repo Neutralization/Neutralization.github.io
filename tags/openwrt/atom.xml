@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>openwrt on H⁺ + OH⁻ → H₂O</title><link>https://naizi.moe/tags/openwrt/</link><description>Recent content in openwrt on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 05 Oct 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://naizi.moe/tags/openwrt/atom.xml" rel="self" type="application/rss+xml"/><item><title>OpenWrt 折腾笔记</title><link>https://naizi.moe/2021/10/05/openwrt-%E6%8A%98%E8%85%BE%E7%AC%94%E8%AE%B0/</link><pubDate>Tue, 05 Oct 2021 00:00:00 +0000</pubDate><guid>https://naizi.moe/2021/10/05/openwrt-%E6%8A%98%E8%85%BE%E7%AC%94%E8%AE%B0/</guid><description>&lt;h2 id="准备工作">准备工作&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>安装 WSL，不再赘述。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;a class="link" href="https://openwrt.org/docs/guide-developer/build-system/wsl#setting_up_path" target="_blank" rel="noopener"
+>移除 WSL 环境变量中包含的 Windows 路径&lt;/a>，为编译做准备。&lt;/p>
+&lt;p>打开 WSL 终端，新建&lt;code>/etc/wsl.conf&lt;/code>文件，输入如下内容并保存。&lt;/p>
+&lt;pre tabindex="0">&lt;code class="language-conf" data-lang="conf">[interop]
+appendWindowsPath = false
+&lt;/code>&lt;/pre>&lt;p>然后执行&lt;code>wsl --shutdown&lt;/code>，再重新启动 wsl，执行&lt;code>echo ${PATH}&lt;/code>检查是否含有 Windows 路径。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>更新系统&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;strong>sudo&lt;/strong> apt update&lt;br>
+&lt;strong>sudo&lt;/strong> apt full-upgrade -y&lt;/p>
+&lt;/blockquote>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;a class="link" href="https://openwrt.org/docs/guide-developer/build-system/install-buildsystem#debianubuntu" target="_blank" rel="noopener"
+>准备编译工具&lt;/a>&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;strong>sudo&lt;/strong> apt install -y ack antlr3 asciidoc autoconf automake \&lt;br>
+autopoint binutils bison build-essential bzip2 ccache cmake cpio \&lt;br>
+curl device-tree-compiler fastjar flex gawk gettext gcc-multilib \&lt;br>
+g++-multilib git gperf haveged help2man intltool libc6-dev-i386 \&lt;br>
+libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev \&lt;br>
+libncurses5-dev libncursesw5-dev libreadline-dev libssl-dev libtool \&lt;br>
+lrzsz mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf \&lt;br>
+python2.7 python3 python3-pip qemu-utils rsync scons squashfs-tools \&lt;br>
+subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev&lt;/p>
+&lt;/blockquote>
+&lt;/li>
+&lt;/ol>
+&lt;!-- raw HTML omitted -->
+&lt;h2 id="克隆仓库">克隆仓库&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>下载 OpenWrt 源码（更改为&lt;a class="link" href="https://github.com/coolsnowwolf/lede" target="_blank" rel="noopener"
+>LEDE&lt;/a>）&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>cd ~
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git clone https://github.com/coolsnowwolf/lede openwrt
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cd openwrt
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git pull
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>下载 &lt;a class="link" href="https://github.com/vernesong/OpenClash" target="_blank" rel="noopener"
+>OpenClash&lt;/a> 源码&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>cd ~/openwrt/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>mkdir package/luci-app-openclash
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cd package/luci-app-openclash
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git init
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git remote add origin https://github.com/vernesong/OpenClash.git
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git config core.sparsecheckout true
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>echo &lt;span style="color:#e6db74">&amp;#34;luci-app-openclash&amp;#34;&lt;/span> &amp;gt;&amp;gt; .git/info/sparse-checkout
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git pull --depth &lt;span style="color:#ae81ff">1&lt;/span> origin master
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git branch --set-upstream-to&lt;span style="color:#f92672">=&lt;/span>origin/master master
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>修改路由IP地址&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&amp;gt; sed -i &lt;span style="color:#e6db74">&amp;#39;s/192.168.1.1/192.168.2.1/g&amp;#39;&lt;/span> package/base-files/files/bin/config_generate
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ol>
+&lt;h2 id="开始编译">开始编译&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>更新 feeds&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;strong>cd&lt;/strong> ~/openwrt/&lt;br>
+./scripts/feeds update -a&lt;br>
+./scripts/feeds install -a&lt;/p>
+&lt;/blockquote>
+&lt;/li>
+&lt;li>
+&lt;p>选择编译内容&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;strong>cd&lt;/strong> ~/openwrt/&lt;br>
+&lt;strong>make defconfig&lt;/strong>&lt;br>
+&lt;strong>make menuconfig&lt;/strong>&lt;br>
+./scripts/diffconfig.sh &amp;gt; diffconfig&lt;/p>
+&lt;/blockquote>
+&lt;p>diffconfig 后期可用于更新镜像时导入&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;strong>cp&lt;/strong> diffconfig ~/openwrt/.config&lt;br>
+&lt;strong>make defconfig&lt;/strong>&lt;br>
+&lt;strong>make menuconfig&lt;/strong>&lt;/p>
+&lt;/blockquote>
+&lt;pre tabindex="0">&lt;code class="language-menuconfig" data-lang="menuconfig">Target System ---&amp;gt;
+(X) Rockchip
+Subtarget ---&amp;gt;
+(X) RK33xx boards (64 bit)
+Target Profile ---&amp;gt;
+(X) FriendlyARM NanoPi R2S
+Target Images ---&amp;gt;
+[*] ext4
+[*] squashfs
+[*] GZip images
+(128) Kernel partition size (in MB)
+(2048) Root filesystem partition size (in MB)
+Kernel modules ---&amp;gt;
+Cryptographic API modules ---&amp;gt;
+ALL
+LuCI ---&amp;gt;
+2. Modules ---&amp;gt;
+Translations ---&amp;gt;
+&amp;lt;*&amp;gt; Simplified Chinese (zh-cn)
+&amp;lt;*&amp;gt; luci-compat
+3. Applications ---&amp;gt;
+&amp;lt;*&amp;gt; luci-app-openclash
+&amp;lt;*&amp;gt; luci-app-turboacc
+&amp;lt;*&amp;gt; luci-app-unblockmusic
+[*] UnblockNeteaseMusic NodeJS Version
+&amp;lt;*&amp;gt; luci-app-wireguard
+&amp;lt;*&amp;gt; luci-app-zerotier
+4. Themes ---&amp;gt;
+&amp;lt;*&amp;gt; luci-theme-argon
+Utilities ---&amp;gt;
+Editors ---&amp;gt;
+&amp;lt;*&amp;gt; nano-full
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>执行编译&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;strong>cd&lt;/strong> ~/openwrt/&lt;br>
+&lt;strong>make&lt;/strong> -j8 download&lt;br>
+&lt;strong>make&lt;/strong> -j8&lt;/p>
+&lt;/blockquote>
+&lt;/li>
+&lt;/ol>
+&lt;p>编译生成的镜像文件在 &lt;code>~/openwrt/bin/targets/rockchip/armv8/&lt;/code> 路径下&lt;/p>
+&lt;h2 id="收尾工作">收尾工作&lt;/h2>
+&lt;p>opkg 安装部分官方包的时候会提示 Kernel 版本不对&lt;code>kernel is not compatible&lt;/code>，这是因为自己编译的 kernel 指纹和官方不一致造成的，&lt;a class="link" href="https://github.com/iyuangang/openwrt/issues/8#issuecomment-605431578" target="_blank" rel="noopener"
+>替换成官方指纹即可&lt;/a>。&lt;/p>
+&lt;p>比如目前 kernel 版本是&lt;code>5.4.143-1-fb881fbbae69f30da18e7c6eb01310c1&lt;/code>&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;strong>sed&lt;/strong> -i s/&lt;code>编译的kernel hash&lt;/code>/fb881fbbae69f30da18e7c6eb01310c1/g /usr/lib/opkg/status&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="eof">EOF&lt;/h2>
+&lt;p>编译 run 了一万年，再不写点什么记下来，下次编译根本记不住了.jpg&lt;/p>
+&lt;p>后来参考学习了 P3TERX 的 &lt;a class="link" href="https://p3terx.com/archives/build-openwrt-with-github-actions.html" target="_blank" rel="noopener"
+>这篇文章&lt;/a> 利用 Github Action 进行编译，并且按照 &lt;a class="link" href="https://github.com/coolsnowwolf/lede/pull/7796" target="_blank" rel="noopener"
+>LEDE的这个PR&lt;/a> 打开了缓存工具链，再也不用面对奇怪的环境问题和该参数重编又是四、五个小时的窘境了。&lt;/p></description></item></channel></rss>

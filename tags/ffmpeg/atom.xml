@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>ffmpeg on H⁺ + OH⁻ → H₂O</title><link>https://naizi.moe/tags/ffmpeg/</link><description>Recent content in ffmpeg on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 07 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://naizi.moe/tags/ffmpeg/atom.xml" rel="self" type="application/rss+xml"/><item><title>自动化制作周刊哔哩哔哩排行榜</title><link>https://naizi.moe/2021/03/07/%E8%87%AA%E5%8A%A8%E5%8C%96%E5%88%B6%E4%BD%9C%E5%91%A8%E5%88%8A%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E6%8E%92%E8%A1%8C%E6%A6%9C/</link><pubDate>Sun, 07 Mar 2021 00:00:00 +0000</pubDate><guid>https://naizi.moe/2021/03/07/%E8%87%AA%E5%8A%A8%E5%8C%96%E5%88%B6%E4%BD%9C%E5%91%A8%E5%88%8A%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E6%8E%92%E8%A1%8C%E6%A6%9C/</guid><description>&lt;p>总结一下周刊哔哩哔哩排行榜制作流程自动化过程中遇到的一些问题。&lt;/p>
+&lt;p>之前的周刊制作过程中，组员各自领取不同部分的制作任务，每一部分的内容格式包含在不同的 yml 文件中。&lt;/p>
+&lt;p>通常先把 yml 中的 av 号取出，去下载对应的视频到本地，然后人工浏览选择实际制作时选取的片段，记录下片段的开始时间，修改 yml 中的对应字段。然后上传修改完成的 yml，转换成之后导入 Vegas 时需要的 xml 文件。&lt;/p>
+&lt;p>由于旧流程的局限性，没有考虑到视频尺寸的适配，因此在导入 Vegas 后，往往要手动对齐所有视频。另外由于不同部分的效果不一致（比如是否有过渡场景），也没有在 yml 中进行区分，往往还要再手动调整。工作量本质不大，但其实都是可以进行优化的场景。&lt;/p>
+&lt;p>早几年的时候一直听说 Adobe After Effects 脚本如何如何强大，表达式如何如何好用。怎奈 javascript 从未接触，一直没能下决心去了解。这次也算是终于下了决心，开始了 AE 自动化制作周刊之路。&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;h2 id="vegas---aftereffects">Vegas -&amp;gt; AfterEffects&lt;/h2>
+&lt;h3 id="流程整理">流程整理&lt;/h3>
+&lt;p>首先是重新整理一遍 Vegas 的工作流，尽可能符合原来人工的操作顺序，也方便我理清代码逻辑。&lt;/p>
+&lt;p>Vegas 的导入视频过程，使用的是 xml 还是 yml 文件其实没有本质的区别，需要的内容无非是导入哪个视频的哪个时间点，时长多久，视频如何定位到准确的位置，以及导入对应的图片素材，添加视频过渡效果等等。&lt;/p>
+&lt;p>确定基本顺序后，我就开始对照 Adobe 的文档，一步步的编写代码。有一说一，Adobe 的文档确实非常详细，比 Vegas 的文档看起来是清晰多了（最初的确考虑过直接用 Vegas 脚本来做）。&lt;/p>
+&lt;p>最初先写死了各种变量来进行调试，基本是写一行测试一行的方式。逐步学会了 AE 中如何使用脚本添加合成，再往合成中添加视频/图片层，调整视频的入点和出点等等。熟悉了之后，由于一个个视频的导入其实是非常模块化的操作，在复制粘贴了十几次代码后，我终于意识到应该把它抽象成函数调用。&lt;/p>
+&lt;h3 id="编写函数调用">编写函数调用&lt;/h3>
+&lt;p>流程已经很清晰了，也熟悉了代码，函数要实现的事情其实很简单：&lt;/p>
+&lt;ol>
+&lt;li>添加一个新图层，指定视频文件和时长节点&lt;/li>
+&lt;li>给视频图层添加时间出入点和过渡效果&lt;/li>
+&lt;li>给视频图层添加音频过渡效果&lt;/li>
+&lt;/ol>
+&lt;p>于是我分别编写了 &lt;code>AddLayer&lt;/code>, &lt;code>AddVideoProperty&lt;/code>, &lt;code>AddAudioProperty&lt;/code> 三个函数，包装了 Adobe 的 &lt;code>layers.add&lt;/code> 和 &lt;code>property.setValueAtTime&lt;/code> 两个方法。&lt;/p>
+&lt;p>在编写函数的过程中，因为是 Vegas-&amp;gt;AfterEffects 复刻，Vegas 中的过渡曲线我在 AE 中没有找到一致的傻瓜式功能，只能自己去实现曲线的效果。这里就遇到了 Adobe 文档 “点到为止” 的问题：它没有提供详细的示例代码。&lt;/p>
+&lt;p>原本是计划使用 AE 表达式（区别于 AE 脚本）来实现的，但是文档中对于如何添加表达式并没有解释的很详细，Google 和 StackOverflow 也没能提供有价值的信息。反复翻阅文档之后，我决定采用其他的方式来实现：通过微分法添加透明度/音频增益关键帧来逼近曲线效果。&lt;/p>
+&lt;p>于是 &lt;code>AddVideoProperty&lt;/code>, &lt;code>AddAudioProperty&lt;/code> 的主要代码就变成了基于三角函数的 &lt;code>property.setValueAtTime&lt;/code>，复习正/余弦曲线方程的过程还真是有些令人怀念 (￣_,￣ )&lt;/p>
+&lt;h3 id="函数的函数">函数的函数&lt;/h3>
+&lt;p>对单个视频的函数完成之后，意识到单个 yml 文件其实就是一个更大的函数。&lt;/p>
+&lt;p>这时需要解决的就是之前提到的对于过渡场景有无的判断。为了能够将工作流无缝转换到 AE，此时不可能再对 yml 做新的要求，好在数量不多，这部分区别直接手工指定写死在代码中即可。&lt;/p>
+&lt;p>同时为了减少重复的代码，将原本写在 &lt;code>AddVideoProperty&lt;/code> 函数中的视频定位部分的代码放到了这个大函数 &lt;code>AddRankPart&lt;/code> 中，通过 for 循环迭代 yml 列表（这时其实还是一个写死的列表，而不是读取 yml 文件）的数据，对视频进行长宽比的判断同比缩放，再定位至正确的坐标。&lt;/p>
+&lt;p>另外为了兼容周刊的排名规则，即长期视频的出现会造成视频数量的变化，以及每部分排名中最后一个视频过渡效果与其他不同，和视频间是否需要过渡画面等做了相应的判断，最后通过额外的函数参数兼容了不同样式的榜单部分。&lt;/p>
+&lt;p>但由于主榜前三实在比较特殊，就没有使用 &lt;code>AddRankPart&lt;/code> 而是直接重写了一遍逻辑。&lt;/p>
+&lt;blockquote>
+&lt;h4 id="插曲">插曲&lt;/h4>
+&lt;p>在编写完整个自动化代码后，遇到了久未见到的视频源失效的特殊样式，需要在失效的视频上添加遮挡。Vegas 时期这也是靠人工完成的，因为失效视频已经极少遇到，采用的方案是添加一个 array 记录失效的视频，在 &lt;code>AddRankPart&lt;/code> 的 for 循环中添加视频是否在 array 中的判断来解决。这就需要当出现此类情况的时候修改代码中的变量。&lt;/p>
+&lt;p>但新增一个文件来记录也是同样要人工修改，罢了，就这样吧。&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="定型文">定型文&lt;/h3>
+&lt;p>榜单各个部分间的过渡画面都是不随榜单变化，或者素材文件名保持固定，这部分内容就直接使用 &lt;code>AddLayer&lt;/code>, &lt;code>AddVideoProperty&lt;/code>, &lt;code>AddAudioProperty&lt;/code> 写死了逻辑和时间点。&lt;/p>
+&lt;p>之后把写死的测试数据改写成读取实际的 yml 文件内容和素材文件，然后就是大量的 MagicNumber 时间点和不断地调试。为了测试兼容性还试验了 AfterEffects 的不同版本，结果发现不同版本的 AE 使用的 js 版本大相径庭，各种神秘问题频出。最后还是放弃了去追求更高的兼容性，优先保障了较新版本的 2019CC 和 2020CC 的使用。&lt;/p>
+&lt;h2 id="aftereffects-的问题">AfterEffects 的问题&lt;/h2>
+&lt;h3 id="音频处理">音频处理&lt;/h3>
+&lt;p>AE 作为视频软件，对音频的处理就显得较弱了，这本来不是什么大问题。&lt;/p>
+&lt;p>但是上榜的视频各自的音频增益相差很大，最为明显的是 UP 主的投稿视频和 B 站番剧的动画，后者音频增益比前者低了一个等级。&lt;/p>
+&lt;p>Vegas 中可以直接通过“音频标准化”操作简单解决这个问题。AE 其实也可以通过 Adobe 家族的兼容性，将工程导出使用 Premiere 或者 Audition 进行音频标准化，但这样一来就失去了“自动化”的目的。&lt;/p>
+&lt;p>那么有什么其他办法可以解决么？在咨询群友和同事的意见之后，&lt;a class="link" href="https://github.com/slhck/ffmpeg-normalize" target="_blank" rel="noopener"
+>ffmpeg-normalize&lt;/a>进入了我的视野。&lt;/p>
+&lt;h3 id="ffmpeg-normalize">ffmpeg-normalize&lt;/h3>
+&lt;p>简单而言，ffmpeg-normalize 是对 ffmpeg 中音量处理的一层包装，将整个过程自动化便于进行批量化的操作。&lt;/p>
+&lt;p>试验之后发现果然方便，于是立刻开始编写代码。因为 CMD 过于简陋，选择了 powershell 来进行批处理。&lt;/p>
+&lt;p>然而在试运行一周后，发现大文件处理效率是个问题。对于动辄 600MB~1G 的番剧区视频，ffmpeg-normalize 处理整个文件所消耗的时间甚至超过了最后 AE 导出视频的时间，这就比较难接受了。而且它也不支持只对视频/音频的某一部分进行标准化操作，非常尴尬。&lt;/p>
+&lt;h3 id="ffmpeg-视频截取音频处理">ffmpeg 视频截取&amp;amp;音频处理&lt;/h3>
+&lt;p>既然 ffmpeg-normalize 是 ffmpeg 的包装，自然想到了直接用 ffmpeg 不也可以吗？还能少装一个 python，降低了其他组员的学习成本。&lt;/p>
+&lt;p>为了提升处理效率，与其处理整个视频，不如只处理选取的视频片段。于是在刚刚学习完 JavaScript 后，我又开始翻阅 powershell 的文档，研究怎样用 powershell 实现读取 yml 中的数据，传递给 ffmpeg 截取视频，并标准化截取视频的音频。&lt;/p>
+&lt;p>这种不同语言间的语法差异着实又烦恼了我一阵子，好在微软的文档也很详尽，绕了几次弯路后找到了正确的写法，实现了需求。&lt;/p>
+&lt;p>考虑到现在大家基本上都有不错的显卡，调用 ffmpeg 截取时使用 GPU 编/解码又能进一步提升效率，但使用 GPU 不能发挥 powershell 的并发能力，这受制于显卡的硬件，但仍比 CPU 编码快上不少。&lt;/p>
+&lt;p>然而在音频标准化处理上，GPU 就没有用武之地了，只能依赖 CPU 处理，与此同时可以依靠 powershell 的 &lt;code>ForEach-Object -Parallel&lt;/code> 并发加快处理速度。只能说这两者算是有失有得吧。&lt;/p>
+&lt;blockquote>
+&lt;h4 id="对应修改">对应修改&lt;/h4>
+&lt;p>视频先行截取意味着之前 AE 脚本中读取的视频时间点全部无效了，于是修改了对应的变量在读取数据后直接重新赋值为零，纠正了时间问题。&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="powershell-工作流">PowerShell 工作流&lt;/h2>
+&lt;p>既然 powershell 并发这么好用，我又动了新的歪脑筋，想起了之前 python 写的 B 站视频下载工具。&lt;/p>
+&lt;p>因为已经尝试重构过 bash 的代码，在熟悉了 powershell 的部分函数后，这部分重构也是轻车熟路。很快一个读取分析 yml 文件自动下载视频的 powershell 脚本就编写完成了。&lt;/p>
+&lt;p>不仅并发下载的代码逻辑比 python 简洁多了，甚至又填坑了之前想要指定下载分 P 的 TODO。另外 python 版的代码在下载时调用了 aria2c，powershell 的重构中也放弃了这部分依赖，如此一来整个工作流的外部依赖就只有 ffmpeg 了。&lt;/p>
+&lt;p>为了完全抛弃 python 脚本的依赖，周刊使用的生成传送门评论的脚本（没错，这个也是 python）当然也要用 powershell 重构，事情到了这一步已经无法停下脚步了（ry&lt;/p>
+&lt;p>最后，&lt;code>download.ps1&lt;/code>, &lt;code>normailze.ps1&lt;/code>, &lt;code>rankdoor.ps1&lt;/code> 组成了周刊自动化中 powershell 工作流的三剑客。&lt;/p>
+&lt;h2 id="未尽之事">未尽之事&lt;/h2>
+&lt;p>如此一来，制作周刊还剩下的人工操作就只有选取视频片段一项了。但是这也已经有了尝试性的解决方案（&lt;a class="link" href="https://www.bilibili.com/video/BV1pN411o7Cg?p=2" target="_blank" rel="noopener"
+>Artificial Idiot 截取片段试运行&lt;/a>），目前仍是个 python 脚本，也许成熟之后也会再重构为 powershell，到时就是四剑客了。&lt;/p>
+&lt;p>如果你对以上内容有兴趣，相关脚本&lt;a class="link" href="https://github.com/Neutralization/BiliBiliRankingScripts" target="_blank" rel="noopener"
+>在 Github 已开源&lt;/a>。如果你不知道周刊哔哩哔哩排行榜，你也可以选择&lt;a class="link" href="https://space.bilibili.com/398300398" target="_blank" rel="noopener"
+>关注了解一下&lt;/a>。&lt;/p>
+&lt;h2 id="eof">EOF&lt;/h2>
+&lt;p>powershell 真香（&lt;/p></description></item></channel></rss>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>crontab on H⁺ + OH⁻ → H₂O</title><link>https://naizi.moe/tags/crontab/</link><description>Recent content in crontab on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 25 Jan 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://naizi.moe/tags/crontab/atom.xml" rel="self" type="application/rss+xml"/><item><title>Windows使用WSL配置crontab定时任务</title><link>https://naizi.moe/2020/01/25/windows%E4%BD%BF%E7%94%A8wsl%E9%85%8D%E7%BD%AEcrontab%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/</link><pubDate>Sat, 25 Jan 2020 00:00:00 +0000</pubDate><guid>https://naizi.moe/2020/01/25/windows%E4%BD%BF%E7%94%A8wsl%E9%85%8D%E7%BD%AEcrontab%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/</guid><description>&lt;p>有些 python 脚本任务对于树莓派来说还是负担太重了。毕竟性能上限摆在那里，也不能靠一个小小的 pi 承担太多。&lt;/p>
+&lt;p>借此机会正好尝试一下 WSL(Windows Subsystem for Linux).&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;h2 id="安装-wsl">安装 WSL&lt;/h2>
+&lt;p>安装 WSL 并没有想象中的复杂。进入控制面板-&amp;gt;程序和功能-&amp;gt;启用或关闭 Windows 功能，勾选&lt;code>适用于Linux的Windows子系统&lt;/code>，等待安装完毕，然后重启系统。&lt;/p>
+&lt;p>&lt;img src="https://naizi.moe/2020-01-25-wsl-crontab/Snipaste_2020-01-25_19-14-26.png"
+loading="lazy"
+alt="适用于Linux的Windows子系统"
+>&lt;/p>
+&lt;p>重启完毕，开始菜单选择 MicrosoftStore，搜索 linux 就能够找到可供使用的 linux 发行版，我这里选择了 Ubuntu18.04LTS。&lt;/p>
+&lt;p>&lt;img src="https://naizi.moe/2020-01-25-wsl-crontab/Snipaste_2020-01-25_02-08-03.png"
+loading="lazy"
+alt="MicrosoftStore"
+>&lt;/p>
+&lt;p>应用安装完毕后，启动应用会要求设定基础的用户名和密码，接着，一个可供使用的 WSL 就准备就绪了。&lt;/p>
+&lt;h2 id="确保-crontab-服务">确保 crontab 服务&lt;/h2>
+&lt;p>由于 WSL 并不会默认启动，而且当运行中的 WSL 的最后一个 bash 关闭后，就相当于关闭了整个子系统，那我们的 crontab 也就直接去世了。&lt;/p>
+&lt;p>为了保持 crontab 常驻，需要一些措施。这里参考了&lt;a class="link" href="https://blog.snowme34.com/post/schedule-tasks-using-crontab-on-windows-10-with-wsl/index.html" target="_blank" rel="noopener"
+>Schedule Tasks Using Crontab on Windows 10 with WSL&lt;/a>的方法，建立一个 crontab 服务的 Windows 启动项，每次系统启动后在后台常驻。&lt;/p>
+&lt;p>首先进入 WSL，修改 sudoer，避免每次启动 crontab 服务时需要输入密码确认：&lt;/p>
+&lt;blockquote>
+&lt;p>sudo visudo&lt;/p>
+&lt;/blockquote>
+&lt;p>在文件末尾加入&lt;/p>
+&lt;blockquote>
+&lt;p>%sudo ALL=NOPASSWD: /etc/init.d/cron start&lt;/p>
+&lt;/blockquote>
+&lt;p>然后保存文件。回到 Windows，Win+R 打开运行，输入&lt;code>shell:startup&lt;/code>打开启动文件夹，右键新建快捷方式，目标输入：&lt;/p>
+&lt;blockquote>
+&lt;p>C:\Windows\System32\wsl.exe sudo /etc/init.d/cron start&lt;/p>
+&lt;/blockquote>
+&lt;p>这样我们就能够保证 crontab 在每次 Windows 启动后常驻后台了。一切正常的话重启 Windows，在任务管理器能看到一个名称为 cron 的进程。&lt;/p>
+&lt;p>&lt;img src="https://naizi.moe/2020-01-25-wsl-crontab/Snipaste_2020-01-25_19-16-06.png"
+loading="lazy"
+alt="任务管理器"
+>&lt;/p>
+&lt;h2 id="使用-crontab">使用 crontab&lt;/h2>
+&lt;p>剩下的操作和在 linux 里使用 crontab 没有区别，唯一需要注意的是文件的路径。&lt;/p>
+&lt;p>在 WSL 中，Windows 的 C 盘被挂载在&lt;code>/mnt/c&lt;/code>目录下，D\E\F 以此类推，需要注意对应修改。&lt;/p>
+&lt;h2 id="eof">EOF&lt;/h2></description></item><item><title>没有KMSCON的第一天，想他</title><link>https://naizi.moe/2019/01/10/%E6%B2%A1%E6%9C%89kmscon%E7%9A%84%E7%AC%AC%E4%B8%80%E5%A4%A9%E6%83%B3%E4%BB%96/</link><pubDate>Thu, 10 Jan 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/01/10/%E6%B2%A1%E6%9C%89kmscon%E7%9A%84%E7%AC%AC%E4%B8%80%E5%A4%A9%E6%83%B3%E4%BB%96/</guid><description>&lt;p>因为树莓派用了官方系统，原本在 Arch 上利用&lt;a class="link" href="https://wiki.archlinux.org/index.php/KMSCON" target="_blank" rel="noopener"
+>KMSCON&lt;/a>来回显中文字符的方式不可行了，沉痛悼念。&lt;/p>
+&lt;p>不会编译是罪魁祸首，而且包依赖关系看得头大，实在不想自己解决。&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;h2 id="前情提要">前情提要&lt;/h2>
+&lt;p>因为 tty 设备不支持 CJK 字符，原本 crontab 任务只要重定向输出到&lt;code>KMSCON&lt;/code>模拟的 pts 设备上就能正常显示中文，现在不得不回归起点。&lt;/p>
+&lt;p>选择只有两种：&lt;/p>
+&lt;ol>
+&lt;li>研究怎么在 debian 上把&lt;code>KMSCON&lt;/code>编译过去&lt;/li>
+&lt;li>研究怎么在图形界面输出工作用脚本的日志&lt;/li>
+&lt;/ol>
+&lt;p>然后&lt;code>KMSCON&lt;/code>的编译依赖实在有点多，在 debian 内的包名又都不一样。本来就只会按照教程 &lt;code>./configure&lt;/code>、&lt;code>make&lt;/code>、&lt;code>make install&lt;/code>三步走的我实在是应付不来。&lt;/p>
+&lt;p>结果只能当&lt;code>KMSCON&lt;/code>从来不存在，在图形界面寻找解决办法。&lt;/p>
+&lt;h2 id="变通法">变通法&lt;/h2>
+&lt;p>搜索之后发现的确有从终端弹图形界面的方式，只需要指定显示设备就行了：&lt;/p>
+&lt;blockquote>
+&lt;p>DISPLAY=:0.0 command&lt;/p>
+&lt;/blockquote>
+&lt;p>因为我的目的只是需要一个终端窗口，所以：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&amp;gt; crontab -e
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>---
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>@reboot sleep &lt;span style="color:#ae81ff">30&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> DISPLAY&lt;span style="color:#f92672">=&lt;/span>:0.0 /usr/bin/lxterminal
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>这样便会在系统启动之后自动启动一个终端窗口，分配一个 pts 的设备，因为是第一个终端窗口所以一定是 pts/0&lt;/p>
+&lt;p>再把剩下的定时脚本输出全部重定向到 &lt;code>/dev/pts/0&lt;/code> 就行了&lt;/p>
+&lt;h2 id="eof">EOF&lt;/h2>
+&lt;p>感觉还是会有回到 Arch 的一天，Arch 真香。&lt;/p></description></item></channel></rss>

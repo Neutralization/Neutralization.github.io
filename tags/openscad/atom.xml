@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>openscad on H⁺ + OH⁻ → H₂O</title><link>https://naizi.moe/tags/openscad/</link><description>Recent content in openscad on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 12 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://naizi.moe/tags/openscad/atom.xml" rel="self" type="application/rss+xml"/><item><title>试做了一个明日方舟的小夜灯</title><link>https://naizi.moe/2021/01/12/%E8%AF%95%E5%81%9A%E4%BA%86%E4%B8%80%E4%B8%AA%E6%98%8E%E6%97%A5%E6%96%B9%E8%88%9F%E7%9A%84%E5%B0%8F%E5%A4%9C%E7%81%AF/</link><pubDate>Tue, 12 Jan 2021 00:00:00 +0000</pubDate><guid>https://naizi.moe/2021/01/12/%E8%AF%95%E5%81%9A%E4%BA%86%E4%B8%80%E4%B8%AA%E6%98%8E%E6%97%A5%E6%96%B9%E8%88%9F%E7%9A%84%E5%B0%8F%E5%A4%9C%E7%81%AF/</guid><description>&lt;p>之前也有在尝试用 3D 打印做奇怪的东西，建模一直在用的是 AutoDesk 家的线上工具&lt;a class="link" href="https://www.tinkercad.com/" target="_blank" rel="noopener"
+>Tinkercad&lt;/a>，属于那种拖拖拽拽就能拼出差不多模型的工具，还挺好用。&lt;/p>
+&lt;p>这次尝试做小夜灯，原本是打算做成游戏关卡结算时的三星标志，后来想了想，为了更显而易见的突出方舟元素，用了游戏里医疗干员的标志。主要因为医疗干员的标志几何对称性很好，估摸着可以偷懒。&lt;/p>
+&lt;p>软件用了同事推荐的&lt;a class="link" href="https://www.openscad.org/" target="_blank" rel="noopener"
+>OpenSCAD&lt;/a>，通过代码的方式来进行建模。我基本上是一边查文档一边写，很容易就上手找到需要的功能写出来了。&lt;/p>
+&lt;p>除了没有代码自动格式化这一点略有不习惯，代码逻辑支持实体的交并补操作，渲染后可以意见导出 stl 格式文档进行后续打印工作，实在是方便的很。&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;p>放两张成果图，使用的是创想三维的 Ender-3 打印机。冬天材料热涨冷缩比较严重结果留下了两道印子，有点可惜。&lt;/p>
+&lt;p>电池盒是圣诞节的时候那种细绳装饰灯的电池，考虑到亮度和分散光源，接了一个 COB 灯板。&lt;/p>
+&lt;p>&lt;img src="https://naizi.moe/2021-01-12-arknight-lamp/battery.jpg"
+loading="lazy"
+alt="lamp"
+>&lt;/p>
+&lt;p>&lt;img src="https://naizi.moe/2021-01-12-arknight-lamp/lamp.jpg"
+loading="lazy"
+alt="lamp"
+>&lt;/p>
+&lt;p>工程文件放在&lt;a class="link" href="https://github.com/Neutralization/Arknights-lamp" target="_blank" rel="noopener"
+>github&lt;/a>上了。&lt;/p></description></item></channel></rss>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>poetry on H⁺ + OH⁻ → H₂O</title><link>https://naizi.moe/tags/poetry/</link><description>Recent content in poetry on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 26 Nov 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://naizi.moe/tags/poetry/atom.xml" rel="self" type="application/rss+xml"/><item><title>来一场圆周率的飞花令</title><link>https://naizi.moe/2019/11/26/%E6%9D%A5%E4%B8%80%E5%9C%BA%E5%9C%86%E5%91%A8%E7%8E%87%E7%9A%84%E9%A3%9E%E8%8A%B1%E4%BB%A4/</link><pubDate>Tue, 26 Nov 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/11/26/%E6%9D%A5%E4%B8%80%E5%9C%BA%E5%9C%86%E5%91%A8%E7%8E%87%E7%9A%84%E9%A3%9E%E8%8A%B1%E4%BB%A4/</guid><description>&lt;p>逛微博看到了一些有意思的东西：山东卫视《国学小名士》第三季的节目，进行了一场 π(圆周率)的飞花令。&lt;/p>
+&lt;p>节目里选手们接到了小数点后 204 位，那，能不能更长一点？&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;h2 id="数据储备">数据储备&lt;/h2>
+&lt;p>首先需要有足够多的古诗词储备，不然程序生成的时候耗光弹药就显得非常尴尬了。&lt;/p>
+&lt;p>非常感谢&lt;a class="link" href="https://github.com/chinese-poetry/chinese-poetry" target="_blank" rel="noopener"
+>chinese-poetry&lt;/a>这样的开源项目，积累了大量的已经结构化的古诗词数据。&lt;/p>
+&lt;p>这里只用宋词部分的数据。&lt;/p>
+&lt;h2 id="算法逻辑">算法逻辑&lt;/h2>
+&lt;p>逻辑很简单粗暴：找出所有包含中文数字的词句进行汇总，然后按小数点后位数迭代 π 值随机取对应的诗词就行。&lt;/p>
+&lt;p>整理诗词数据：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> json
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> re
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> os
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>filelist &lt;span style="color:#f92672">=&lt;/span> [
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> file &lt;span style="color:#66d9ef">for&lt;/span> file &lt;span style="color:#f92672">in&lt;/span> os&lt;span style="color:#f92672">.&lt;/span>listdir(&lt;span style="color:#e6db74">&amp;#39;./json&amp;#39;&lt;/span>) &lt;span style="color:#66d9ef">if&lt;/span> re&lt;span style="color:#f92672">.&lt;/span>search(&lt;span style="color:#e6db74">r&lt;/span>&lt;span style="color:#e6db74">&amp;#39;poet.song&amp;#39;&lt;/span>, file)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>files &lt;span style="color:#f92672">=&lt;/span> [
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> json&lt;span style="color:#f92672">.&lt;/span>load(open(&lt;span style="color:#e6db74">&amp;#39;./json/&amp;#39;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> file, &lt;span style="color:#e6db74">&amp;#39;r&amp;#39;&lt;/span>, encoding&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;utf-8-sig&amp;#39;&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> file &lt;span style="color:#f92672">in&lt;/span> filelist
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>result &lt;span style="color:#f92672">=&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;一&amp;#39;&lt;/span>: [],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;二&amp;#39;&lt;/span>: [],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;三&amp;#39;&lt;/span>: [],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;四&amp;#39;&lt;/span>: [],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;五&amp;#39;&lt;/span>: [],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;六&amp;#39;&lt;/span>: [],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;七&amp;#39;&lt;/span>: [],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;八&amp;#39;&lt;/span>: [],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;九&amp;#39;&lt;/span>: [],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;零&amp;#39;&lt;/span>: []
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">for&lt;/span> file &lt;span style="color:#f92672">in&lt;/span> files:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> x &lt;span style="color:#f92672">in&lt;/span> file:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> y &lt;span style="color:#f92672">in&lt;/span> x[&lt;span style="color:#e6db74">&amp;#39;paragraphs&amp;#39;&lt;/span>]:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> z &lt;span style="color:#f92672">in&lt;/span> [&lt;span style="color:#e6db74">&amp;#39;一&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;二&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;三&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;四&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;五&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;六&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;七&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;八&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;九&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;零&amp;#39;&lt;/span>]:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 　 &lt;span style="color:#66d9ef">if&lt;/span> re&lt;span style="color:#f92672">.&lt;/span>search(z, y):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> result[z] &lt;span style="color:#f92672">=&lt;/span> result&lt;span style="color:#f92672">.&lt;/span>get(z) &lt;span style="color:#f92672">+&lt;/span> [
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#ae81ff">\n\t\t\t\t&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">/&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(y, x[&lt;span style="color:#e6db74">&amp;#39;author&amp;#39;&lt;/span>], x[&lt;span style="color:#e6db74">&amp;#39;title&amp;#39;&lt;/span>])
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">with&lt;/span> open(&lt;span style="color:#e6db74">&amp;#39;step.json&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;w&amp;#39;&lt;/span>, encoding&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;utf-8-sig&amp;#39;&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> f:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f&lt;span style="color:#f92672">.&lt;/span>write(json&lt;span style="color:#f92672">.&lt;/span>dumps(result, ensure_ascii&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">False&lt;/span>))
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="π-值计算">π 值计算&lt;/h2>
+&lt;p>无脑套用了一下别人的代码：http://z-rui.github.io/post/2015/06/pi-digits/&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">pidigits&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> q, r, t, u, i &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">180&lt;/span>, &lt;span style="color:#ae81ff">60&lt;/span>, &lt;span style="color:#ae81ff">168&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">while&lt;/span> &lt;span style="color:#66d9ef">True&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> y &lt;span style="color:#f92672">=&lt;/span> r &lt;span style="color:#f92672">//&lt;/span> t
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">yield&lt;/span> y
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> q, r, t, u, i &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">10&lt;/span> &lt;span style="color:#f92672">*&lt;/span> q &lt;span style="color:#f92672">*&lt;/span> i &lt;span style="color:#f92672">*&lt;/span> (&lt;span style="color:#ae81ff">2&lt;/span> &lt;span style="color:#f92672">*&lt;/span> i &lt;span style="color:#f92672">-&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>), &lt;span style="color:#ae81ff">10&lt;/span> &lt;span style="color:#f92672">*&lt;/span> u &lt;span style="color:#f92672">*&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> q &lt;span style="color:#f92672">*&lt;/span> (&lt;span style="color:#ae81ff">5&lt;/span> &lt;span style="color:#f92672">*&lt;/span> i &lt;span style="color:#f92672">-&lt;/span> &lt;span style="color:#ae81ff">2&lt;/span>) &lt;span style="color:#f92672">+&lt;/span> r &lt;span style="color:#f92672">-&lt;/span> y &lt;span style="color:#f92672">*&lt;/span> t), t &lt;span style="color:#f92672">*&lt;/span> u, u &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">54&lt;/span> &lt;span style="color:#f92672">*&lt;/span> (i &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>), i &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>不停迭代 pidigits() 就能得到后一位小数数值。&lt;/p>
+&lt;h2 id="开始飞花令">开始飞花令&lt;/h2>
+&lt;p>测试一下迭代圆周率 1000 位&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> json
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> sys
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">from&lt;/span> random &lt;span style="color:#f92672">import&lt;/span> randint
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>poets &lt;span style="color:#f92672">=&lt;/span> json&lt;span style="color:#f92672">.&lt;/span>load(open(&lt;span style="color:#e6db74">&amp;#39;step.json&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;r&amp;#39;&lt;/span>, encoding&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;utf-8-sig&amp;#39;&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>number &lt;span style="color:#f92672">=&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">1&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;一&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">2&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;二&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">3&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;三&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">4&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;四&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">5&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;五&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">6&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;六&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">7&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;七&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">8&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;八&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">9&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;九&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">0&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;零&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>n &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">pidigits&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> q, r, t, u, i &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">180&lt;/span>, &lt;span style="color:#ae81ff">60&lt;/span>, &lt;span style="color:#ae81ff">168&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">while&lt;/span> &lt;span style="color:#66d9ef">True&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> y &lt;span style="color:#f92672">=&lt;/span> r &lt;span style="color:#f92672">//&lt;/span> t
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">yield&lt;/span> y
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> q, r, t, u, i &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">10&lt;/span> &lt;span style="color:#f92672">*&lt;/span> q &lt;span style="color:#f92672">*&lt;/span> i &lt;span style="color:#f92672">*&lt;/span> (&lt;span style="color:#ae81ff">2&lt;/span> &lt;span style="color:#f92672">*&lt;/span> i &lt;span style="color:#f92672">-&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>), &lt;span style="color:#ae81ff">10&lt;/span> &lt;span style="color:#f92672">*&lt;/span> u &lt;span style="color:#f92672">*&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> q &lt;span style="color:#f92672">*&lt;/span> (&lt;span style="color:#ae81ff">5&lt;/span> &lt;span style="color:#f92672">*&lt;/span> i &lt;span style="color:#f92672">-&lt;/span> &lt;span style="color:#ae81ff">2&lt;/span>) &lt;span style="color:#f92672">+&lt;/span> r &lt;span style="color:#f92672">-&lt;/span> y &lt;span style="color:#f92672">*&lt;/span> t), t &lt;span style="color:#f92672">*&lt;/span> u, u &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">54&lt;/span> &lt;span style="color:#f92672">*&lt;/span> (i &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>), i &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">while&lt;/span> &lt;span style="color:#66d9ef">True&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f &lt;span style="color:#f92672">=&lt;/span> open(&lt;span style="color:#e6db74">&amp;#39;result.md&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;w&amp;#39;&lt;/span>, encoding&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;utf-8-sig&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> num &lt;span style="color:#f92672">in&lt;/span> pidigits():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> used &lt;span style="color:#f92672">=&lt;/span> []
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> new &lt;span style="color:#f92672">=&lt;/span> poets[number[num]]&lt;span style="color:#f92672">.&lt;/span>pop(randint(&lt;span style="color:#ae81ff">0&lt;/span>, len(poets[number[num]])))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">while&lt;/span> new &lt;span style="color:#f92672">in&lt;/span> used:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> new &lt;span style="color:#f92672">=&lt;/span> poets[number[num]]&lt;span style="color:#f92672">.&lt;/span>pop(randint(&lt;span style="color:#ae81ff">0&lt;/span>, len(poets[number[num]])))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> print(num, number[num], new)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f&lt;span style="color:#f92672">.&lt;/span>write(&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#ae81ff">\t&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#ae81ff">\t&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#ae81ff">\n&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> num, number[num],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> new&lt;span style="color:#f92672">.&lt;/span>replace(number[num], &lt;span style="color:#e6db74">&amp;#39;`&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">`&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(number[num]))))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> used &lt;span style="color:#f92672">=&lt;/span> used&lt;span style="color:#f92672">.&lt;/span>append(new)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> n &lt;span style="color:#f92672">+=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> n &lt;span style="color:#f92672">&amp;gt;&lt;/span> &lt;span style="color:#ae81ff">1000&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f&lt;span style="color:#f92672">.&lt;/span>close()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> sys&lt;span style="color:#f92672">.&lt;/span>exit()
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="eof">EOF&lt;/h2></description></item></channel></rss>

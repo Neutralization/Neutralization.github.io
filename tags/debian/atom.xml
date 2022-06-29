@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>debian on H⁺ + OH⁻ → H₂O</title><link>https://naizi.moe/tags/debian/</link><description>Recent content in debian on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 08 Dec 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://naizi.moe/tags/debian/atom.xml" rel="self" type="application/rss+xml"/><item><title>从零开始 Raspberry Pi</title><link>https://naizi.moe/2018/12/08/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-raspberry-pi/</link><pubDate>Sat, 08 Dec 2018 00:00:00 +0000</pubDate><guid>https://naizi.moe/2018/12/08/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-raspberry-pi/</guid><description>&lt;p>为了让吃灰的树莓派重新开始工作，这回不瞎折腾了，直接用官方系统。&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;h2 id="安装">安装&lt;/h2>
+&lt;p>按照&lt;a class="link" href="https://www.raspberrypi.org/downloads/noobs/" target="_blank" rel="noopener"
+>官方教程&lt;/a>采用 NOOBS 安装，当然也可以选择用&lt;a class="link" href="https://www.raspberrypi.org/downloads/raspbian/" target="_blank" rel="noopener"
+>镜像安装&lt;/a>，不论哪一种，选择 ↓&lt;/p>
+&lt;p>&lt;code>Raspbian Stretch with desktop and recommended software&lt;/code>&lt;/p>
+&lt;p>安装完成后，首次进入图形界面，选择首选项中的 &lt;code>Raspberry Pi Configuration&lt;/code> ，在 &lt;code>Interfaces&lt;/code> 书签页启用 &lt;code>SSH&lt;/code>, &lt;code>VNC&lt;/code>，之后就可以不用另接键鼠了。&lt;/p>
+&lt;p>记得在 &lt;code>Localisation&lt;/code> 书签页设定好 &lt;code>WiFi Country&lt;/code>。&lt;/p>
+&lt;h2 id="连接-wifi">连接 WiFi&lt;/h2>
+&lt;p>因为公司 WiFi 使用了 WPA-EAP 协议，树莓派不显示热点，让我一度以为树莓派不能连接此类 WiFi。后来在&lt;a class="link" href="https://eparon.me/2016/09/09/rpi3-enterprise-wifi.html" target="_blank" rel="noopener"
+>这篇文章&lt;/a>的帮助下，通过修改 &lt;code>wpa_supplicant.conf&lt;/code> 连接成功，但是 WiFi 列表中对应 SSID 选项为灰色不可点击，迷。&lt;/p>
+&lt;blockquote>
+&lt;p>修改 /etc/wpa_supplicant/wpa_supplicant.conf&lt;/p>
+&lt;/blockquote>
+&lt;pre tabindex="0">&lt;code class="language-textile" data-lang="textile">ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+country=CN
+network={
+ssid=&amp;#34;OfficeWiFiSSID&amp;#34;
+key_mgmt=WPA-EAP
+identity=&amp;#34;username&amp;#34;
+password=&amp;#34;password&amp;#34;
+}
+&lt;/code>&lt;/pre>&lt;h2 id="软件更新">软件更新&lt;/h2>
+&lt;p>更换软件源，这个不多说了，国内推荐 &lt;a class="link" href="https://mirrors.ustc.edu.cn/" target="_blank" rel="noopener"
+>中国科学技术大学&lt;/a> 、 &lt;a class="link" href="https://mirrors.tuna.tsinghua.edu.cn/" target="_blank" rel="noopener"
+>清华大学&lt;/a> 、 &lt;a class="link" href="https://mirrors.163.com/" target="_blank" rel="noopener"
+>网易开源镜像站&lt;/a> 的镜像。&lt;/p>
+&lt;p>在 apt 更新前，先删除不必要的软件。反正周也是要卸载的，没必要让他们下载安装更新。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo apt-get remove --purge python3-pygame python-pygame scratch nuscratch claws-mail smartsim sonic-pi minecraft-pi python-minecraftpi wolfram-engine scratch bluej nodered greenfoot scratch2 libreoffice libreoffice-base libreoffice-core chromium-browser thonny python3-thonny python-sense-emu python3-sense-emu python-sense-emu-doc sense-emu-tools
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get autoremove
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get update
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get dist-upgrade
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>卸载这部分应用后，会有一部分文件残留，通过 VNC 远程进去打开以下三个目录&lt;/p>
+&lt;blockquote>
+&lt;p>/usr/share/applications/&lt;/p>
+&lt;p>/usr/share/raspi-ui-overrides/applications/&lt;/p>
+&lt;p>/usr/share/mimelnk/application/&lt;/p>
+&lt;/blockquote>
+&lt;p>在三个目录里找到图标显示失效的文件，删掉它们。&lt;/p>
+&lt;h2 id="自动获取树莓派-ip">自动获取树莓派 IP&lt;/h2>
+&lt;p>接下来遇到的问题是，可能是因为联网设备实在太多，公司 WiFi 分配的 IP 地址短期内是和 MAC 绑定不变的，但假如长时间未连接，重新连接就会发分配不同的 IP。&lt;/p>
+&lt;p>导致 SSH 记住 IP 并没有什么用，只能每次用 VNC 或者 nmap 扫描网段找到树莓派的地址。&lt;/p>
+&lt;p>Google 后参考 &lt;a class="link" href="https://ariandy1.wordpress.com/2014/04/08/linux-send-email-when-ip-address-changes/" target="_blank" rel="noopener"
+>这篇文章&lt;/a> 设置，让树莓派每次 IP 变动后自动发送邮件通知自己。&lt;/p>
+&lt;blockquote>
+&lt;p>sudo apt-get install ssmtp mailutils&lt;/p>
+&lt;p>nano /etc/ssmtp/ssmtp.conf&lt;/p>
+&lt;/blockquote>
+&lt;pre tabindex="0">&lt;code class="language-textile" data-lang="textile">root=youremail@gmail.com
+mailhub=smtp.gmail.com:587
+AuthUser=youremail@gmail.com
+AuthPass=yourpassword
+UseTLS=YES
+UseSTARTTLS=YES
+AuthMethod=LOGIN
+&lt;/code>&lt;/pre>&lt;blockquote>
+&lt;p>nano /home/pi/checkip.sh&lt;/p>
+&lt;/blockquote>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#!/bin/bash
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>MYIP&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>ifconfig | grep -Eo &lt;span style="color:#e6db74">&amp;#39;inet (addr:)?([0-9]*\.){3}[0-9]*&amp;#39;&lt;/span> | grep -Eo &lt;span style="color:#e6db74">&amp;#39;([0-9]*\.){3}[0-9]*&amp;#39;&lt;/span> | grep -v &lt;span style="color:#e6db74">&amp;#39;127.0.0.1&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>TIME&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>date&lt;span style="color:#e6db74">`&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>LASTIPFILE&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;/home/pi/.last_ip_addr&amp;#39;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>LASTIP&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>cat &lt;span style="color:#e6db74">${&lt;/span>LASTIPFILE&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[[&lt;/span> &lt;span style="color:#e6db74">${&lt;/span>MYIP&lt;span style="color:#e6db74">}&lt;/span> !&lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">${&lt;/span>LASTIP&lt;span style="color:#e6db74">}&lt;/span> &lt;span style="color:#f92672">]]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[[&lt;/span> &lt;span style="color:#e6db74">${&lt;/span>MYIP&lt;span style="color:#e6db74">}&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span> &lt;span style="color:#f92672">]]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">&amp;#34;LOST&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">&amp;#34;Sending E-mail..&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;Hello\n\nTimestamp = &lt;/span>&lt;span style="color:#e6db74">${&lt;/span>TIME&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">\nIP = &lt;/span>&lt;span style="color:#e6db74">${&lt;/span>MYIP&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">\n\nBye&amp;#34;&lt;/span> | &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> /usr/bin/mail -s &lt;span style="color:#e6db74">&amp;#34;[INFO] Raspberrypi New IP&amp;#34;&lt;/span> youremail@gmail.com;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">${&lt;/span>MYIP&lt;span style="color:#e6db74">}&lt;/span> &amp;gt; &lt;span style="color:#e6db74">${&lt;/span>LASTIPFILE&lt;span style="color:#e6db74">}&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">&amp;#34;No IP change!&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>chmod +x checkip.sh&lt;/p>
+&lt;p>crontab -e&lt;/p>
+&lt;/blockquote>
+&lt;pre tabindex="0">&lt;code class="language-textile" data-lang="textile">*/30 * * * * /home/pi/checkip.sh
+&lt;/code>&lt;/pre>&lt;h2 id="eof">EOF&lt;/h2>
+&lt;p>于是树莓派终于可以一边通电一边吃灰了。&lt;/p></description></item></channel></rss>

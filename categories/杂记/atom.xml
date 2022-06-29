@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>杂记 on H⁺ + OH⁻ → H₂O</title><link>https://naizi.moe/categories/%E6%9D%82%E8%AE%B0/</link><description>Recent content in 杂记 on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 07 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://naizi.moe/categories/%E6%9D%82%E8%AE%B0/atom.xml" rel="self" type="application/rss+xml"/><item><title>自动化制作周刊哔哩哔哩排行榜</title><link>https://naizi.moe/2021/03/07/%E8%87%AA%E5%8A%A8%E5%8C%96%E5%88%B6%E4%BD%9C%E5%91%A8%E5%88%8A%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E6%8E%92%E8%A1%8C%E6%A6%9C/</link><pubDate>Sun, 07 Mar 2021 00:00:00 +0000</pubDate><guid>https://naizi.moe/2021/03/07/%E8%87%AA%E5%8A%A8%E5%8C%96%E5%88%B6%E4%BD%9C%E5%91%A8%E5%88%8A%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E6%8E%92%E8%A1%8C%E6%A6%9C/</guid><description>&lt;p>总结一下周刊哔哩哔哩排行榜制作流程自动化过程中遇到的一些问题。&lt;/p>
+&lt;p>之前的周刊制作过程中，组员各自领取不同部分的制作任务，每一部分的内容格式包含在不同的 yml 文件中。&lt;/p>
+&lt;p>通常先把 yml 中的 av 号取出，去下载对应的视频到本地，然后人工浏览选择实际制作时选取的片段，记录下片段的开始时间，修改 yml 中的对应字段。然后上传修改完成的 yml，转换成之后导入 Vegas 时需要的 xml 文件。&lt;/p>
+&lt;p>由于旧流程的局限性，没有考虑到视频尺寸的适配，因此在导入 Vegas 后，往往要手动对齐所有视频。另外由于不同部分的效果不一致（比如是否有过渡场景），也没有在 yml 中进行区分，往往还要再手动调整。工作量本质不大，但其实都是可以进行优化的场景。&lt;/p>
+&lt;p>早几年的时候一直听说 Adobe After Effects 脚本如何如何强大，表达式如何如何好用。怎奈 javascript 从未接触，一直没能下决心去了解。这次也算是终于下了决心，开始了 AE 自动化制作周刊之路。&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;h2 id="vegas---aftereffects">Vegas -&amp;gt; AfterEffects&lt;/h2>
+&lt;h3 id="流程整理">流程整理&lt;/h3>
+&lt;p>首先是重新整理一遍 Vegas 的工作流，尽可能符合原来人工的操作顺序，也方便我理清代码逻辑。&lt;/p>
+&lt;p>Vegas 的导入视频过程，使用的是 xml 还是 yml 文件其实没有本质的区别，需要的内容无非是导入哪个视频的哪个时间点，时长多久，视频如何定位到准确的位置，以及导入对应的图片素材，添加视频过渡效果等等。&lt;/p>
+&lt;p>确定基本顺序后，我就开始对照 Adobe 的文档，一步步的编写代码。有一说一，Adobe 的文档确实非常详细，比 Vegas 的文档看起来是清晰多了（最初的确考虑过直接用 Vegas 脚本来做）。&lt;/p>
+&lt;p>最初先写死了各种变量来进行调试，基本是写一行测试一行的方式。逐步学会了 AE 中如何使用脚本添加合成，再往合成中添加视频/图片层，调整视频的入点和出点等等。熟悉了之后，由于一个个视频的导入其实是非常模块化的操作，在复制粘贴了十几次代码后，我终于意识到应该把它抽象成函数调用。&lt;/p>
+&lt;h3 id="编写函数调用">编写函数调用&lt;/h3>
+&lt;p>流程已经很清晰了，也熟悉了代码，函数要实现的事情其实很简单：&lt;/p>
+&lt;ol>
+&lt;li>添加一个新图层，指定视频文件和时长节点&lt;/li>
+&lt;li>给视频图层添加时间出入点和过渡效果&lt;/li>
+&lt;li>给视频图层添加音频过渡效果&lt;/li>
+&lt;/ol>
+&lt;p>于是我分别编写了 &lt;code>AddLayer&lt;/code>, &lt;code>AddVideoProperty&lt;/code>, &lt;code>AddAudioProperty&lt;/code> 三个函数，包装了 Adobe 的 &lt;code>layers.add&lt;/code> 和 &lt;code>property.setValueAtTime&lt;/code> 两个方法。&lt;/p>
+&lt;p>在编写函数的过程中，因为是 Vegas-&amp;gt;AfterEffects 复刻，Vegas 中的过渡曲线我在 AE 中没有找到一致的傻瓜式功能，只能自己去实现曲线的效果。这里就遇到了 Adobe 文档 “点到为止” 的问题：它没有提供详细的示例代码。&lt;/p>
+&lt;p>原本是计划使用 AE 表达式（区别于 AE 脚本）来实现的，但是文档中对于如何添加表达式并没有解释的很详细，Google 和 StackOverflow 也没能提供有价值的信息。反复翻阅文档之后，我决定采用其他的方式来实现：通过微分法添加透明度/音频增益关键帧来逼近曲线效果。&lt;/p>
+&lt;p>于是 &lt;code>AddVideoProperty&lt;/code>, &lt;code>AddAudioProperty&lt;/code> 的主要代码就变成了基于三角函数的 &lt;code>property.setValueAtTime&lt;/code>，复习正/余弦曲线方程的过程还真是有些令人怀念 (￣_,￣ )&lt;/p>
+&lt;h3 id="函数的函数">函数的函数&lt;/h3>
+&lt;p>对单个视频的函数完成之后，意识到单个 yml 文件其实就是一个更大的函数。&lt;/p>
+&lt;p>这时需要解决的就是之前提到的对于过渡场景有无的判断。为了能够将工作流无缝转换到 AE，此时不可能再对 yml 做新的要求，好在数量不多，这部分区别直接手工指定写死在代码中即可。&lt;/p>
+&lt;p>同时为了减少重复的代码，将原本写在 &lt;code>AddVideoProperty&lt;/code> 函数中的视频定位部分的代码放到了这个大函数 &lt;code>AddRankPart&lt;/code> 中，通过 for 循环迭代 yml 列表（这时其实还是一个写死的列表，而不是读取 yml 文件）的数据，对视频进行长宽比的判断同比缩放，再定位至正确的坐标。&lt;/p>
+&lt;p>另外为了兼容周刊的排名规则，即长期视频的出现会造成视频数量的变化，以及每部分排名中最后一个视频过渡效果与其他不同，和视频间是否需要过渡画面等做了相应的判断，最后通过额外的函数参数兼容了不同样式的榜单部分。&lt;/p>
+&lt;p>但由于主榜前三实在比较特殊，就没有使用 &lt;code>AddRankPart&lt;/code> 而是直接重写了一遍逻辑。&lt;/p>
+&lt;blockquote>
+&lt;h4 id="插曲">插曲&lt;/h4>
+&lt;p>在编写完整个自动化代码后，遇到了久未见到的视频源失效的特殊样式，需要在失效的视频上添加遮挡。Vegas 时期这也是靠人工完成的，因为失效视频已经极少遇到，采用的方案是添加一个 array 记录失效的视频，在 &lt;code>AddRankPart&lt;/code> 的 for 循环中添加视频是否在 array 中的判断来解决。这就需要当出现此类情况的时候修改代码中的变量。&lt;/p>
+&lt;p>但新增一个文件来记录也是同样要人工修改，罢了，就这样吧。&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="定型文">定型文&lt;/h3>
+&lt;p>榜单各个部分间的过渡画面都是不随榜单变化，或者素材文件名保持固定，这部分内容就直接使用 &lt;code>AddLayer&lt;/code>, &lt;code>AddVideoProperty&lt;/code>, &lt;code>AddAudioProperty&lt;/code> 写死了逻辑和时间点。&lt;/p>
+&lt;p>之后把写死的测试数据改写成读取实际的 yml 文件内容和素材文件，然后就是大量的 MagicNumber 时间点和不断地调试。为了测试兼容性还试验了 AfterEffects 的不同版本，结果发现不同版本的 AE 使用的 js 版本大相径庭，各种神秘问题频出。最后还是放弃了去追求更高的兼容性，优先保障了较新版本的 2019CC 和 2020CC 的使用。&lt;/p>
+&lt;h2 id="aftereffects-的问题">AfterEffects 的问题&lt;/h2>
+&lt;h3 id="音频处理">音频处理&lt;/h3>
+&lt;p>AE 作为视频软件，对音频的处理就显得较弱了，这本来不是什么大问题。&lt;/p>
+&lt;p>但是上榜的视频各自的音频增益相差很大，最为明显的是 UP 主的投稿视频和 B 站番剧的动画，后者音频增益比前者低了一个等级。&lt;/p>
+&lt;p>Vegas 中可以直接通过“音频标准化”操作简单解决这个问题。AE 其实也可以通过 Adobe 家族的兼容性，将工程导出使用 Premiere 或者 Audition 进行音频标准化，但这样一来就失去了“自动化”的目的。&lt;/p>
+&lt;p>那么有什么其他办法可以解决么？在咨询群友和同事的意见之后，&lt;a class="link" href="https://github.com/slhck/ffmpeg-normalize" target="_blank" rel="noopener"
+>ffmpeg-normalize&lt;/a>进入了我的视野。&lt;/p>
+&lt;h3 id="ffmpeg-normalize">ffmpeg-normalize&lt;/h3>
+&lt;p>简单而言，ffmpeg-normalize 是对 ffmpeg 中音量处理的一层包装，将整个过程自动化便于进行批量化的操作。&lt;/p>
+&lt;p>试验之后发现果然方便，于是立刻开始编写代码。因为 CMD 过于简陋，选择了 powershell 来进行批处理。&lt;/p>
+&lt;p>然而在试运行一周后，发现大文件处理效率是个问题。对于动辄 600MB~1G 的番剧区视频，ffmpeg-normalize 处理整个文件所消耗的时间甚至超过了最后 AE 导出视频的时间，这就比较难接受了。而且它也不支持只对视频/音频的某一部分进行标准化操作，非常尴尬。&lt;/p>
+&lt;h3 id="ffmpeg-视频截取音频处理">ffmpeg 视频截取&amp;amp;音频处理&lt;/h3>
+&lt;p>既然 ffmpeg-normalize 是 ffmpeg 的包装，自然想到了直接用 ffmpeg 不也可以吗？还能少装一个 python，降低了其他组员的学习成本。&lt;/p>
+&lt;p>为了提升处理效率，与其处理整个视频，不如只处理选取的视频片段。于是在刚刚学习完 JavaScript 后，我又开始翻阅 powershell 的文档，研究怎样用 powershell 实现读取 yml 中的数据，传递给 ffmpeg 截取视频，并标准化截取视频的音频。&lt;/p>
+&lt;p>这种不同语言间的语法差异着实又烦恼了我一阵子，好在微软的文档也很详尽，绕了几次弯路后找到了正确的写法，实现了需求。&lt;/p>
+&lt;p>考虑到现在大家基本上都有不错的显卡，调用 ffmpeg 截取时使用 GPU 编/解码又能进一步提升效率，但使用 GPU 不能发挥 powershell 的并发能力，这受制于显卡的硬件，但仍比 CPU 编码快上不少。&lt;/p>
+&lt;p>然而在音频标准化处理上，GPU 就没有用武之地了，只能依赖 CPU 处理，与此同时可以依靠 powershell 的 &lt;code>ForEach-Object -Parallel&lt;/code> 并发加快处理速度。只能说这两者算是有失有得吧。&lt;/p>
+&lt;blockquote>
+&lt;h4 id="对应修改">对应修改&lt;/h4>
+&lt;p>视频先行截取意味着之前 AE 脚本中读取的视频时间点全部无效了，于是修改了对应的变量在读取数据后直接重新赋值为零，纠正了时间问题。&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="powershell-工作流">PowerShell 工作流&lt;/h2>
+&lt;p>既然 powershell 并发这么好用，我又动了新的歪脑筋，想起了之前 python 写的 B 站视频下载工具。&lt;/p>
+&lt;p>因为已经尝试重构过 bash 的代码，在熟悉了 powershell 的部分函数后，这部分重构也是轻车熟路。很快一个读取分析 yml 文件自动下载视频的 powershell 脚本就编写完成了。&lt;/p>
+&lt;p>不仅并发下载的代码逻辑比 python 简洁多了，甚至又填坑了之前想要指定下载分 P 的 TODO。另外 python 版的代码在下载时调用了 aria2c，powershell 的重构中也放弃了这部分依赖，如此一来整个工作流的外部依赖就只有 ffmpeg 了。&lt;/p>
+&lt;p>为了完全抛弃 python 脚本的依赖，周刊使用的生成传送门评论的脚本（没错，这个也是 python）当然也要用 powershell 重构，事情到了这一步已经无法停下脚步了（ry&lt;/p>
+&lt;p>最后，&lt;code>download.ps1&lt;/code>, &lt;code>normailze.ps1&lt;/code>, &lt;code>rankdoor.ps1&lt;/code> 组成了周刊自动化中 powershell 工作流的三剑客。&lt;/p>
+&lt;h2 id="未尽之事">未尽之事&lt;/h2>
+&lt;p>如此一来，制作周刊还剩下的人工操作就只有选取视频片段一项了。但是这也已经有了尝试性的解决方案（&lt;a class="link" href="https://www.bilibili.com/video/BV1pN411o7Cg?p=2" target="_blank" rel="noopener"
+>Artificial Idiot 截取片段试运行&lt;/a>），目前仍是个 python 脚本，也许成熟之后也会再重构为 powershell，到时就是四剑客了。&lt;/p>
+&lt;p>如果你对以上内容有兴趣，相关脚本&lt;a class="link" href="https://github.com/Neutralization/BiliBiliRankingScripts" target="_blank" rel="noopener"
+>在 Github 已开源&lt;/a>。如果你不知道周刊哔哩哔哩排行榜，你也可以选择&lt;a class="link" href="https://space.bilibili.com/398300398" target="_blank" rel="noopener"
+>关注了解一下&lt;/a>。&lt;/p>
+&lt;h2 id="eof">EOF&lt;/h2>
+&lt;p>powershell 真香（&lt;/p></description></item><item><title>Python 使用 USB 热敏打印机</title><link>https://naizi.moe/2020/07/07/python-%E4%BD%BF%E7%94%A8-usb-%E7%83%AD%E6%95%8F%E6%89%93%E5%8D%B0%E6%9C%BA/</link><pubDate>Tue, 07 Jul 2020 00:00:00 +0000</pubDate><guid>https://naizi.moe/2020/07/07/python-%E4%BD%BF%E7%94%A8-usb-%E7%83%AD%E6%95%8F%E6%89%93%E5%8D%B0%E6%9C%BA/</guid><description>&lt;p>通过使用 python-escpos 库，就可以和常见的 USB 热敏打印机通信来进行打印，不再赘述具体方法。&lt;/p>
+&lt;p>但是 python-escpos 库并不是为 Windows 写的，实际在使用的时候就会出现许多的问题。&lt;/p>
+&lt;p>一个常见的错误是&lt;/p>
+&lt;blockquote>
+&lt;p>ValueError: No backend available&lt;/p>
+&lt;/blockquote>
+&lt;p>根据&lt;a class="link" href="https://stackoverflow.com/questions/13773132/pyusb-on-windows-no-backend-available" target="_blank" rel="noopener"
+>Stackoverflow&lt;/a>上的解答，应该是缺少 dll 文件，按解答中提供的链接地址下载安装就行了。&lt;/p>
+&lt;p>但安装后会出现新的错误：&lt;/p>
+&lt;blockquote>
+&lt;p>NotImplementedError: Operation not supported or unimplemented on this platform&lt;/p>
+&lt;/blockquote>
+&lt;p>所幸在 python-escpos 的 Github &lt;a class="link" href="https://github.com/python-escpos/python-escpos/issues/316" target="_blank" rel="noopener"
+>issue316&lt;/a>中有人提供了解决方式。直接修改源代码，删去对应的异常捕捉，就能够正常使用了。&lt;/p>
+&lt;p>此处留档以备不时之需。&lt;/p></description></item><item><title>Windows使用WSL配置crontab定时任务</title><link>https://naizi.moe/2020/01/25/windows%E4%BD%BF%E7%94%A8wsl%E9%85%8D%E7%BD%AEcrontab%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/</link><pubDate>Sat, 25 Jan 2020 00:00:00 +0000</pubDate><guid>https://naizi.moe/2020/01/25/windows%E4%BD%BF%E7%94%A8wsl%E9%85%8D%E7%BD%AEcrontab%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/</guid><description>&lt;p>有些 python 脚本任务对于树莓派来说还是负担太重了。毕竟性能上限摆在那里，也不能靠一个小小的 pi 承担太多。&lt;/p>
+&lt;p>借此机会正好尝试一下 WSL(Windows Subsystem for Linux).&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;h2 id="安装-wsl">安装 WSL&lt;/h2>
+&lt;p>安装 WSL 并没有想象中的复杂。进入控制面板-&amp;gt;程序和功能-&amp;gt;启用或关闭 Windows 功能，勾选&lt;code>适用于Linux的Windows子系统&lt;/code>，等待安装完毕，然后重启系统。&lt;/p>
+&lt;p>&lt;img src="https://naizi.moe/2020-01-25-wsl-crontab/Snipaste_2020-01-25_19-14-26.png"
+loading="lazy"
+alt="适用于Linux的Windows子系统"
+>&lt;/p>
+&lt;p>重启完毕，开始菜单选择 MicrosoftStore，搜索 linux 就能够找到可供使用的 linux 发行版，我这里选择了 Ubuntu18.04LTS。&lt;/p>
+&lt;p>&lt;img src="https://naizi.moe/2020-01-25-wsl-crontab/Snipaste_2020-01-25_02-08-03.png"
+loading="lazy"
+alt="MicrosoftStore"
+>&lt;/p>
+&lt;p>应用安装完毕后，启动应用会要求设定基础的用户名和密码，接着，一个可供使用的 WSL 就准备就绪了。&lt;/p>
+&lt;h2 id="确保-crontab-服务">确保 crontab 服务&lt;/h2>
+&lt;p>由于 WSL 并不会默认启动，而且当运行中的 WSL 的最后一个 bash 关闭后，就相当于关闭了整个子系统，那我们的 crontab 也就直接去世了。&lt;/p>
+&lt;p>为了保持 crontab 常驻，需要一些措施。这里参考了&lt;a class="link" href="https://blog.snowme34.com/post/schedule-tasks-using-crontab-on-windows-10-with-wsl/index.html" target="_blank" rel="noopener"
+>Schedule Tasks Using Crontab on Windows 10 with WSL&lt;/a>的方法，建立一个 crontab 服务的 Windows 启动项，每次系统启动后在后台常驻。&lt;/p>
+&lt;p>首先进入 WSL，修改 sudoer，避免每次启动 crontab 服务时需要输入密码确认：&lt;/p>
+&lt;blockquote>
+&lt;p>sudo visudo&lt;/p>
+&lt;/blockquote>
+&lt;p>在文件末尾加入&lt;/p>
+&lt;blockquote>
+&lt;p>%sudo ALL=NOPASSWD: /etc/init.d/cron start&lt;/p>
+&lt;/blockquote>
+&lt;p>然后保存文件。回到 Windows，Win+R 打开运行，输入&lt;code>shell:startup&lt;/code>打开启动文件夹，右键新建快捷方式，目标输入：&lt;/p>
+&lt;blockquote>
+&lt;p>C:\Windows\System32\wsl.exe sudo /etc/init.d/cron start&lt;/p>
+&lt;/blockquote>
+&lt;p>这样我们就能够保证 crontab 在每次 Windows 启动后常驻后台了。一切正常的话重启 Windows，在任务管理器能看到一个名称为 cron 的进程。&lt;/p>
+&lt;p>&lt;img src="https://naizi.moe/2020-01-25-wsl-crontab/Snipaste_2020-01-25_19-16-06.png"
+loading="lazy"
+alt="任务管理器"
+>&lt;/p>
+&lt;h2 id="使用-crontab">使用 crontab&lt;/h2>
+&lt;p>剩下的操作和在 linux 里使用 crontab 没有区别，唯一需要注意的是文件的路径。&lt;/p>
+&lt;p>在 WSL 中，Windows 的 C 盘被挂载在&lt;code>/mnt/c&lt;/code>目录下，D\E\F 以此类推，需要注意对应修改。&lt;/p>
+&lt;h2 id="eof">EOF&lt;/h2></description></item><item><title>来一场圆周率的飞花令</title><link>https://naizi.moe/2019/11/26/%E6%9D%A5%E4%B8%80%E5%9C%BA%E5%9C%86%E5%91%A8%E7%8E%87%E7%9A%84%E9%A3%9E%E8%8A%B1%E4%BB%A4/</link><pubDate>Tue, 26 Nov 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/11/26/%E6%9D%A5%E4%B8%80%E5%9C%BA%E5%9C%86%E5%91%A8%E7%8E%87%E7%9A%84%E9%A3%9E%E8%8A%B1%E4%BB%A4/</guid><description>&lt;p>逛微博看到了一些有意思的东西：山东卫视《国学小名士》第三季的节目，进行了一场 π(圆周率)的飞花令。&lt;/p>
+&lt;p>节目里选手们接到了小数点后 204 位，那，能不能更长一点？&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;h2 id="数据储备">数据储备&lt;/h2>
+&lt;p>首先需要有足够多的古诗词储备，不然程序生成的时候耗光弹药就显得非常尴尬了。&lt;/p>
+&lt;p>非常感谢&lt;a class="link" href="https://github.com/chinese-poetry/chinese-poetry" target="_blank" rel="noopener"
+>chinese-poetry&lt;/a>这样的开源项目，积累了大量的已经结构化的古诗词数据。&lt;/p>
+&lt;p>这里只用宋词部分的数据。&lt;/p>
+&lt;h2 id="算法逻辑">算法逻辑&lt;/h2>
+&lt;p>逻辑很简单粗暴：找出所有包含中文数字的词句进行汇总，然后按小数点后位数迭代 π 值随机取对应的诗词就行。&lt;/p>
+&lt;p>整理诗词数据：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> json
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> re
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> os
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>filelist &lt;span style="color:#f92672">=&lt;/span> [
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> file &lt;span style="color:#66d9ef">for&lt;/span> file &lt;span style="color:#f92672">in&lt;/span> os&lt;span style="color:#f92672">.&lt;/span>listdir(&lt;span style="color:#e6db74">&amp;#39;./json&amp;#39;&lt;/span>) &lt;span style="color:#66d9ef">if&lt;/span> re&lt;span style="color:#f92672">.&lt;/span>search(&lt;span style="color:#e6db74">r&lt;/span>&lt;span style="color:#e6db74">&amp;#39;poet.song&amp;#39;&lt;/span>, file)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>files &lt;span style="color:#f92672">=&lt;/span> [
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> json&lt;span style="color:#f92672">.&lt;/span>load(open(&lt;span style="color:#e6db74">&amp;#39;./json/&amp;#39;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> file, &lt;span style="color:#e6db74">&amp;#39;r&amp;#39;&lt;/span>, encoding&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;utf-8-sig&amp;#39;&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> file &lt;span style="color:#f92672">in&lt;/span> filelist
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>result &lt;span style="color:#f92672">=&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;一&amp;#39;&lt;/span>: [],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;二&amp;#39;&lt;/span>: [],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;三&amp;#39;&lt;/span>: [],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;四&amp;#39;&lt;/span>: [],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;五&amp;#39;&lt;/span>: [],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;六&amp;#39;&lt;/span>: [],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;七&amp;#39;&lt;/span>: [],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;八&amp;#39;&lt;/span>: [],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;九&amp;#39;&lt;/span>: [],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;零&amp;#39;&lt;/span>: []
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">for&lt;/span> file &lt;span style="color:#f92672">in&lt;/span> files:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> x &lt;span style="color:#f92672">in&lt;/span> file:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> y &lt;span style="color:#f92672">in&lt;/span> x[&lt;span style="color:#e6db74">&amp;#39;paragraphs&amp;#39;&lt;/span>]:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> z &lt;span style="color:#f92672">in&lt;/span> [&lt;span style="color:#e6db74">&amp;#39;一&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;二&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;三&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;四&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;五&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;六&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;七&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;八&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;九&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;零&amp;#39;&lt;/span>]:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 　 &lt;span style="color:#66d9ef">if&lt;/span> re&lt;span style="color:#f92672">.&lt;/span>search(z, y):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> result[z] &lt;span style="color:#f92672">=&lt;/span> result&lt;span style="color:#f92672">.&lt;/span>get(z) &lt;span style="color:#f92672">+&lt;/span> [
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#ae81ff">\n\t\t\t\t&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">/&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(y, x[&lt;span style="color:#e6db74">&amp;#39;author&amp;#39;&lt;/span>], x[&lt;span style="color:#e6db74">&amp;#39;title&amp;#39;&lt;/span>])
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">with&lt;/span> open(&lt;span style="color:#e6db74">&amp;#39;step.json&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;w&amp;#39;&lt;/span>, encoding&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;utf-8-sig&amp;#39;&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> f:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f&lt;span style="color:#f92672">.&lt;/span>write(json&lt;span style="color:#f92672">.&lt;/span>dumps(result, ensure_ascii&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">False&lt;/span>))
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="π-值计算">π 值计算&lt;/h2>
+&lt;p>无脑套用了一下别人的代码：http://z-rui.github.io/post/2015/06/pi-digits/&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">pidigits&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> q, r, t, u, i &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">180&lt;/span>, &lt;span style="color:#ae81ff">60&lt;/span>, &lt;span style="color:#ae81ff">168&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">while&lt;/span> &lt;span style="color:#66d9ef">True&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> y &lt;span style="color:#f92672">=&lt;/span> r &lt;span style="color:#f92672">//&lt;/span> t
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">yield&lt;/span> y
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> q, r, t, u, i &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">10&lt;/span> &lt;span style="color:#f92672">*&lt;/span> q &lt;span style="color:#f92672">*&lt;/span> i &lt;span style="color:#f92672">*&lt;/span> (&lt;span style="color:#ae81ff">2&lt;/span> &lt;span style="color:#f92672">*&lt;/span> i &lt;span style="color:#f92672">-&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>), &lt;span style="color:#ae81ff">10&lt;/span> &lt;span style="color:#f92672">*&lt;/span> u &lt;span style="color:#f92672">*&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> q &lt;span style="color:#f92672">*&lt;/span> (&lt;span style="color:#ae81ff">5&lt;/span> &lt;span style="color:#f92672">*&lt;/span> i &lt;span style="color:#f92672">-&lt;/span> &lt;span style="color:#ae81ff">2&lt;/span>) &lt;span style="color:#f92672">+&lt;/span> r &lt;span style="color:#f92672">-&lt;/span> y &lt;span style="color:#f92672">*&lt;/span> t), t &lt;span style="color:#f92672">*&lt;/span> u, u &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">54&lt;/span> &lt;span style="color:#f92672">*&lt;/span> (i &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>), i &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>不停迭代 pidigits() 就能得到后一位小数数值。&lt;/p>
+&lt;h2 id="开始飞花令">开始飞花令&lt;/h2>
+&lt;p>测试一下迭代圆周率 1000 位&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> json
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> sys
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">from&lt;/span> random &lt;span style="color:#f92672">import&lt;/span> randint
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>poets &lt;span style="color:#f92672">=&lt;/span> json&lt;span style="color:#f92672">.&lt;/span>load(open(&lt;span style="color:#e6db74">&amp;#39;step.json&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;r&amp;#39;&lt;/span>, encoding&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;utf-8-sig&amp;#39;&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>number &lt;span style="color:#f92672">=&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">1&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;一&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">2&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;二&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">3&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;三&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">4&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;四&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">5&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;五&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">6&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;六&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">7&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;七&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">8&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;八&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">9&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;九&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">0&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;零&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>n &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">pidigits&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> q, r, t, u, i &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">180&lt;/span>, &lt;span style="color:#ae81ff">60&lt;/span>, &lt;span style="color:#ae81ff">168&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">while&lt;/span> &lt;span style="color:#66d9ef">True&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> y &lt;span style="color:#f92672">=&lt;/span> r &lt;span style="color:#f92672">//&lt;/span> t
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">yield&lt;/span> y
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> q, r, t, u, i &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">10&lt;/span> &lt;span style="color:#f92672">*&lt;/span> q &lt;span style="color:#f92672">*&lt;/span> i &lt;span style="color:#f92672">*&lt;/span> (&lt;span style="color:#ae81ff">2&lt;/span> &lt;span style="color:#f92672">*&lt;/span> i &lt;span style="color:#f92672">-&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>), &lt;span style="color:#ae81ff">10&lt;/span> &lt;span style="color:#f92672">*&lt;/span> u &lt;span style="color:#f92672">*&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> q &lt;span style="color:#f92672">*&lt;/span> (&lt;span style="color:#ae81ff">5&lt;/span> &lt;span style="color:#f92672">*&lt;/span> i &lt;span style="color:#f92672">-&lt;/span> &lt;span style="color:#ae81ff">2&lt;/span>) &lt;span style="color:#f92672">+&lt;/span> r &lt;span style="color:#f92672">-&lt;/span> y &lt;span style="color:#f92672">*&lt;/span> t), t &lt;span style="color:#f92672">*&lt;/span> u, u &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">54&lt;/span> &lt;span style="color:#f92672">*&lt;/span> (i &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>), i &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">while&lt;/span> &lt;span style="color:#66d9ef">True&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f &lt;span style="color:#f92672">=&lt;/span> open(&lt;span style="color:#e6db74">&amp;#39;result.md&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;w&amp;#39;&lt;/span>, encoding&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;utf-8-sig&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> num &lt;span style="color:#f92672">in&lt;/span> pidigits():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> used &lt;span style="color:#f92672">=&lt;/span> []
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> new &lt;span style="color:#f92672">=&lt;/span> poets[number[num]]&lt;span style="color:#f92672">.&lt;/span>pop(randint(&lt;span style="color:#ae81ff">0&lt;/span>, len(poets[number[num]])))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">while&lt;/span> new &lt;span style="color:#f92672">in&lt;/span> used:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> new &lt;span style="color:#f92672">=&lt;/span> poets[number[num]]&lt;span style="color:#f92672">.&lt;/span>pop(randint(&lt;span style="color:#ae81ff">0&lt;/span>, len(poets[number[num]])))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> print(num, number[num], new)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f&lt;span style="color:#f92672">.&lt;/span>write(&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#ae81ff">\t&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#ae81ff">\t&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#ae81ff">\n&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> num, number[num],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> new&lt;span style="color:#f92672">.&lt;/span>replace(number[num], &lt;span style="color:#e6db74">&amp;#39;`&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">`&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(number[num]))))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> used &lt;span style="color:#f92672">=&lt;/span> used&lt;span style="color:#f92672">.&lt;/span>append(new)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> n &lt;span style="color:#f92672">+=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> n &lt;span style="color:#f92672">&amp;gt;&lt;/span> &lt;span style="color:#ae81ff">1000&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f&lt;span style="color:#f92672">.&lt;/span>close()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> sys&lt;span style="color:#f92672">.&lt;/span>exit()
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="eof">EOF&lt;/h2></description></item><item><title>配置Cmder整合Cygwin与Github</title><link>https://naizi.moe/2019/10/19/%E9%85%8D%E7%BD%AEcmder%E6%95%B4%E5%90%88cygwin%E4%B8%8Egithub/</link><pubDate>Sat, 19 Oct 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/10/19/%E9%85%8D%E7%BD%AEcmder%E6%95%B4%E5%90%88cygwin%E4%B8%8Egithub/</guid><description>&lt;p>记录下折腾 Cmder 的过程。&lt;/p>
+&lt;p>虽然群友安利了许久的 WSL 和 Powershell，但对于前两者的 GUI 我实在看不下去。也许他们真的很棒，但好用的工具似乎注定了不能拥有好看的 UI。&lt;/p>
+&lt;p>而我，还是倾向于 UI 舒服的。毕竟只要它真的不是功能上缺胳膊少腿儿，剩下的事情，大部分都可以克服。&lt;/p>
+&lt;p>再说了，不多折腾折腾，不多踩几个坑，多 Google 和 Stackoverflow 一下，你怎么会知道原来世界上还能有这种问题呢.jpg&lt;/p>
+&lt;h2 id="初始化">初始化&lt;/h2>
+&lt;p>我们可以从&lt;a class="link" href="https://cmder.net/" target="_blank" rel="noopener"
+>Cmder 的主页&lt;/a>下载它的最新版（当前是 v1.3.12）。为了避免之后和 Github 以及 Cygwin 附带的命令出现不同版本并存的问题，选择&lt;code>Download Mini&lt;/code>。&lt;/p>
+&lt;p>下载完毕后解压，先把 Cmder 添加到右键菜单，方便之后随时调用。在解压目录打开一个管理员权限的 Powershell：&lt;/p>
+&lt;blockquote>
+&lt;p>Cmder.exe /REGISTER ALL&lt;/p>
+&lt;/blockquote>
+&lt;p>接下来先放着 Cmder 不管，继续装 Git for windows。&lt;/p>
+&lt;p>从&lt;a class="link" href="https://gitforwindows.org/" target="_blank" rel="noopener"
+>Git for windows 的主页&lt;/a>下载最新版，安装基本都是默认选项，需要注意的是：&lt;/p>
+&lt;ol>
+&lt;li>&lt;code>Adjusting your PATH enviroment&lt;/code>选择&lt;code>Use Git from the Windows Command Prompt&lt;/code>&lt;/li>
+&lt;li>&lt;code>Configuring the line ending conversions&lt;/code>选择&lt;code>Checkout Windows-style, commit Unix-style line endings&lt;/code>&lt;/li>
+&lt;li>&lt;code>Configuing the terminal emulator to use with Git Bash&lt;/code>选择&lt;code>Use MinTTY&lt;/code>&lt;/li>
+&lt;/ol>
+&lt;p>额外选项可以默认也可以不选，安装完成后在任意目录右键，应该能看见&lt;code>Git Bash Here&lt;/code>和&lt;code>Git GUI Here&lt;/code>的选项。&lt;/p>
+&lt;p>接着继续，安装 Cygwin。&lt;/p>
+&lt;p>在&lt;a class="link" href="https://www.cygwin.com/" target="_blank" rel="noopener"
+>Cygwin 官网&lt;/a>下载对应版本（64-bit/32-bit），双击执行，默认选项即可。&lt;/p>
+&lt;p>在&lt;code>Choose A Download Site&lt;/code>这步，我们可以添加&lt;a class="link" href="https://mirror.tuna.tsinghua.edu.cn/help/cygwin/" target="_blank" rel="noopener"
+>清华大学的镜像源&lt;/a>&lt;code>https://mirrors.tuna.tsinghua.edu.cn/cygwin/&lt;/code>来提升软件包的下载速度，然后点击下一步。&lt;/p>
+&lt;p>在 Search 中搜索 wget，下拉菜单将 Skip 替换成其中一个版本安装，这是之后安装 apt-cyg 需要的依赖。另外检查 gwak、tar、bzip2 这几个包是否安装（不是 Skip 就对了）。&lt;/p>
+&lt;p>有需要的话可以自己选择还要安装哪些命令，不过这些都可以之后再改，先接着继续下一步默认安装就可以了。&lt;/p>
+&lt;h2 id="折腾">折腾&lt;/h2>
+&lt;p>现在我们有了 Cmder+Github+Cygwin，接下来把他们整一起。&lt;/p>
+&lt;p>git 比较方便，打开控制面板，选择&lt;code>系统和安全&lt;/code>-&amp;gt;&lt;code>系统&lt;/code>-&amp;gt;&lt;code>高级系统设置&lt;/code>-&amp;gt;&lt;code>环境变量&lt;/code>，在&lt;code>用户变量&lt;/code>里选择&lt;code>Path&lt;/code>-&amp;gt;&lt;code>编辑&lt;/code>，如果是默认安装的话，应该会有一条&lt;code>C:\Program Files\Git\usr\bin&lt;/code>的记录，如果没有可以手动添加。&lt;/p>
+&lt;p>然后打开 Cmder，输入 git 并回车，检查是否能够调用 git。&lt;/p>
+&lt;p>Cygwin 按照同样的方式加入系统环境变量，默认路径是&lt;code>C:\cygwin64\bin&lt;/code>，如果修改了安装路径需要对应修改。&lt;/p>
+&lt;p>接着安装 apt-cyg，有了它就可以像 Ubuntu 管理软件包一样随意 install 需要的命令了。&lt;/p>
+&lt;p>apt-cyg 的项目主页是 &lt;a class="link" href="https://github.com/transcode-open/apt-cyg" target="_blank" rel="noopener"
+>https://github.com/transcode-open/apt-cyg&lt;/a> ，在 Release 页面下载最新版，解压将&lt;code>apt-cyg&lt;/code>文件移动到&lt;code>C:\cygwin64\bin&lt;/code>，打开 cygwin 终端：&lt;/p>
+&lt;blockquote>
+&lt;p>apt-cyg install nano&lt;/p>
+&lt;/blockquote>
+&lt;p>测试 apt-cyg 是否正常工作。&lt;/p>
+&lt;p>为了解决中文编码问题，在 Cygwin 终端窗口右键选择&lt;code>Options&lt;/code>，选择&lt;code>Text&lt;/code>，更改&lt;code>locale&lt;/code>为&lt;code>zh_CN&lt;/code>，&lt;code>Character set&lt;/code>为&lt;code>UTF-8&lt;/code>。&lt;/p>
+&lt;p>然后 nano 或者 vi 编辑&lt;code>~/.bashrc&lt;/code>文件，在文件最后添加：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-~/.bashrc" data-lang="~/.bashrc">&lt;span style="display:flex;">&lt;span>export LC_ALL&lt;span style="color:#f92672">=&lt;/span>zh_CN.UTF-8
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>export LC_CTYPE&lt;span style="color:#f92672">=&lt;/span>zh_CN.UTF-8
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>export LANG&lt;span style="color:#f92672">=&lt;/span>zh_CN.UTF-8
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>为了 Cygwin 和 Cmder 整合后，能够识别当前工作目录，通过 apt-cyg 安装 chere 命令：&lt;/p>
+&lt;blockquote>
+&lt;p>apt-cyg install chere&lt;/p>
+&lt;/blockquote>
+&lt;p>然后还是编辑&lt;code>~/.bashrc&lt;/code>，追加内容：&lt;a class="link" href="https://conemu.github.io/en/CygwinStartDir.html" title="cygwin, mingw, ConEmu and start up directory"
+target="_blank" rel="noopener"
+>参考1&lt;/a>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-~/.bashrc" data-lang="~/.bashrc">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[&lt;/span> -n &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>ConEmuWorkDir&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &lt;span style="color:#f92672">]&lt;/span>; &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cd &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$ConEmuWorkDir&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Cygwin 中 C 盘的路径映射为&lt;code>/cygdrive/c&lt;/code>，如果觉得太长的话，可以在 cygwin 终端里修改&lt;code>/etc/fstab&lt;/code>或者直接修改&lt;code>C:\cygwin64\etc\fstab&lt;/code>:&lt;/p>
+&lt;pre tabindex="0">&lt;code class="language-/etc/fstab" data-lang="/etc/fstab"># /etc/fstab
+#
+# This file is read once by the first process in a Cygwin process tree.
+# To pick up changes, restart all Cygwin processes. For a description
+# see https://cygwin.com/cygwin-ug-net/using.html#mount-table
+# This is default anyway:
+# none /cygdrive cygdrive binary,posix=0,user 0 0
+none / cygdrive binary 0 0
+&lt;/code>&lt;/pre>&lt;p>之后 C 盘映射到&lt;code>/c&lt;/code>，D 盘映射到&lt;code>/d&lt;/code>，以此类推。&lt;/p>
+&lt;p>以上设置完可以算是告一段落了，接着把 Cygwin 整进 Cmder 里。&lt;/p>
+&lt;p>打开 Cmder，右键选择&lt;code>Settings&lt;/code>，选择&lt;code>Startup&lt;/code>-&amp;gt;&lt;code>Tasks&lt;/code>。&lt;/p>
+&lt;p>点击&amp;rsquo;+&amp;lsquo;号添加新的 Task，&lt;code>Task Name&lt;/code>填一个能区分出是 Cygwin 的，比如&lt;code>Cygwin::bash&lt;/code>，&lt;code>Task parameters&lt;/code>填写&lt;code>/icon C:\cygwin64\Cygwin-Terminal.ico&lt;/code>，在&lt;code>Commands&lt;/code>中填写&lt;code>set CHERE_INVOKING=1 &amp;amp; C:\cygwin64\Cygwin.bat -c &amp;quot;/bin/xhere /bin/bash.exe --login -i '%V'&amp;quot;&lt;/code>&lt;a class="link" href="https://github.com/cmderdev/cmder/wiki/Integrating-Cygwin" title="Integrating Cygwin"
+target="_blank" rel="noopener"
+>参考2&lt;/a>&lt;/p>
+&lt;p>然后勾选上&lt;code>Default task for new console&lt;/code>和&lt;code>Taskbar jump lists&lt;/code>。回到&lt;code>Startup&lt;/code>，选择&lt;code>Specified named task&lt;/code>-&amp;gt;&lt;code>Cygwin::bash&lt;/code>。&lt;/p>
+&lt;p>这样一来 Cmder 的默认终端就是 Cygwin 了，git 命令和 windows 本身的支持也没有问题。&lt;/p>
+&lt;h2 id="进一步调整">进一步调整&lt;/h2>
+&lt;h3 id="general-fonts">&lt;code>General&lt;/code>-&amp;gt;&lt;code>Fonts&lt;/code>&lt;/h3>
+&lt;p>先解决编码问题，选择&lt;code>General&lt;/code>-&amp;gt;&lt;code>Fonts&lt;/code>-&amp;gt;&lt;code>Unicode ranges&lt;/code>-&amp;gt;&lt;code>CJK: 2E80-9FC3;AC00-D7A3;F900-FAFF;FE30-FE4F;FF01-FF60;FFE0-FFE6;&lt;/code>-&amp;gt;&lt;code>Apply&lt;/code>。&lt;/p>
+&lt;p>&lt;code>Font charset&lt;/code>还是保持 ANSI，否则 Cmder 会报错&lt;code>Failed to create font&lt;/code>然后 fail back 回缺省字体。&lt;/p>
+&lt;p>然后选择&lt;code>Startup&lt;/code>-&amp;gt;&lt;code>Environment&lt;/code>，添加如下内容：&lt;/p>
+&lt;pre tabindex="0">&lt;code>set PATH=%ConEmuBaseDir%\Scripts;%PATH%
+set LANG=zh_CN.UTF8
+&lt;/code>&lt;/pre>&lt;p>接着是字体，中文字体真的太少了，好看的就更少了。（有一说一，我觉得，确实，是这样的）&lt;/p>
+&lt;p>选了 Powerline Fonts：&lt;/p>
+&lt;blockquote>
+&lt;p>git clone &lt;a class="link" href="https://github.com/powerline/fonts.git" target="_blank" rel="noopener"
+>https://github.com/powerline/fonts.git&lt;/a>&lt;/p>
+&lt;/blockquote>
+&lt;p>我单独装了&lt;code>Noto Mono for Powerline&lt;/code>，也可以选择执行&lt;code>install.ps1&lt;/code>直接安装全部的字体。&lt;/p>
+&lt;p>在&lt;code>Main console font&lt;/code>选了&lt;code>Noto Mono for Powerline&lt;/code>后，中文还是会 fail back 成宋体，这里勾上&lt;code>Alternative font&lt;/code>，选择&lt;code>微软雅黑 Light&lt;/code>，个人感觉不违和，能看。&lt;/p>
+&lt;p>其他勾选上&lt;code>Monospace&lt;/code>和&lt;code>Compress long strings to fit space&lt;/code>。&lt;/p>
+&lt;h3 id="general-size--pos">&lt;code>General&lt;/code>-&amp;gt;&lt;code>Size &amp;amp; Pos&lt;/code>&lt;/h3>
+&lt;p>将&lt;code>Width&lt;/code>改为 80%，&lt;code>Height&lt;/code>改为 70%，这样 Cmder 启动会自动根据显示器大小调整窗口大小。&lt;/p>
+&lt;h3 id="general-background">&lt;code>General&lt;/code>-&amp;gt;&lt;code>Background&lt;/code>&lt;/h3>
+&lt;p>设置&lt;code>Background Image&lt;/code>和&lt;code>Darkening&lt;/code>可以给终端添加图片背景并调整图片透明度，我就敬谢不敏了。&lt;/p>
+&lt;h3 id="general-confirm">&lt;code>General&lt;/code>-&amp;gt;&lt;code>Confirm&lt;/code>&lt;/h3>
+&lt;p>去除&lt;code>Confirm creating new console/tab&lt;/code>和&lt;code>Confirm tab duplicating&lt;/code>的勾选，这两个太烦人了。&lt;/p>
+&lt;h3 id="features-transparency">&lt;code>Features&lt;/code>-&amp;gt;&lt;code>Transparency&lt;/code>&lt;/h3>
+&lt;p>&lt;code>Alpha transparency&lt;/code>可以调整终端窗口本身的透明度，我这里直接拖到了最右边不透明。屡次截图终端映出了背后的内容总是让我心有余悸。&lt;/p>
+&lt;h3 id="keys--macro-paste">&lt;code>Keys &amp;amp; Macro&lt;/code>-&amp;gt;&lt;code>Paste&lt;/code>&lt;/h3>
+&lt;p>确保两个&lt;code>Paste mode&lt;/code>都是&lt;code>Multi lines&lt;/code>，避免行为不一致。&lt;/p>
+&lt;h2 id="其他">其他&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>Cmder 有自己的&lt;code>user_alias&lt;/code>(&amp;ldquo;Cmder/config/user_alias.cmd&amp;rdquo;)可以很方便的设定一些常用命令，可以在 cmd 或者 powershell 终端里使用，但是不能和 Cygwin 通用。Cygwin 需要 Alias 的话还是得老老实实编辑&lt;code>~/.bashrc&lt;/code>。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Cmder 可以作为 Sublime Text 的终端来使用，Sublime 安装 Terminal 插件，设置终端路径为 Cmder 安装路径即可。默认呼出终端的快捷键是 Ctrl+Shift+T。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Cygwin 有个已知问题，Ctrl+方向键没有绑定操作，需要手动添加，方法是编辑&lt;code>~/.inputrc&lt;/code>添加两行内容&lt;code>&amp;quot;\e[1;5C&amp;quot;: forward-word&lt;/code>和&lt;code>&amp;quot;\e[1;5D&amp;quot;: backward-word&lt;/code>。&lt;a class="link" href="http://trumaze.blogspot.com/2011/04/how-to-configure-cygwin-to-use-ctrl.html" title="How to configure cygwin to use ctrl &amp;#43; arrow to move cursor forward / backward"
+target="_blank" rel="noopener"
+>参考3&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>如果之前已经生成了 SSH KEY 的话，需要手动复制到&lt;code>C:\cygwin64\home\&amp;lt;user name&amp;gt;\.ssh&lt;/code>或者直接指定 ssh key 才能让 git 识别到。&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="eof">EOF&lt;/h2></description></item><item><title>jojo，python的能力是有极限的</title><link>https://naizi.moe/2019/10/18/jojopython%E7%9A%84%E8%83%BD%E5%8A%9B%E6%98%AF%E6%9C%89%E6%9E%81%E9%99%90%E7%9A%84/</link><pubDate>Fri, 18 Oct 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/10/18/jojopython%E7%9A%84%E8%83%BD%E5%8A%9B%E6%98%AF%E6%9C%89%E6%9E%81%E9%99%90%E7%9A%84/</guid><description>&lt;p>&amp;ndash;&amp;gt; jojo，python 的能力是有极限的。&lt;/p>
+&lt;p>&amp;ndash;&amp;gt; 我从短暂的人生当中学到一件事&amp;hellip;&amp;hellip;&lt;/p>
+&lt;p>&amp;ndash;&amp;gt; 越是玩弄代码，就越会发现 python 的不足&amp;hellip;&amp;hellip;&lt;/p>
+&lt;p>&amp;ndash;&amp;gt; 除非超越 python。&lt;/p>
+&lt;p>你到底想说什么？&lt;/p>
+&lt;p>&amp;ndash;&amp;gt; 吔我 bash 啦！&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;h2 id="起因">起因&lt;/h2>
+&lt;p>原因其实很简单，工作上需要使用后台导入些数据。&lt;/p>
+&lt;p>吭哧吭哧把原始数据整理完，搞成 csv 了，点个“导入”，给我来了个报错：&lt;/p>
+&lt;ul>
+&lt;li>单次导入只支持 1000 条&lt;/li>
+&lt;/ul>
+&lt;p>崽啊，9102 年末了，我 csv 里面近百万条数据，你跟我说一次 1000？我不下班啦？&lt;/p>
+&lt;p>然而优秀的底层员工是不会抱怨这些事情的，行吧，我自己切表总行了吧。&lt;/p>
+&lt;h2 id="尝试-python-切割">尝试 python 切割&lt;/h2>
+&lt;p>先用 python 瞎糊了一个：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>datas &lt;span style="color:#f92672">=&lt;/span> {}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">for&lt;/span> n, line &lt;span style="color:#f92672">in&lt;/span> enumerate(open(&lt;span style="color:#e6db74">&amp;#39;test.csv&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;r&amp;#39;&lt;/span>, encoding&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;utf-8-sig&amp;#39;&lt;/span>)):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> datas&lt;span style="color:#f92672">.&lt;/span>get(n&lt;span style="color:#f92672">//&lt;/span>&lt;span style="color:#ae81ff">1000&lt;/span>):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> datas[n&lt;span style="color:#f92672">//&lt;/span>&lt;span style="color:#ae81ff">1000&lt;/span>] &lt;span style="color:#f92672">=&lt;/span> datas[n&lt;span style="color:#f92672">//&lt;/span>&lt;span style="color:#ae81ff">1000&lt;/span>] &lt;span style="color:#f92672">+&lt;/span> [line]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">else&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> datas[n&lt;span style="color:#f92672">//&lt;/span>&lt;span style="color:#ae81ff">1000&lt;/span>] &lt;span style="color:#f92672">=&lt;/span> [line]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">for&lt;/span> k,v &lt;span style="color:#f92672">in&lt;/span> datas&lt;span style="color:#f92672">.&lt;/span>items():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">with&lt;/span> open(&lt;span style="color:#e6db74">&amp;#39;test-&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">.csv&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(k), &lt;span style="color:#e6db74">&amp;#39;w&amp;#39;&lt;/span>, encoding&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;utf-8-sig&amp;#39;&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> f:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f&lt;span style="color:#f92672">.&lt;/span>write(&lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>join(v))
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>凑合着用了，顺便再写了个脚本把切好的文件自动导入到后台，把工作做完了。&lt;/p>
+&lt;p>但是回过头了，就开始嫌弃 python 不够快了。&lt;/p>
+&lt;p>虽然很明显原因在于我（毕竟瞎糊凑合用），想看能不能更快一点。&lt;/p>
+&lt;p>于是想起了 bash，想起了 split 和 xargs。&lt;/p>
+&lt;h2 id="换成-bash">换成 bash&lt;/h2>
+&lt;p>要切割文件的话 split 的确很方便:&lt;/p>
+&lt;blockquote>
+&lt;p>split test.csv -l 1000 -d -a 3 test__&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;code>-d -a 3&lt;/code>指定了按 3 位数递增添加后缀，这样就能产生 test&lt;strong>001 ~ test&lt;/strong>999 命名的切割好的文件。&lt;/p>
+&lt;p>但新的问题也来了，切割完需要全部加上文件扩展名：&lt;/p>
+&lt;blockquote>
+&lt;p>mv test_&lt;em>001 test&lt;/em>-001.csv&lt;/p>
+&lt;/blockquote>
+&lt;p>但手工操作量还是太大，这时候我们就需要 xargs 了：&lt;/p>
+&lt;blockquote>
+&lt;p>ls | grep test__ | xargs -n1 -I file mv file file.csv&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;code>ls | grep test__&lt;/code>筛选了所有缺少扩展名的文件，管道命令传给 xargs 后，&lt;code>-n1&lt;/code>代表一次接受一个参数，&lt;code>-I file&lt;/code>告诉 xargs 后续命令中的&lt;code>file&lt;/code>全部用参数值替换。&lt;/p>
+&lt;p>比如只有一个文件的时候，&lt;code>ls | grep test__&lt;/code>只有一个结果&lt;code>test__001&lt;/code>，xargs 接收到参数，将&lt;code>file&lt;/code>替换成&lt;code>test__001&lt;/code>，实际执行内容就是：&lt;/p>
+&lt;blockquote>
+&lt;p>mv test&lt;strong>001 test&lt;/strong>001.csv&lt;/p>
+&lt;/blockquote>
+&lt;p>将他们组合一下：&lt;/p>
+&lt;blockquote>
+&lt;p>split -l 1000 test.csv -d -a 3 test** &amp;amp;&amp;amp; ls | grep test** | xargs -n1 -I file mv file file.csv&lt;/p>
+&lt;/blockquote>
+&lt;p>回车执行，1 秒都不需要，爽死了。&lt;/p>
+&lt;h2 id="人类是懒惰的动物">人类是懒惰的动物&lt;/h2>
+&lt;p>但这样还是需要自己手打需要切割的文件名，不够爽。尝试把代码再变长一点：&lt;/p>
+&lt;blockquote>
+&lt;p>ls | grep .csv$ | sed &amp;rsquo;s/.csv//g&amp;rsquo; | xargs -n1 -I file split -l 1000 file.csv -d -a 3 file** &amp;amp;&amp;amp; ls | grep ** | xargs -n1 -I file mv file file.csv&lt;/p>
+&lt;/blockquote>
+&lt;p>以管道命令分割解释一下：&lt;/p>
+&lt;ol>
+&lt;li>&lt;code>ls&lt;/code> 列出当前目录下所有文件和子目录&lt;/li>
+&lt;li>&lt;code>grep .csv$&lt;/code> 筛选扩展名是 csv 的所有文件&lt;/li>
+&lt;li>&lt;code>sed 's/.csv//g'&lt;/code> 去除扩展名，只留文件名&lt;/li>
+&lt;li>&lt;code>xargs -n1 -I file split -l 1000 file.csv -d -a 3 file__&lt;/code> 切割所有的文件&lt;/li>
+&lt;li>&lt;code>ls&lt;/code> 列出当前目录下所有文件和子目录&lt;/li>
+&lt;li>&lt;code>grep __&lt;/code> 筛选文件名包含&lt;code>__&lt;/code>的文件（上一步切割好的文件）&lt;/li>
+&lt;li>&lt;code>xargs -n1 -I file mv file file.csv&lt;/code> 加上扩展名&lt;/li>
+&lt;/ol>
+&lt;p>爽又死了。&lt;/p>
+&lt;h2 id="eof">EOF&lt;/h2>
+&lt;p>尝试在 windows 上（Cmder+Github）做类似的操作，发现远没有在虚拟机（Ubuntu）里执行快，垃圾微软.jpg&lt;/p></description></item><item><title>没有KMSCON的第一天，想他</title><link>https://naizi.moe/2019/01/10/%E6%B2%A1%E6%9C%89kmscon%E7%9A%84%E7%AC%AC%E4%B8%80%E5%A4%A9%E6%83%B3%E4%BB%96/</link><pubDate>Thu, 10 Jan 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/01/10/%E6%B2%A1%E6%9C%89kmscon%E7%9A%84%E7%AC%AC%E4%B8%80%E5%A4%A9%E6%83%B3%E4%BB%96/</guid><description>&lt;p>因为树莓派用了官方系统，原本在 Arch 上利用&lt;a class="link" href="https://wiki.archlinux.org/index.php/KMSCON" target="_blank" rel="noopener"
+>KMSCON&lt;/a>来回显中文字符的方式不可行了，沉痛悼念。&lt;/p>
+&lt;p>不会编译是罪魁祸首，而且包依赖关系看得头大，实在不想自己解决。&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;h2 id="前情提要">前情提要&lt;/h2>
+&lt;p>因为 tty 设备不支持 CJK 字符，原本 crontab 任务只要重定向输出到&lt;code>KMSCON&lt;/code>模拟的 pts 设备上就能正常显示中文，现在不得不回归起点。&lt;/p>
+&lt;p>选择只有两种：&lt;/p>
+&lt;ol>
+&lt;li>研究怎么在 debian 上把&lt;code>KMSCON&lt;/code>编译过去&lt;/li>
+&lt;li>研究怎么在图形界面输出工作用脚本的日志&lt;/li>
+&lt;/ol>
+&lt;p>然后&lt;code>KMSCON&lt;/code>的编译依赖实在有点多，在 debian 内的包名又都不一样。本来就只会按照教程 &lt;code>./configure&lt;/code>、&lt;code>make&lt;/code>、&lt;code>make install&lt;/code>三步走的我实在是应付不来。&lt;/p>
+&lt;p>结果只能当&lt;code>KMSCON&lt;/code>从来不存在，在图形界面寻找解决办法。&lt;/p>
+&lt;h2 id="变通法">变通法&lt;/h2>
+&lt;p>搜索之后发现的确有从终端弹图形界面的方式，只需要指定显示设备就行了：&lt;/p>
+&lt;blockquote>
+&lt;p>DISPLAY=:0.0 command&lt;/p>
+&lt;/blockquote>
+&lt;p>因为我的目的只是需要一个终端窗口，所以：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&amp;gt; crontab -e
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>---
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>@reboot sleep &lt;span style="color:#ae81ff">30&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> DISPLAY&lt;span style="color:#f92672">=&lt;/span>:0.0 /usr/bin/lxterminal
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>这样便会在系统启动之后自动启动一个终端窗口，分配一个 pts 的设备，因为是第一个终端窗口所以一定是 pts/0&lt;/p>
+&lt;p>再把剩下的定时脚本输出全部重定向到 &lt;code>/dev/pts/0&lt;/code> 就行了&lt;/p>
+&lt;h2 id="eof">EOF&lt;/h2>
+&lt;p>感觉还是会有回到 Arch 的一天，Arch 真香。&lt;/p></description></item><item><title>从零开始 Raspberry Pi</title><link>https://naizi.moe/2018/12/08/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-raspberry-pi/</link><pubDate>Sat, 08 Dec 2018 00:00:00 +0000</pubDate><guid>https://naizi.moe/2018/12/08/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-raspberry-pi/</guid><description>&lt;p>为了让吃灰的树莓派重新开始工作，这回不瞎折腾了，直接用官方系统。&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;h2 id="安装">安装&lt;/h2>
+&lt;p>按照&lt;a class="link" href="https://www.raspberrypi.org/downloads/noobs/" target="_blank" rel="noopener"
+>官方教程&lt;/a>采用 NOOBS 安装，当然也可以选择用&lt;a class="link" href="https://www.raspberrypi.org/downloads/raspbian/" target="_blank" rel="noopener"
+>镜像安装&lt;/a>，不论哪一种，选择 ↓&lt;/p>
+&lt;p>&lt;code>Raspbian Stretch with desktop and recommended software&lt;/code>&lt;/p>
+&lt;p>安装完成后，首次进入图形界面，选择首选项中的 &lt;code>Raspberry Pi Configuration&lt;/code> ，在 &lt;code>Interfaces&lt;/code> 书签页启用 &lt;code>SSH&lt;/code>, &lt;code>VNC&lt;/code>，之后就可以不用另接键鼠了。&lt;/p>
+&lt;p>记得在 &lt;code>Localisation&lt;/code> 书签页设定好 &lt;code>WiFi Country&lt;/code>。&lt;/p>
+&lt;h2 id="连接-wifi">连接 WiFi&lt;/h2>
+&lt;p>因为公司 WiFi 使用了 WPA-EAP 协议，树莓派不显示热点，让我一度以为树莓派不能连接此类 WiFi。后来在&lt;a class="link" href="https://eparon.me/2016/09/09/rpi3-enterprise-wifi.html" target="_blank" rel="noopener"
+>这篇文章&lt;/a>的帮助下，通过修改 &lt;code>wpa_supplicant.conf&lt;/code> 连接成功，但是 WiFi 列表中对应 SSID 选项为灰色不可点击，迷。&lt;/p>
+&lt;blockquote>
+&lt;p>修改 /etc/wpa_supplicant/wpa_supplicant.conf&lt;/p>
+&lt;/blockquote>
+&lt;pre tabindex="0">&lt;code class="language-textile" data-lang="textile">ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+country=CN
+network={
+ssid=&amp;#34;OfficeWiFiSSID&amp;#34;
+key_mgmt=WPA-EAP
+identity=&amp;#34;username&amp;#34;
+password=&amp;#34;password&amp;#34;
+}
+&lt;/code>&lt;/pre>&lt;h2 id="软件更新">软件更新&lt;/h2>
+&lt;p>更换软件源，这个不多说了，国内推荐 &lt;a class="link" href="https://mirrors.ustc.edu.cn/" target="_blank" rel="noopener"
+>中国科学技术大学&lt;/a> 、 &lt;a class="link" href="https://mirrors.tuna.tsinghua.edu.cn/" target="_blank" rel="noopener"
+>清华大学&lt;/a> 、 &lt;a class="link" href="https://mirrors.163.com/" target="_blank" rel="noopener"
+>网易开源镜像站&lt;/a> 的镜像。&lt;/p>
+&lt;p>在 apt 更新前，先删除不必要的软件。反正周也是要卸载的，没必要让他们下载安装更新。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo apt-get remove --purge python3-pygame python-pygame scratch nuscratch claws-mail smartsim sonic-pi minecraft-pi python-minecraftpi wolfram-engine scratch bluej nodered greenfoot scratch2 libreoffice libreoffice-base libreoffice-core chromium-browser thonny python3-thonny python-sense-emu python3-sense-emu python-sense-emu-doc sense-emu-tools
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get autoremove
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get update
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get dist-upgrade
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>卸载这部分应用后，会有一部分文件残留，通过 VNC 远程进去打开以下三个目录&lt;/p>
+&lt;blockquote>
+&lt;p>/usr/share/applications/&lt;/p>
+&lt;p>/usr/share/raspi-ui-overrides/applications/&lt;/p>
+&lt;p>/usr/share/mimelnk/application/&lt;/p>
+&lt;/blockquote>
+&lt;p>在三个目录里找到图标显示失效的文件，删掉它们。&lt;/p>
+&lt;h2 id="自动获取树莓派-ip">自动获取树莓派 IP&lt;/h2>
+&lt;p>接下来遇到的问题是，可能是因为联网设备实在太多，公司 WiFi 分配的 IP 地址短期内是和 MAC 绑定不变的，但假如长时间未连接，重新连接就会发分配不同的 IP。&lt;/p>
+&lt;p>导致 SSH 记住 IP 并没有什么用，只能每次用 VNC 或者 nmap 扫描网段找到树莓派的地址。&lt;/p>
+&lt;p>Google 后参考 &lt;a class="link" href="https://ariandy1.wordpress.com/2014/04/08/linux-send-email-when-ip-address-changes/" target="_blank" rel="noopener"
+>这篇文章&lt;/a> 设置，让树莓派每次 IP 变动后自动发送邮件通知自己。&lt;/p>
+&lt;blockquote>
+&lt;p>sudo apt-get install ssmtp mailutils&lt;/p>
+&lt;p>nano /etc/ssmtp/ssmtp.conf&lt;/p>
+&lt;/blockquote>
+&lt;pre tabindex="0">&lt;code class="language-textile" data-lang="textile">root=youremail@gmail.com
+mailhub=smtp.gmail.com:587
+AuthUser=youremail@gmail.com
+AuthPass=yourpassword
+UseTLS=YES
+UseSTARTTLS=YES
+AuthMethod=LOGIN
+&lt;/code>&lt;/pre>&lt;blockquote>
+&lt;p>nano /home/pi/checkip.sh&lt;/p>
+&lt;/blockquote>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#!/bin/bash
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>MYIP&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>ifconfig | grep -Eo &lt;span style="color:#e6db74">&amp;#39;inet (addr:)?([0-9]*\.){3}[0-9]*&amp;#39;&lt;/span> | grep -Eo &lt;span style="color:#e6db74">&amp;#39;([0-9]*\.){3}[0-9]*&amp;#39;&lt;/span> | grep -v &lt;span style="color:#e6db74">&amp;#39;127.0.0.1&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>TIME&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>date&lt;span style="color:#e6db74">`&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>LASTIPFILE&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;/home/pi/.last_ip_addr&amp;#39;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>LASTIP&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>cat &lt;span style="color:#e6db74">${&lt;/span>LASTIPFILE&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[[&lt;/span> &lt;span style="color:#e6db74">${&lt;/span>MYIP&lt;span style="color:#e6db74">}&lt;/span> !&lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">${&lt;/span>LASTIP&lt;span style="color:#e6db74">}&lt;/span> &lt;span style="color:#f92672">]]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[[&lt;/span> &lt;span style="color:#e6db74">${&lt;/span>MYIP&lt;span style="color:#e6db74">}&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span> &lt;span style="color:#f92672">]]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">&amp;#34;LOST&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">&amp;#34;Sending E-mail..&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;Hello\n\nTimestamp = &lt;/span>&lt;span style="color:#e6db74">${&lt;/span>TIME&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">\nIP = &lt;/span>&lt;span style="color:#e6db74">${&lt;/span>MYIP&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">\n\nBye&amp;#34;&lt;/span> | &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> /usr/bin/mail -s &lt;span style="color:#e6db74">&amp;#34;[INFO] Raspberrypi New IP&amp;#34;&lt;/span> youremail@gmail.com;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">${&lt;/span>MYIP&lt;span style="color:#e6db74">}&lt;/span> &amp;gt; &lt;span style="color:#e6db74">${&lt;/span>LASTIPFILE&lt;span style="color:#e6db74">}&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">&amp;#34;No IP change!&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>chmod +x checkip.sh&lt;/p>
+&lt;p>crontab -e&lt;/p>
+&lt;/blockquote>
+&lt;pre tabindex="0">&lt;code class="language-textile" data-lang="textile">*/30 * * * * /home/pi/checkip.sh
+&lt;/code>&lt;/pre>&lt;h2 id="eof">EOF&lt;/h2>
+&lt;p>于是树莓派终于可以一边通电一边吃灰了。&lt;/p></description></item></channel></rss>

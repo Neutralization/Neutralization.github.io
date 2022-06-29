@@ -1,0 +1,1035 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>爬虫 on H⁺ + OH⁻ → H₂O</title><link>https://naizi.moe/categories/%E7%88%AC%E8%99%AB/</link><description>Recent content in 爬虫 on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 03 May 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://naizi.moe/categories/%E7%88%AC%E8%99%AB/atom.xml" rel="self" type="application/rss+xml"/><item><title>Windows 10 使用 OpenSSH + Rsync/SCP 同步文件</title><link>https://naizi.moe/2020/05/03/windows-10-%E4%BD%BF%E7%94%A8-openssh--rsync/scp-%E5%90%8C%E6%AD%A5%E6%96%87%E4%BB%B6/</link><pubDate>Sun, 03 May 2020 00:00:00 +0000</pubDate><guid>https://naizi.moe/2020/05/03/windows-10-%E4%BD%BF%E7%94%A8-openssh--rsync/scp-%E5%90%8C%E6%AD%A5%E6%96%87%E4%BB%B6/</guid><description>&lt;p>疫情期间在家工作一直使用公司的 VPN，于是在公司电脑开了共享用来传输文件。但不知道为什么，公司-&amp;gt;家方向传文件很顺畅，反方向传文件时就经常会出现进度条走到末尾就停住，要多等一段时间才能传输结束的问题。&lt;/p>
+&lt;p>虽然可以考虑用 OneDrive 这类网盘来进行同步，但这样的同步不够实时，而且毕竟要从三方服务器绕一圈，上传速度波动也很大。&lt;/p>
+&lt;p>想到既然 Windows 10 支持了 OpenSSH，家里和公司电脑又都装了 WSL，也许可以用 rsync/scp 来解决这个问题。&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;h2 id="安装-openssh-server">安装 OpenSSH Server&lt;/h2>
+&lt;p>Windows 10(1809)虽然自带了 OpenSSH 的 Server 和 Client，但默认并没有安装。&lt;/p>
+&lt;p>参照&lt;a class="link" href="https://docs.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse" target="_blank" rel="noopener"
+>Microsoft 的文档&lt;/a>给两台电脑都安装 OpenSSH：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-PowerShell" data-lang="PowerShell">&lt;span style="display:flex;">&lt;span>Get-WindowsCapability -Online | ? Name &lt;span style="color:#f92672">-like&lt;/span> &lt;span style="color:#e6db74">&amp;#39;OpenSSH*&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># This should return the following output:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Name &lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> OpenSSH.Client~~~~0.0.1.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>State &lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> NotPresent
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Name &lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> OpenSSH.Server~~~~0.0.1.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>State &lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> NotPresent
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Install the OpenSSH Client&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Install the OpenSSH Server&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Both of these should return the following output:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Path &lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Online &lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> True
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>RestartNeeded &lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> False
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Start-Service sshd
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># OPTIONAL but recommended:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Set-Service -Name sshd -StartupType &lt;span style="color:#e6db74">&amp;#39;Automatic&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Confirm the Firewall rule is configured. It should be created automatically by setup.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Get-NetFirewallRule -Name *ssh*
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># There should be a firewall rule named &amp;#34;OpenSSH-Server-In-TCP&amp;#34;, which should be enabled&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># If the firewall does not exist, create one&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>New-NetFirewallRule -Name sshd -DisplayName &lt;span style="color:#e6db74">&amp;#39;OpenSSH Server (sshd)&amp;#39;&lt;/span> -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>这时候就可以从其中一台电脑向另一台发起 SSH 连接了。&lt;/p>
+&lt;h2 id="生成-ssh-密钥并部署">生成 SSH 密钥并部署&lt;/h2>
+&lt;p>考虑到之后计划使用 rsync 传输，与 Linux 类似，我们可以使用密钥登陆的方式来避免每次都要输入密码。&lt;/p>
+&lt;p>先设定作为 Client 的电脑：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-PowerShell" data-lang="PowerShell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 提示输入生成密钥的文件名，这里假设是 client_rsa&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ssh-keygen
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 启动ssh-agent服务&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Get-Service -Name ssh-agent | Set-Service -StartupType &lt;span style="color:#e6db74">&amp;#39;Automatic&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Start-Service ssh-agent
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 导入密钥&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ssh-add client_rsa
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>先通过密码登录的方式 SSH 连接到 Server 的电脑上：（注意替换成自己的 server_user 和 client_user）&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-PowerShell" data-lang="PowerShell">&lt;span style="display:flex;">&lt;span>ssh server_user@Server_ip
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>mkdir C:\Users\server_user\.ssh\
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>scp C:\Users\client_user\.ssh\client_rsa.pub server_user@Server_ip&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>C:\Users\server_user\.ssh\authorized_keys
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>退出 SSH 会话，然后重新连接，这时应该已经不需要再输入密码了。&lt;/p>
+&lt;p>设置到这里的时候踩到一个坑：如果 SSH 登录的 Server 用户是管理员身份的话，&lt;code>authorized_keys&lt;/code>需要存到&lt;code>C:\ProgramData\ssh\administrators_authorized_keys&lt;/code>这个位置。&lt;/p>
+&lt;p>不然的话此时 SSH 登录仍然会要求密码。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-PowerShell" data-lang="PowerShell">&lt;span style="display:flex;">&lt;span>ssh server_user@Server_ip
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>scp C:\Users\client_user\.ssh\client_rsa.pub server_user@Server_ip&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>C:\ProgramData\ssh\administrators_authorized_keys
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 修正ACL权限&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$acl = Get-Acl C:\ProgramData\ssh\administrators_authorized_keys
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$acl.SetAccessRuleProtection($true, $false)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$administratorsRule = New-Object system.security.accesscontrol.filesystemaccessrule(&lt;span style="color:#e6db74">&amp;#34;Administrators&amp;#34;&lt;/span>,&lt;span style="color:#e6db74">&amp;#34;FullControl&amp;#34;&lt;/span>,&lt;span style="color:#e6db74">&amp;#34;Allow&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$systemRule = New-Object system.security.accesscontrol.filesystemaccessrule(&lt;span style="color:#e6db74">&amp;#34;SYSTEM&amp;#34;&lt;/span>,&lt;span style="color:#e6db74">&amp;#34;FullControl&amp;#34;&lt;/span>,&lt;span style="color:#e6db74">&amp;#34;Allow&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$acl.SetAccessRule($administratorsRule)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$acl.SetAccessRule($systemRule)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$acl | Set-Acl
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>之后对调 Client 和 Server 的身份再做一次同样的事情就可以了。&lt;/p>
+&lt;h2 id="进入-wsl-部署-rsync">进入 WSL 部署 rsync&lt;/h2>
+&lt;p>只用 scp 存在着一定的局限性，若要使用 rsync 则需要依靠 WSL 了。&lt;/p>
+&lt;p>依旧从 Client 开始设置：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>cd ~/.ssh
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cp /mnt/c/Users/client_user/.ssh/client_rsa ./client_rsa
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cp /mnt/c/Users/client_user/.ssh/client_rsa.pub ./client_rsa.pub
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>chmod &lt;span style="color:#ae81ff">600&lt;/span> client_rsa
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>转到 Server 上：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>cd ~/.ssh
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cp /mnt/c/Users/server_user/.ssh/authorized_keys ./authorized_keys
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>假设 Client 的 D 盘有个 testfile 的文件，测试 rsync：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># --rsync-path=&amp;#34;wsl rsync&amp;#34; 用来指示Server通过wsl启动rsync环境&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>rsync -rtuv -e &lt;span style="color:#e6db74">&amp;#34;ssh -i ~/.ssh/client_rsa&amp;#34;&lt;/span> /mnt/d/testfile server_user@Server_ip:/mnt/d/ --rsync-path&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;wsl rsync&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果一切正常，应该不会提示输入密码，然后你能在 Server 的 D 盘看到这个文件。&lt;/p>
+&lt;p>同样，对调 Client 和 Server 的身份再设定一次就可以双向操作了。&lt;/p>
+&lt;h2 id="eof">EOF&lt;/h2></description></item><item><title>哔哩哔哩下载工具 三</title><link>https://naizi.moe/2019/11/16/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7-%E4%B8%89/</link><pubDate>Sat, 16 Nov 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/11/16/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7-%E4%B8%89/</guid><description>&lt;p>有生之年我最后居然是用 Shell 来填了分 P 的 TODO……&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;h2 id="curl---命令行下的文件传输工具">cURL - 命令行下的文件传输工具&lt;/h2>
+&lt;p>cURL 这个工具太过强大，我也不知道该怎么去解释它比较好。几乎所有的网络访问，上传下载，都能够使用 cURL 来完成。&lt;/p>
+&lt;p>也难怪诸如 Chrome 和 Firefox 等浏览器，会支持复制网络访问为 cURL。而其实我也一直依靠这个功能，通过&lt;a class="link" href="https://curl.trillworks.com/" target="_blank" rel="noopener"
+>https://curl.trillworks.com/&lt;/a>来快速写我的 python 爬虫。&lt;/p>
+&lt;p>大部分的工作都可以直接靠右键复制为 cURL 来完成，所以只需要简单的查看下 cURL 的说明，便于进行一些小的修改就行。&lt;/p>
+&lt;p>然后开始对照之前写的 python 脚本的逻辑，一步步转成 Shell 脚本。&lt;/p>
+&lt;h2 id="jq---命令行下的-json-处理工具">jq - 命令行下的 JSON 处理工具&lt;/h2>
+&lt;p>B 站 API 接口的各种返回数据以 JSON 为主，直接靠 awk/sed 手撸解析是一件很痛苦的事。所以我们需要用上 jq 这个工具减轻负担。&lt;/p>
+&lt;p>jq 解析 JSON 数据非常的便捷，比如获取分 P 数据时：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-json" data-lang="json">&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;code&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">0&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;message&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;0&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;ttl&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;data&amp;#34;&lt;/span>: [
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;cid&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">73802454&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;page&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;from&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;vupload&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;part&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;3&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;duration&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">66&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;vid&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;weblink&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;dimension&amp;#34;&lt;/span>: {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;width&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">1920&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;height&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">1080&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;rotate&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>↑ jq 的另一个作用就是格式化 json 数据，比如上面的代码就是通过&lt;code>cat result.json | jq .&lt;/code>自动格式化出来的。&lt;/p>
+&lt;p>要取得分 P 的 cid，我们可以：
+&lt;code>curl -sL 'https://api.bilibili.com/x/player/pagelist?aid=42038790&amp;amp;jsonp=jsonp' | jq -r '.data[0].cid'&lt;/code>&lt;/p>
+&lt;p>如果有多个分 P，我们可以这样取得所有的 cid：
+&lt;code>curl -sL 'https://api.bilibili.com/x/player/pagelist?aid=42038790&amp;amp;jsonp=jsonp' | jq -r '.data[].cid'&lt;/code>&lt;/p>
+&lt;p>真的是非常方便。&lt;/p>
+&lt;h2 id="sed---支持正则表达式的流编辑器">sed - 支持正则表达式的流编辑器&lt;/h2>
+&lt;p>考虑到 windows 上的兼容性，如果用视频标题做文件名，势必要排除&lt;code>/?!.*|:&lt;/code>等特殊字符。这时我们就可以用 sed 来完成：
+&lt;code>curl -sL -H https://api.bilibili.com/x/web-interface/view?aid=42038790 | jq -r '.data.title' | sed 's/[/?!.*|:]//g'&lt;/code>&lt;/p>
+&lt;p>再后面我们会更多的用到 sed。&lt;code>(Flag)&lt;/code>&lt;/p>
+&lt;h2 id="编写-shell-脚本">编写 Shell 脚本&lt;/h2>
+&lt;p>&lt;code>$1&lt;/code> 代表了命令行传给脚本的第一个参数，使用场景类似 &lt;code>bash download.sh av42038790&lt;/code>
+通过 sed，我们可以兼容 &lt;code>bash download.sh https://www.bilibili.com/video/av42038790?from=search&amp;amp;seid=3037567923943401758&lt;/code> 的链接模式。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>aid&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $1 | sed -e &lt;span style="color:#e6db74">&amp;#39;s/.*av//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/[a-zA-Z?/].*//g&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Shell 脚本中声明变量时等号前后都不能有空格，使用变量时在变量前加上&lt;code>$&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>pagelist&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;https://api.bilibili.com/x/player/pagelist?aid=&amp;#39;&lt;/span>$aid&lt;span style="color:#e6db74">&amp;#39;&amp;amp;jsonp=jsonp&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cids&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>curl -sL $pagelist | jq -r &lt;span style="color:#e6db74">&amp;#39;.data[].cid&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>这里的 cids 只是一个包含空格分隔的字符串&lt;code>123 234 345&lt;/code>，为了让 Shell 正确计数，把它转为数组&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>cids_arr&lt;span style="color:#f92672">=(&lt;/span>$cids&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>这样一来通过&lt;code>${ #cids_arr[@] }&lt;/code>就能够正确得出 cids 中的元素个数&lt;/p>
+&lt;p>接下来通过 for 循环遍历 cids 中的元素，为了能同时计算元素的个数，需要另行计数：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>part&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">for&lt;/span> cid in $cids
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> episode&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">$((&lt;/span> &lt;span style="color:#f92672">++&lt;/span>part &lt;span style="color:#66d9ef">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">#some code&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">done&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Shell 中的 if else 判断以 if 开始，fi 结束：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">${#&lt;/span>cids_arr[@]&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#34;1&amp;#34;&lt;/span> &lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> filename&lt;span style="color:#f92672">=&lt;/span>av$aid.$title.mp4 &lt;span style="color:#75715e"># 视频只有1P时，不标注分P&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> filename&lt;span style="color:#f92672">=&lt;/span>av$aid.$title【P$episode】.mp4 &lt;span style="color:#75715e"># 多P视频标注分P&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>判断视频是 DASH 还是 FLV：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>json_url&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;https://api.bilibili.com/x/player/playurl?avid=&amp;#39;&lt;/span>$aid&lt;span style="color:#e6db74">&amp;#39;&amp;amp;cid=&amp;#39;&lt;/span>$cid&lt;span style="color:#e6db74">&amp;#39;&amp;amp;qn=116&amp;amp;fnver=0&amp;amp;fnval=16&amp;amp;otype=json&amp;amp;type=&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>json&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>curl -sL $json_url&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dash&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | jq &lt;span style="color:#e6db74">&amp;#39;.data|has(&amp;#34;dash&amp;#34;)&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>durl&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | jq &lt;span style="color:#e6db74">&amp;#39;.data|has(&amp;#34;durl&amp;#34;)&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>处理 DASH 视频：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$dash&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#34;true&amp;#34;&lt;/span> &lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> vp&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | jq -r &lt;span style="color:#e6db74">&amp;#39;.data.dash.video[0].baseUrl&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span> &lt;span style="color:#75715e"># 视频&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ap&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | jq -r &lt;span style="color:#e6db74">&amp;#39;.data.dash.audio[0].baseUrl&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span> &lt;span style="color:#75715e"># 音频&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>aria2c --args $vp --out ./v_$cid.m4s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>aria2c --args $vp --out ./a_$cid.m4s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ffmpeg -i ./v_$cid.m4s -i ./a_$cid.m4s -c:v copy -c:a copy ./$filename
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>rm *.m4s
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>处理 FLV 视频：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">elif&lt;/span> &lt;span style="color:#f92672">[&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$durl&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#34;true&amp;#34;&lt;/span> &lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> flvs&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | jq -r &lt;span style="color:#e6db74">&amp;#39;.data.durl[].url&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> flv in $flvs
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">&amp;#34;file &amp;#39;./&amp;#34;&lt;/span>$flvname&lt;span style="color:#e6db74">&amp;#34;&amp;#39;&amp;#34;&lt;/span> &amp;gt;./merge_$cid.txt
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> flvname&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $flv | sed -e &lt;span style="color:#e6db74">&amp;#39;s/\?.*//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/.*\///g&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> aria2c --args $flv --out ./$flvname
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ffmpeg -safe &lt;span style="color:#ae81ff">0&lt;/span> -f concat -i ./merge_$cid.txt -c copy ./$filename
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> rm *.flv
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> rm ./merge_$cid.txt
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="使用-shift">使用 shift&lt;/h2>
+&lt;p>shift 命令的作用是左移参数，举例来说，如果我们传给脚本 3 个参数 a,b,c，脚本接收到的参数为：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>echo $1 $2 $3
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>a b c
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>当我们执行 shift 后&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>shift
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>echo $1 $2 $3
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>b c
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>这样就可以在循环中一直只处理$1，直到所有参数左移完毕。&lt;/p>
+&lt;p>先判断没有参数时退出脚本：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[&lt;/span> $# -eq &lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Need AVID to download!\n&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> exit &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>加上 shift 和循环：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">until&lt;/span> &lt;span style="color:#f92672">[&lt;/span> $# -eq &lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> aid&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $1 | sed -e &lt;span style="color:#e6db74">&amp;#39;s/.*av//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/[a-zA-Z?/].*//g&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">#some code&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> shift
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">done&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="记得加上-cookies">记得加上 Cookies&lt;/h2>
+&lt;p>要获得高清源必须在访问 API 时加上 Cookies，cURL 要做到这点很简单。&lt;/p>
+&lt;p>测试得知判断的关键是 Cookies 的如下键值：
+&lt;code>DedeUserID=; DedeUserID__ckMd5=; SESSDATA=; bili_jct=&lt;/code>&lt;/p>
+&lt;p>F12 打开浏览器，找到对应的键值，保存成 Cookies 的文本文件，然后修改代码：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>cookies&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>cat ./cookies&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>curl -sL -H &lt;span style="color:#e6db74">&amp;#34;Cookie: &amp;#34;&lt;/span>$cookies
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>aria2c --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Cookie: &amp;#34;&lt;/span>$cookies
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="完整代码">完整代码&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#!/bin/sh
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>IFS&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">$&amp;#39;\n&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[&lt;/span> $# -eq &lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Need AVID to download!\n&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> exit &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">until&lt;/span> &lt;span style="color:#f92672">[&lt;/span> $# -eq &lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> aid&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $1 | sed -e &lt;span style="color:#e6db74">&amp;#39;s/.*av//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/[a-zA-Z?/].*//g&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cookies&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>cat ./cookies&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> pagelist&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;https://api.bilibili.com/x/player/pagelist?aid=&amp;#39;&lt;/span>$aid&lt;span style="color:#e6db74">&amp;#39;&amp;amp;jsonp=jsonp&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Getting video list: \n&amp;#34;&lt;/span>$pagelist
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cids&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>curl -sL -H &lt;span style="color:#e6db74">&amp;#34;Cookie: &amp;#34;&lt;/span>$cookies $pagelist | jq -r &lt;span style="color:#e6db74">&amp;#39;.data[].cid&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> title&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>curl -sL -H &lt;span style="color:#e6db74">&amp;#34;Cookie: &amp;#34;&lt;/span>$cookies &lt;span style="color:#e6db74">&amp;#39;https://api.bilibili.com/x/web-interface/view?aid=&amp;#39;&lt;/span>$aid | jq -r &lt;span style="color:#e6db74">&amp;#39;.data.title&amp;#39;&lt;/span> | sed &lt;span style="color:#e6db74">&amp;#39;s/[/?!.*|:]//g&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cids_arr&lt;span style="color:#f92672">=(&lt;/span>$cids&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Found video pages: &amp;#34;&lt;/span>&lt;span style="color:#e6db74">${#&lt;/span>cids_arr[@]&lt;span style="color:#e6db74">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> part&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> cid in $cids
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> episode&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">$((&lt;/span> &lt;span style="color:#f92672">++&lt;/span>part &lt;span style="color:#66d9ef">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Download video page: &amp;#34;&lt;/span>$episode
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">${#&lt;/span>cids_arr[@]&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#34;1&amp;#34;&lt;/span> &lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> filename&lt;span style="color:#f92672">=&lt;/span>av$aid.$title.mp4
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> filename&lt;span style="color:#f92672">=&lt;/span>av$aid.$title【P$episode】.mp4
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> json_url&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;https://api.bilibili.com/x/player/playurl?avid=&amp;#39;&lt;/span>$aid&lt;span style="color:#e6db74">&amp;#39;&amp;amp;cid=&amp;#39;&lt;/span>$cid&lt;span style="color:#e6db74">&amp;#39;&amp;amp;qn=116&amp;amp;fnver=0&amp;amp;fnval=16&amp;amp;otype=json&amp;amp;type=&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Getting video source: \n&amp;#34;&lt;/span>$json_url
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> json&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>curl -sL -H &lt;span style="color:#e6db74">&amp;#34;Cookie: &amp;#34;&lt;/span>$cookies $json_url&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> dash&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | jq &lt;span style="color:#e6db74">&amp;#39;.data|has(&amp;#34;dash&amp;#34;)&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> durl&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | jq &lt;span style="color:#e6db74">&amp;#39;.data|has(&amp;#34;durl&amp;#34;)&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$dash&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#34;true&amp;#34;&lt;/span> &lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> vp&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | jq -r &lt;span style="color:#e6db74">&amp;#39;.data.dash.video[0].baseUrl&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ap&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | jq -r &lt;span style="color:#e6db74">&amp;#39;.data.dash.audio[0].baseUrl&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Downloading Video Dash&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> aria2c -x10 -k1M --file-allocation&lt;span style="color:#f92672">=&lt;/span>none --auto-file-renaming&lt;span style="color:#f92672">=&lt;/span>false --allow-overwrite&lt;span style="color:#f92672">=&lt;/span>true $vp&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --show-console-readout false --quiet &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Accept: */*&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Referer: https://www.bilibili.com/video/av&amp;#34;&lt;/span>$aid&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Origin: https://www.bilibili.com&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;DNT: 1&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Connection: keep-alive&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Pragma: no-cache&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Cache-Control: no-cache&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Cookie: &amp;#34;&lt;/span>$cookies &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --out ./v_$cid.m4s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Downloading Audio Dash&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> aria2c -x10 -k1M --file-allocation&lt;span style="color:#f92672">=&lt;/span>none --auto-file-renaming&lt;span style="color:#f92672">=&lt;/span>false --allow-overwrite&lt;span style="color:#f92672">=&lt;/span>true $ap&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --show-console-readout false --quiet &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Accept: */*&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Referer: https://www.bilibili.com/video/av&amp;#34;&lt;/span>$aid&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Origin: https://www.bilibili.com&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;DNT: 1&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Connection: keep-alive&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Pragma: no-cache&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Cache-Control: no-cache&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Cookie: &amp;#34;&lt;/span>$cookies &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --out ./a_$cid.m4s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Merge into file: &amp;#34;&lt;/span>$filename
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ffmpeg -i ./v_$cid.m4s -i ./a_$cid.m4s -c:v copy -c:a copy&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> -y -hide_banner -loglevel panic &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> ./$filename
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Removing temp files\n&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> rm *.m4s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">elif&lt;/span> &lt;span style="color:#f92672">[&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$durl&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#34;true&amp;#34;&lt;/span> &lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> flvs&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | jq -r &lt;span style="color:#e6db74">&amp;#39;.data.durl[].url&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> flv in $flvs
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> flvname&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $flv | sed -e &lt;span style="color:#e6db74">&amp;#39;s/\?.*//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/.*\///g&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">&amp;#34;file &amp;#39;./&amp;#34;&lt;/span>$flvname&lt;span style="color:#e6db74">&amp;#34;&amp;#39;&amp;#34;&lt;/span> &amp;gt;./merge_$cid.txt
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Downloading Video Part: &amp;#34;&lt;/span>$flvname
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> aria2c -x10 -k1M --file-allocation&lt;span style="color:#f92672">=&lt;/span>none --auto-file-renaming&lt;span style="color:#f92672">=&lt;/span>false --allow-overwrite&lt;span style="color:#f92672">=&lt;/span>true $flv&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --show-console-readout false --quiet &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Accept: */*&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Referer: https://www.bilibili.com/video/av&amp;#34;&lt;/span>$aid&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Origin: https://www.bilibili.com&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;DNT: 1&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Connection: keep-alive&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Pragma: no-cache&amp;#34;&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Cache-Control: no-cache&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Cookie: &amp;#34;&lt;/span>$cookies &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --out ./$flvname
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">done&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Merge into file: &amp;#34;&lt;/span>$filename
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ffmpeg -safe &lt;span style="color:#ae81ff">0&lt;/span> -f concat -i ./merge_$cid.txt -c copy&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> -y -hide_banner -loglevel panic &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> ./$filename
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Removing temp files\n&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> rm *.flv
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> rm ./merge_$cid.txt
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Error: Video not found!\n&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">done&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> shift
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">done&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="eof">EOF&lt;/h2>
+&lt;p>清晰度选择我觉得就真的没必要了吧.jpg&lt;/p>
+&lt;p>但是 jq 毕竟是个第三方工具，难道真的不能用 awk/sed 来解析 json 吗？&lt;/p>
+&lt;p>可以，但没必要。&lt;/p>
+&lt;p>但今天就尝试一次，用 awk 和 sed 组合，替换掉 jq 的工作：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 获取cids&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cids&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>curl -sL -H &lt;span style="color:#e6db74">&amp;#34;Cookie: &amp;#34;&lt;/span>$cookies $pagelist | sed &lt;span style="color:#e6db74">&amp;#39;s/[{,}]/\n/g&amp;#39;&lt;/span> | awk -F: &lt;span style="color:#e6db74">&amp;#39;/&amp;#34;cid&amp;#34;/ {print $2}&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 获取视频标题&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>title&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>curl -sL -H &lt;span style="color:#e6db74">&amp;#34;Cookie: &amp;#34;&lt;/span>$cookies &lt;span style="color:#e6db74">&amp;#39;https://api.bilibili.com/x/web-interface/view?aid=&amp;#39;&lt;/span>$aid | sed -e &lt;span style="color:#e6db74">&amp;#39;s/[{}]//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/,&amp;#34;/\n&amp;#34;/g&amp;#39;&lt;/span> | awk -F: &lt;span style="color:#e6db74">&amp;#39;/&amp;#34;title&amp;#34;/ {print $2}&amp;#39;&lt;/span> | sed -e &lt;span style="color:#e6db74">&amp;#39;s/&amp;#34;//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/[/?!.*|:]/-/g&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 是否是DASH&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dash&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | sed -e &lt;span style="color:#e6db74">&amp;#39;s/[{}]//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/,&amp;#34;/\n&amp;#34;/g&amp;#39;&lt;/span> | awk &lt;span style="color:#e6db74">&amp;#39;/&amp;#34;dash&amp;#34;/&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 是否是FLV&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>durl&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | sed -e &lt;span style="color:#e6db74">&amp;#39;s/[{}]//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/,&amp;#34;/\n&amp;#34;/g&amp;#39;&lt;/span> | awk &lt;span style="color:#e6db74">&amp;#39;/&amp;#34;durl&amp;#34;/&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$dash&lt;span style="color:#e6db74">&amp;#34;&lt;/span> !&lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span> &lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># 视频 DASH&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> vp&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | sed -e &lt;span style="color:#e6db74">&amp;#39;s/[{}]//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/,&amp;#34;/\n&amp;#34;/g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/\]//g&amp;#39;&lt;/span> | awk &lt;span style="color:#e6db74">&amp;#39;/&amp;#34;video&amp;#34;/,/&amp;#34;audio&amp;#34;/&amp;#39;&lt;/span> | awk &lt;span style="color:#e6db74">&amp;#39;/&amp;#34;baseUrl&amp;#34;/&amp;#39;&lt;/span> | sed -e &lt;span style="color:#e6db74">&amp;#39;s/&amp;#34;baseUrl&amp;#34;://g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/&amp;#34;//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/\u0026/\&amp;amp;/g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/\\\\//g&amp;#39;&lt;/span> | awk &lt;span style="color:#e6db74">&amp;#39;NR==1&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># 音频 DASH&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ap&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | sed -e &lt;span style="color:#e6db74">&amp;#39;s/[{}]//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/,&amp;#34;/\n&amp;#34;/g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/\]//g&amp;#39;&lt;/span> | awk &lt;span style="color:#e6db74">&amp;#39;/&amp;#34;audio&amp;#34;/,/&amp;#34;&amp;#34;/&amp;#39;&lt;/span> | awk &lt;span style="color:#e6db74">&amp;#39;/&amp;#34;baseUrl&amp;#34;/&amp;#39;&lt;/span> | sed -e &lt;span style="color:#e6db74">&amp;#39;s/&amp;#34;baseUrl&amp;#34;://g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/&amp;#34;//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/\u0026/\&amp;amp;/g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/\\\\//g&amp;#39;&lt;/span> | awk &lt;span style="color:#e6db74">&amp;#39;NR==1&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">elif&lt;/span> &lt;span style="color:#f92672">[&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$durl&lt;span style="color:#e6db74">&amp;#34;&lt;/span> !&lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span> &lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># FLV 视频&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> flvs&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | sed -e &lt;span style="color:#e6db74">&amp;#39;s/[{}]//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/,&amp;#34;/\n&amp;#34;/g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/\]//g&amp;#39;&lt;/span> | awk &lt;span style="color:#e6db74">&amp;#39;/&amp;#34;url&amp;#34;/&amp;#39;&lt;/span> | sed -e &lt;span style="color:#e6db74">&amp;#39;s/&amp;#34;url&amp;#34;://g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/&amp;#34;//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/\u0026/\&amp;amp;/g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/\\\\//g&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Error: Video not found!\n&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>RSS咕咕机</title><link>https://naizi.moe/2019/10/02/rss%E5%92%95%E5%92%95%E6%9C%BA/</link><pubDate>Wed, 02 Oct 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/10/02/rss%E5%92%95%E5%92%95%E6%9C%BA/</guid><description>&lt;p>之前从同事那里二手买了个咕咕机，当玩具玩。享受了几天使用 APP 打印各种沙雕照片和表情包带来的乐趣后，它毫无意外的开始吃灰，就和桌子旁边的树莓派一样染上历史的颜色。&lt;/p>
+&lt;p>还是拿出来用用吧……&lt;/p>
+&lt;p>咕咕机 APP 里的一部分订阅号的确有点意思，比如订阅每天天气，早上 8 点自动打印一条天气内容之类的。那么拿来订阅微博更新好像也没什么不对的。&lt;/p>
+&lt;p>反正一天有 12 小时在公司，闲着也是闲着，不定时的来一段小纸条也不错。&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;h2 id="开发者申请">开发者申请&lt;/h2>
+&lt;p>为了做到这些，首先要去咕咕机的&lt;a class="link" href="http://open.memobird.cn" target="_blank" rel="noopener"
+>开发者页面&lt;/a>申请 APPKEY。填写必要的信息然后提交申请就行了。等了一周左右申请就通过了。&lt;/p>
+&lt;p>拿到 APPKEY 之后，可以查阅官方给的文档，可用的 API 其实不多，更多还是要靠自己去生成内容。&lt;/p>
+&lt;p>&lt;a class="link" href="https://github.com/Windfarer/pymobird" target="_blank" rel="noopener"
+>GitHub&lt;/a>上也有其他开发者写的 SDK，可以不用自己重复按照官方文档造轮子。&lt;/p>
+&lt;h2 id="rss">RSS&lt;/h2>
+&lt;p>打个比方，订阅&lt;a class="link" href="https://space.bilibili.com/332704117/dynamic" target="_blank" rel="noopener"
+>小狐狸&lt;/a>的 B 站动态。&lt;/p>
+&lt;p>熟练的打开小狐狸的空间，F12，刷新，过滤 XHR，找到 API 接口&lt;code>https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history&lt;/code>。B 站的动态有多种类型，需要根据类型判断爬取的内容。&lt;/p>
+&lt;p>&lt;code>['data']['cards']['desc']['type']&lt;/code>的值表明了动态是何种类型，比如 1 是指转发，2 是带图动态，4 是纯文字动态，8 是投稿视频推送。&lt;/p>
+&lt;p>在 &lt;code>['data']['cards']['card']&lt;/code> 中是一串 JSON 数据，动态的文本内容根据上面不同的类型存在不同的键值里，比如&lt;code>['dynamic']&lt;/code>、&lt;code>['item']['content']&lt;/code>、&lt;code>['item']['description']&lt;/code>这几个位置。&lt;/p>
+&lt;h2 id="图片存储">图片存储&lt;/h2>
+&lt;p>只有文本内容的纸条太单调了，信息量也不够，还是需要能够同时打印图片内容。但图片打印会增加打印时间和下载时间，折衷选择只保存附带图片的第一张。&lt;/p>
+&lt;p>为了保持目录整洁，图片数据全部用 sqlite3 存储。&lt;/p>
+&lt;h2 id="内容更新">内容更新&lt;/h2>
+&lt;p>为了避免重复打印浪费纸张，每次爬取数据时需要判断是否有新的内容。&lt;/p>
+&lt;p>建数据表，只存储必要的时间、日期、文字内容和图片数据，加上动态的 ID 作为主键来进行去重。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sql" data-lang="sql">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">CREATE&lt;/span> &lt;span style="color:#66d9ef">TABLE&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">IF&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">NOT&lt;/span> &lt;span style="color:#66d9ef">EXISTS&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">白上吹雪&lt;/span>Official (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">day&lt;/span> VARCHAR,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> _id VARCHAR &lt;span style="color:#66d9ef">PRIMARY&lt;/span> &lt;span style="color:#66d9ef">KEY&lt;/span> &lt;span style="color:#66d9ef">UNIQUE&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> msg VARCHAR,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> pic BLOB,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> title VARCHAR);
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>然后人工插入一条 id 为 0 的数据，用来记录是否获取到新内容，每次先单独查询这一行，有新数据再取出内容进行打印。&lt;/p>
+&lt;h2 id="post-请求打印">POST 请求打印&lt;/h2>
+&lt;p>利用之前提到的 SDK，将文字和图片的复合内容整合后一起 POST 给服务器。&lt;/p>
+&lt;h3 id="小花样">小花样&lt;/h3>
+&lt;p>为了区分普通的带图动态和视频投稿的推送，仿照动态的样式给视频投稿的图像加上了角标。同时因为咕咕机采用的是 WiFi 打印，为了减小文件体积，POST 数据前对图片尺寸进行缩小。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">from&lt;/span> pymobird &lt;span style="color:#f92672">import&lt;/span> Content
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">from&lt;/span> pymobird &lt;span style="color:#f92672">import&lt;/span> Content
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>bird &lt;span style="color:#f92672">=&lt;/span> SimplePymobird(appkey, device_id, user_id)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>content &lt;span style="color:#f92672">=&lt;/span> Content()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>content&lt;span style="color:#f92672">.&lt;/span>add_text(&lt;span style="color:#e6db74">&amp;#39;【&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">】&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uname)) &lt;span style="color:#75715e"># 用户名&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>content&lt;span style="color:#f92672">.&lt;/span>add_text(time&lt;span style="color:#f92672">.&lt;/span>strftime(&lt;span style="color:#e6db74">&amp;#39;%Y-%m-&lt;/span>&lt;span style="color:#e6db74">%d&lt;/span>&lt;span style="color:#e6db74"> %H:%M&amp;#39;&lt;/span>,time&lt;span style="color:#f92672">.&lt;/span>gmtime(int(day)))) &lt;span style="color:#75715e"># 日期&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>content&lt;span style="color:#f92672">.&lt;/span>add_text(&lt;span style="color:#e6db74">&amp;#39;https://t.bilibili.com/&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(_id)) &lt;span style="color:#75715e"># 链接&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>content&lt;span style="color:#f92672">.&lt;/span>add_text(msg) &lt;span style="color:#75715e"># 文字内容&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">from&lt;/span> PIL &lt;span style="color:#f92672">import&lt;/span> Image
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">from&lt;/span> PIL &lt;span style="color:#f92672">import&lt;/span> ImageDraw
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">from&lt;/span> PIL &lt;span style="color:#f92672">import&lt;/span> ImageFont
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>img &lt;span style="color:#f92672">=&lt;/span> Image&lt;span style="color:#f92672">.&lt;/span>open(&lt;span style="color:#e6db74">&amp;#39;peitu.jpg&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>img&lt;span style="color:#f92672">.&lt;/span>thumbnail((&lt;span style="color:#ae81ff">400&lt;/span>, &lt;span style="color:#ae81ff">400&lt;/span>), Image&lt;span style="color:#f92672">.&lt;/span>ANTIALIAS)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>font &lt;span style="color:#f92672">=&lt;/span> ImageFont&lt;span style="color:#f92672">.&lt;/span>truetype(&lt;span style="color:#e6db74">&amp;#39;SourceHanSansCN-Regular.otf&amp;#39;&lt;/span>, &lt;span style="color:#ae81ff">22&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>draw &lt;span style="color:#f92672">=&lt;/span> ImageDraw&lt;span style="color:#f92672">.&lt;/span>Draw(img)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>draw&lt;span style="color:#f92672">.&lt;/span>rectangle(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#ae81ff">268&lt;/span>, &lt;span style="color:#ae81ff">15&lt;/span>, &lt;span style="color:#ae81ff">368&lt;/span>, &lt;span style="color:#ae81ff">47&lt;/span>), fill&lt;span style="color:#f92672">=&lt;/span>(&lt;span style="color:#ae81ff">250&lt;/span>, &lt;span style="color:#ae81ff">115&lt;/span>, &lt;span style="color:#ae81ff">150&lt;/span>), outline&lt;span style="color:#f92672">=&lt;/span>(&lt;span style="color:#ae81ff">250&lt;/span>, &lt;span style="color:#ae81ff">140&lt;/span>, &lt;span style="color:#ae81ff">160&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>draw&lt;span style="color:#f92672">.&lt;/span>text((&lt;span style="color:#ae81ff">274&lt;/span>, &lt;span style="color:#ae81ff">14&lt;/span>), &lt;span style="color:#e6db74">&amp;#39;投稿视频&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;#FFFFFF&amp;#39;&lt;/span>, font&lt;span style="color:#f92672">=&lt;/span>font)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>img&lt;span style="color:#f92672">.&lt;/span>save(&lt;span style="color:#e6db74">&amp;#39;peitu.png&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;PNG&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>content&lt;span style="color:#f92672">.&lt;/span>add_image(&lt;span style="color:#e6db74">&amp;#39;peitu.png&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>result &lt;span style="color:#f92672">=&lt;/span> bird&lt;span style="color:#f92672">.&lt;/span>print_multi_part_content(content)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="crontab-定时任务">Crontab 定时任务&lt;/h2>
+&lt;p>开 SSH 把脚本扔进富有历史感的树莓派。&lt;/p>
+&lt;blockquote>
+&lt;p>crontab -e&lt;/p>
+&lt;p>*/5 * * * * python3 bilibili_fubuki.py&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="完整代码">完整代码&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#!/usr/bin/python&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">## -*- coding: utf-8 -*-&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> json
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> os
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> re
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> requests
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> sqlite3
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> time
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">## bilibili&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>uname &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;白上吹雪Official&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>uid &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;332704117&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">## memobird&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>appkey &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>device_id &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>user_id &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>headers &lt;span style="color:#f92672">=&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;User-Agent&amp;#39;&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:69.0) Gecko/20100101 Firefox/69.0&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Accept&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;application/json, text/plain, */*&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Accept-Language&amp;#39;&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Origin&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;https://space.bilibili.com&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;DNT&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;1&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Connection&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;keep-alive&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Referer&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;https://space.bilibili.com/&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>newfile &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#f92672">not&lt;/span> os&lt;span style="color:#f92672">.&lt;/span>path&lt;span style="color:#f92672">.&lt;/span>exists(&lt;span style="color:#e6db74">&amp;#39;bilibili_&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">.sqlite&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uname))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>db &lt;span style="color:#f92672">=&lt;/span> sqlite3&lt;span style="color:#f92672">.&lt;/span>connect(&lt;span style="color:#e6db74">&amp;#39;bilibili_&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">.sqlite&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uname), isolation_level&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">None&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cur &lt;span style="color:#f92672">=&lt;/span> db&lt;span style="color:#f92672">.&lt;/span>cursor()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cur&lt;span style="color:#f92672">.&lt;/span>execute(&lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">CREATE TABLE
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">IF
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> NOT EXISTS &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74"> (
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> day VARCHAR,
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> _id VARCHAR PRIMARY KEY UNIQUE,
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> msg VARCHAR,
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> pic BLOB,
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> title VARCHAR);&amp;#39;&amp;#39;&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uname))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> newfile:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cur&lt;span style="color:#f92672">.&lt;/span>execute(&lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;INSERT INTO &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74"> VALUES ( ?, ?, ?, ?, ? );&amp;#39;&amp;#39;&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uname),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#66d9ef">None&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;0&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;1&amp;#39;&lt;/span>, &lt;span style="color:#66d9ef">None&lt;/span>, &lt;span style="color:#66d9ef">None&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">bili_pic&lt;/span>(link):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> file &lt;span style="color:#f92672">=&lt;/span> requests&lt;span style="color:#f92672">.&lt;/span>get(link, headers&lt;span style="color:#f92672">=&lt;/span>headers)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> file&lt;span style="color:#f92672">.&lt;/span>content
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> params &lt;span style="color:#f92672">=&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;visitor_uid&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;0&amp;#39;&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;host_uid&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uid)),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;offset_dynamic_id&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;0&amp;#39;&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> response &lt;span style="color:#f92672">=&lt;/span> requests&lt;span style="color:#f92672">.&lt;/span>get(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> headers&lt;span style="color:#f92672">=&lt;/span>headers,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> params&lt;span style="color:#f92672">=&lt;/span>params)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> result &lt;span style="color:#f92672">=&lt;/span> json&lt;span style="color:#f92672">.&lt;/span>loads(response&lt;span style="color:#f92672">.&lt;/span>content)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> result&lt;span style="color:#f92672">.&lt;/span>get(&lt;span style="color:#e6db74">&amp;#39;code&amp;#39;&lt;/span>) &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> print(result&lt;span style="color:#f92672">.&lt;/span>get(&lt;span style="color:#e6db74">&amp;#39;message&amp;#39;&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">False&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> card &lt;span style="color:#f92672">in&lt;/span> result[&lt;span style="color:#e6db74">&amp;#39;data&amp;#39;&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;cards&amp;#39;&lt;/span>]:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> card_time &lt;span style="color:#f92672">=&lt;/span> card[&lt;span style="color:#e6db74">&amp;#39;desc&amp;#39;&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;timestamp&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> card_id &lt;span style="color:#f92672">=&lt;/span> card[&lt;span style="color:#e6db74">&amp;#39;desc&amp;#39;&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;dynamic_id_str&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> card_type &lt;span style="color:#f92672">=&lt;/span> card[&lt;span style="color:#e6db74">&amp;#39;desc&amp;#39;&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;type&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> data &lt;span style="color:#f92672">=&lt;/span> json&lt;span style="color:#f92672">.&lt;/span>loads(card[&lt;span style="color:#e6db74">&amp;#39;card&amp;#39;&lt;/span>])
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> card_type &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">8&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> title &lt;span style="color:#f92672">=&lt;/span> data[&lt;span style="color:#e6db74">&amp;#39;title&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> pic &lt;span style="color:#f92672">=&lt;/span> data[&lt;span style="color:#e6db74">&amp;#39;pic&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> text &lt;span style="color:#f92672">=&lt;/span> data[&lt;span style="color:#e6db74">&amp;#39;dynamic&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">elif&lt;/span> card_type &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">4&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> title &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">None&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> pic &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">None&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> text &lt;span style="color:#f92672">=&lt;/span> data[&lt;span style="color:#e6db74">&amp;#39;item&amp;#39;&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;content&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">elif&lt;/span> card_type &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">2&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> title &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">None&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> data[&lt;span style="color:#e6db74">&amp;#39;item&amp;#39;&lt;/span>]&lt;span style="color:#f92672">.&lt;/span>get(&lt;span style="color:#e6db74">&amp;#39;pictures&amp;#39;&lt;/span>):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> pic &lt;span style="color:#f92672">=&lt;/span> data[&lt;span style="color:#e6db74">&amp;#39;item&amp;#39;&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;pictures&amp;#39;&lt;/span>][&lt;span style="color:#ae81ff">0&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;img_src&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> text &lt;span style="color:#f92672">=&lt;/span> data[&lt;span style="color:#e6db74">&amp;#39;item&amp;#39;&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;description&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">elif&lt;/span> card_type &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> title &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">None&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> pic &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">None&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> text &lt;span style="color:#f92672">=&lt;/span> data[&lt;span style="color:#e6db74">&amp;#39;item&amp;#39;&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;content&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">else&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> print(card_time, card_id, card_type)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">continue&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> img &lt;span style="color:#f92672">=&lt;/span> bili_pic(pic) &lt;span style="color:#66d9ef">if&lt;/span> pic &lt;span style="color:#66d9ef">else&lt;/span> &lt;span style="color:#66d9ef">None&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cur&lt;span style="color:#f92672">.&lt;/span>execute(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;INSERT OR REPLACE INTO &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74"> VALUES ( ?, ?, ?, ?, ? );&amp;#39;&amp;#39;&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> uname), (card_time, card_id, text, img, title))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> new &lt;span style="color:#f92672">=&lt;/span> cur&lt;span style="color:#f92672">.&lt;/span>execute(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;SELECT COUNT(_id) FROM &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">;&amp;#39;&amp;#39;&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uname))&lt;span style="color:#f92672">.&lt;/span>fetchone()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> old &lt;span style="color:#f92672">=&lt;/span> cur&lt;span style="color:#f92672">.&lt;/span>execute(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;SELECT msg FROM &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74"> WHERE _id = 0;&amp;#39;&amp;#39;&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uname))&lt;span style="color:#f92672">.&lt;/span>fetchone()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> int(new[&lt;span style="color:#ae81ff">0&lt;/span>]) &lt;span style="color:#f92672">==&lt;/span> int(old[&lt;span style="color:#ae81ff">0&lt;/span>]):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">False&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cur&lt;span style="color:#f92672">.&lt;/span>execute(&lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;UPDATE &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74"> SET msg = ? WHERE _id = 0&amp;#39;&amp;#39;&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uname),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (str(new[&lt;span style="color:#ae81ff">0&lt;/span>]), ))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> limit &lt;span style="color:#f92672">=&lt;/span> int(new[&lt;span style="color:#ae81ff">0&lt;/span>]) &lt;span style="color:#f92672">-&lt;/span> int(old[&lt;span style="color:#ae81ff">0&lt;/span>])
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> limit &lt;span style="color:#f92672">&amp;lt;&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">False&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> limit &lt;span style="color:#f92672">=&lt;/span> limit &lt;span style="color:#66d9ef">if&lt;/span> limit &lt;span style="color:#f92672">&amp;lt;&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#66d9ef">else&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">from&lt;/span> pymobird &lt;span style="color:#f92672">import&lt;/span> Content
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">from&lt;/span> pymobird &lt;span style="color:#f92672">import&lt;/span> SimplePymobird
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> bird &lt;span style="color:#f92672">=&lt;/span> SimplePymobird(ak&lt;span style="color:#f92672">=&lt;/span>appkey, device_id&lt;span style="color:#f92672">=&lt;/span>device_id, user_id&lt;span style="color:#f92672">=&lt;/span>user_id)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> data &lt;span style="color:#f92672">=&lt;/span> cur&lt;span style="color:#f92672">.&lt;/span>execute(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;SELECT day, _id, msg, pic, title FROM &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74"> ORDER BY _id DESC LIMIT &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">;&amp;#39;&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">.&lt;/span>format(uname, limit))&lt;span style="color:#f92672">.&lt;/span>fetchall()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> dynamic &lt;span style="color:#f92672">in&lt;/span> data[::&lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>]:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> day, _id, msg, pic, title &lt;span style="color:#f92672">=&lt;/span> dynamic
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> content &lt;span style="color:#f92672">=&lt;/span> Content()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> content&lt;span style="color:#f92672">.&lt;/span>add_text(&lt;span style="color:#e6db74">&amp;#39;【&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">】&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uname))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> content&lt;span style="color:#f92672">.&lt;/span>add_text(time&lt;span style="color:#f92672">.&lt;/span>strftime(&lt;span style="color:#e6db74">&amp;#39;%Y-%m-&lt;/span>&lt;span style="color:#e6db74">%d&lt;/span>&lt;span style="color:#e6db74"> %H:%M&amp;#39;&lt;/span>,time&lt;span style="color:#f92672">.&lt;/span>gmtime(int(day))))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> content&lt;span style="color:#f92672">.&lt;/span>add_text(&lt;span style="color:#e6db74">&amp;#39;https://t.bilibili.com/&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(_id))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> content&lt;span style="color:#f92672">.&lt;/span>add_text(msg)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> pic:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">with&lt;/span> open(&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">.jpg&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uname), &lt;span style="color:#e6db74">&amp;#39;wb&amp;#39;&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> f:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f&lt;span style="color:#f92672">.&lt;/span>write(pic)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> img &lt;span style="color:#f92672">=&lt;/span> Image&lt;span style="color:#f92672">.&lt;/span>open(&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">.jpg&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uname))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> img&lt;span style="color:#f92672">.&lt;/span>thumbnail((&lt;span style="color:#ae81ff">400&lt;/span>, &lt;span style="color:#ae81ff">400&lt;/span>), Image&lt;span style="color:#f92672">.&lt;/span>ANTIALIAS)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> title:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">from&lt;/span> PIL &lt;span style="color:#f92672">import&lt;/span> Image
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">from&lt;/span> PIL &lt;span style="color:#f92672">import&lt;/span> ImageDraw
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">from&lt;/span> PIL &lt;span style="color:#f92672">import&lt;/span> ImageFont
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> content&lt;span style="color:#f92672">.&lt;/span>add_text(title)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> font &lt;span style="color:#f92672">=&lt;/span> ImageFont&lt;span style="color:#f92672">.&lt;/span>truetype(&lt;span style="color:#e6db74">&amp;#39;SourceHanSansCN-Regular.otf&amp;#39;&lt;/span>, &lt;span style="color:#ae81ff">22&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> draw &lt;span style="color:#f92672">=&lt;/span> ImageDraw&lt;span style="color:#f92672">.&lt;/span>Draw(img)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> draw&lt;span style="color:#f92672">.&lt;/span>rectangle((&lt;span style="color:#ae81ff">268&lt;/span>, &lt;span style="color:#ae81ff">15&lt;/span>, &lt;span style="color:#ae81ff">368&lt;/span>, &lt;span style="color:#ae81ff">47&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> fill&lt;span style="color:#f92672">=&lt;/span>(&lt;span style="color:#ae81ff">250&lt;/span>, &lt;span style="color:#ae81ff">115&lt;/span>, &lt;span style="color:#ae81ff">150&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> outline&lt;span style="color:#f92672">=&lt;/span>(&lt;span style="color:#ae81ff">250&lt;/span>, &lt;span style="color:#ae81ff">140&lt;/span>, &lt;span style="color:#ae81ff">160&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> draw&lt;span style="color:#f92672">.&lt;/span>text((&lt;span style="color:#ae81ff">274&lt;/span>, &lt;span style="color:#ae81ff">14&lt;/span>), &lt;span style="color:#e6db74">&amp;#39;投稿视频&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;#FFFFFF&amp;#39;&lt;/span>, font&lt;span style="color:#f92672">=&lt;/span>font)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> img&lt;span style="color:#f92672">.&lt;/span>save(&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">.png&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uname), &lt;span style="color:#e6db74">&amp;#39;PNG&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> content&lt;span style="color:#f92672">.&lt;/span>add_image(&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">.png&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uname))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> result &lt;span style="color:#f92672">=&lt;/span> bird&lt;span style="color:#f92672">.&lt;/span>print_multi_part_content(content)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> print(result)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> time&lt;span style="color:#f92672">.&lt;/span>sleep(&lt;span style="color:#ae81ff">5&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> __name__ &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#39;__main__&amp;#39;&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> main()
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="eof">EOF&lt;/h2>
+&lt;p>&lt;img src="https://naizi.moe/2019-10-02-memobird-rss/2019-10-02_20-38.gif"
+loading="lazy"
+alt="gugugu"
+>&lt;/p></description></item><item><title>哔哩哔哩下载工具 二</title><link>https://naizi.moe/2019/04/30/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7-%E4%BA%8C/</link><pubDate>Tue, 30 Apr 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/04/30/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7-%E4%BA%8C/</guid><description>&lt;p>主要解决一些之前遇到的坑，填一些留下的 TODO。&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;h2 id="vegas-不支持-hevc-编码">Vegas 不支持 HEVC 编码&lt;/h2>
+&lt;p>思路很简单，对下载下来的&lt;code>m4s&lt;/code>先读一遍编码，看是不是 HEVC 格式的，如果是就在转码的时候用&lt;code>libx264&lt;/code>编码，不是就粗暴的 copy 视频流。&lt;/p>
+&lt;p>暂时不打算加上判断其他视频流格式的代码，遇到再说。&lt;/p>
+&lt;h3 id="通过-ffprobe-判断编码">通过 ffprobe 判断编码&lt;/h3>
+&lt;p>因为之前很少接触视频转码，也没什么机会用 ffmpeg。在判断 HEVC 编码这一步的时候，想着用类似&lt;code>ffmpeg -args | find &amp;quot;stream&amp;quot;&lt;/code>的方式来取得视频编码。&lt;/p>
+&lt;p>可能是环境问题，没成功，而且还要另写正则匹配文本有些麻烦。查了一下改用 ffprobe。&lt;/p>
+&lt;blockquote>
+&lt;p>ffprobe.exe -v error -select_streams v:0 -show_entries stream=codec_name &lt;br>
+-of default=nokey=1:noprint_wrappers=1 v.m4s &amp;raquo; ./t.txt&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="ffmpeg-合并-flv">ffmpeg 合并 flv&lt;/h2>
+&lt;p>ffmpeg 的问题主要出现在合并 flv 上，dash 视频倒没有什么问题。&lt;/p>
+&lt;p>采用&lt;code>-f concat -i file.list&lt;/code>的方式合并遇到了路径问题。因为听取了建议“下载的文件最好单独放个目录，直接下在脚本根目录就会很乱”。&lt;/p>
+&lt;p>所有的文件都下载在了子文件夹里，比如&lt;code>./down&lt;/code>。在下载 flv 分段的时候，文件的目录结构就类似：&lt;/p>
+&lt;blockquote>
+&lt;p>..
+ffmpeg.exe
+/down
+/down/file.list
+/down/part1.flv
+/down/part2.flv&lt;/p>
+&lt;/blockquote>
+&lt;p>ffmpeg 的命令写成：&lt;/p>
+&lt;blockquote>
+&lt;p>ffmpeg -safe 0 -hide_banner -f concat -i ./down/file.list -c copy ./down/finish.mp4&lt;/p>
+&lt;/blockquote>
+&lt;p>问题来了，file.list 里该怎么写，我原本以为应该是：&lt;/p>
+&lt;blockquote>
+&lt;p>file &amp;lsquo;./down/part1.flv&amp;rsquo;
+file &amp;lsquo;./down/part2.flv&amp;rsquo;
+file &amp;lsquo;./down/part3.flv&amp;rsquo;&lt;/p>
+&lt;/blockquote>
+&lt;p>然而这样 ffmpeg 会报错找不到文件，根据错误信息里提示的文件路径，应该改成&lt;/p>
+&lt;blockquote>
+&lt;p>file &amp;lsquo;part1.flv&amp;rsquo;
+file &amp;lsquo;part2.flv&amp;rsquo;
+file &amp;lsquo;part3.flv&amp;rsquo;&lt;/p>
+&lt;/blockquote>
+&lt;p>看来 file.list 里的根目录是 file.list 所在目录。&lt;/p>
+&lt;h2 id="通过子进程加速下载">通过子进程加速下载&lt;/h2>
+&lt;p>音频和视频同时下载。因为原本用 os.system 的方式会阻塞，改用 subprocess.Popen 子进程，然后在 ffmpeg 合并前阻塞两个子进程，确保下载完毕再进行合并。&lt;/p>
+&lt;p>单个任务的话就用上面的方式，然后开启多进程同时执行多个任务。但是这样又遇到了新的问题：&lt;/p>
+&lt;h3 id="尝试多进程和-pyinstaller-的坑">尝试多进程和 pyinstaller 的坑&lt;/h3>
+&lt;p>因为最后要打包成 exe 给其他人用，毕竟没必要让每个人都装一个 python 环境来跑脚本。&lt;/p>
+&lt;p>在打包过程中发现，虽然 py 脚本能够正确执行，但是打包完成的 exe 反而变成了一个 fork 炸弹，会无限的产生子进程直到让系统宕机。&lt;/p>
+&lt;p>如是三次之后 Google 了一下，pyinstaller 和 multiprocessing 相性不合，使用 mulitprocessing.Process 和 mulitprocessing.Pool 的代码在 pyinstaller 编译后就会出现这个问题。&lt;/p>
+&lt;p>给出的解决方法只适用于 python2 版本，而我用的是 python3.7，摊手。&lt;/p>
+&lt;h3 id="改用-threading-绕过问题">改用 threading 绕过问题&lt;/h3>
+&lt;p>既然不能用多进程，那就用多线程好了。&lt;/p>
+&lt;p>而且实际上我也的确是先用的 threading 库，遇到了问题才想的用 multiprocessing。&lt;/p>
+&lt;p>原因是 threading 的场合，我编译 exe 完成，测试的时候想直接关闭窗口，发现做不到。&lt;/p>
+&lt;p>结论而且这不算什么问题，比起 fork 炸弹要可接受的多了，而且一个下载工具，本来就没有必要在中途退出。&lt;/p>
+&lt;p>最后上了线程池&lt;code>from multiprocessing.dummy import Pool as ThreadPool&lt;/code>，幸好这样并不会和 pyinstaller 冲突。&lt;/p>
+&lt;h2 id="放弃写配置文件">放弃写配置文件&lt;/h2>
+&lt;p>计划把 ffmpeg 和 aria2c 的配置单独存文件的来着，想想又要增加代码量，而且几乎不会去动这些配置，还是作罢了。&lt;/p>
+&lt;p>硬编码不也挺好么.jpg&lt;/p>
+&lt;h2 id="完整代码">完整代码&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#!/usr/bin/python&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">## -*- coding: utf-8 -*-&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> arrow
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> json
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> os
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> re
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> requests
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> subprocess
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">from&lt;/span> lxml &lt;span style="color:#f92672">import&lt;/span> etree
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">from&lt;/span> multiprocessing.dummy &lt;span style="color:#f92672">import&lt;/span> Pool &lt;span style="color:#66d9ef">as&lt;/span> ThreadPool
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>today &lt;span style="color:#f92672">=&lt;/span> arrow&lt;span style="color:#f92672">.&lt;/span>utcnow()&lt;span style="color:#f92672">.&lt;/span>format(&lt;span style="color:#e6db74">&amp;#39;YYYY-MM-DD&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> os&lt;span style="color:#f92672">.&lt;/span>path&lt;span style="color:#f92672">.&lt;/span>exists(&lt;span style="color:#e6db74">&amp;#39;./&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(today)):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">pass&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">else&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> os&lt;span style="color:#f92672">.&lt;/span>mkdir(&lt;span style="color:#e6db74">&amp;#39;./&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(today))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>session &lt;span style="color:#f92672">=&lt;/span> requests&lt;span style="color:#f92672">.&lt;/span>session()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>session&lt;span style="color:#f92672">.&lt;/span>headers &lt;span style="color:#f92672">=&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;User-Agent&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Accept&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;application/json, text/plain, */*&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Accept-Language&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Referer&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;https://www.bilibili.com/video/av42038790?from=search&amp;amp;seid=4077958841119274554&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Origin&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;https://www.bilibili.com&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;DNT&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;1&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Connection&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;keep-alive&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Pragma&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;no-cache&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Cache-Control&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;no-cache&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">with&lt;/span> open(&lt;span style="color:#e6db74">&amp;#39;cookies&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;r&amp;#39;&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> f:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cookies &lt;span style="color:#f92672">=&lt;/span> f&lt;span style="color:#f92672">.&lt;/span>read()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>session&lt;span style="color:#f92672">.&lt;/span>headers[&lt;span style="color:#e6db74">&amp;#39;cookie&amp;#39;&lt;/span>] &lt;span style="color:#f92672">=&lt;/span> cookies
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">videocid&lt;/span>(aid&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">42038790&lt;/span>, part&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> params &lt;span style="color:#f92672">=&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;aid&amp;#39;&lt;/span>, aid),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;jsonp&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;jsonp&amp;#39;&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> response &lt;span style="color:#f92672">=&lt;/span> session&lt;span style="color:#f92672">.&lt;/span>get(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;https://api.bilibili.com/x/player/pagelist&amp;#39;&lt;/span>, params&lt;span style="color:#f92672">=&lt;/span>params, ) &lt;span style="color:#75715e"># cookies=cookies)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> result &lt;span style="color:#f92672">=&lt;/span> json&lt;span style="color:#f92672">.&lt;/span>loads(response&lt;span style="color:#f92672">.&lt;/span>content)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cid &lt;span style="color:#f92672">=&lt;/span> result[&lt;span style="color:#e6db74">&amp;#39;data&amp;#39;&lt;/span>][part &lt;span style="color:#f92672">-&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;cid&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> cid
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">videourl&lt;/span>(aid&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">42038790&lt;/span>, cid&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">73802454&lt;/span>):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> params &lt;span style="color:#f92672">=&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;avid&amp;#39;&lt;/span>, aid),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;cid&amp;#39;&lt;/span>, cid),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;qn&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;112&amp;#39;&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;fnver&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;0&amp;#39;&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;fnval&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;16&amp;#39;&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;type&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;otype&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;json&amp;#39;&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> response &lt;span style="color:#f92672">=&lt;/span> session&lt;span style="color:#f92672">.&lt;/span>get(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;https://api.bilibili.com/x/player/playurl&amp;#39;&lt;/span>, params&lt;span style="color:#f92672">=&lt;/span>params,) &lt;span style="color:#75715e"># cookies=cookies)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> result &lt;span style="color:#f92672">=&lt;/span> json&lt;span style="color:#f92672">.&lt;/span>loads(response&lt;span style="color:#f92672">.&lt;/span>content)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> result&lt;span style="color:#f92672">.&lt;/span>get(&lt;span style="color:#e6db74">&amp;#39;data&amp;#39;&lt;/span>) &lt;span style="color:#f92672">is&lt;/span> &lt;span style="color:#66d9ef">None&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> response &lt;span style="color:#f92672">=&lt;/span> session&lt;span style="color:#f92672">.&lt;/span>get(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;https://api.bilibili.com/pgc/player/web/playurl&amp;#39;&lt;/span>, params&lt;span style="color:#f92672">=&lt;/span>params,) &lt;span style="color:#75715e"># cookies=cookies)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> result &lt;span style="color:#f92672">=&lt;/span> json&lt;span style="color:#f92672">.&lt;/span>loads(response&lt;span style="color:#f92672">.&lt;/span>content)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> playinfo &lt;span style="color:#f92672">=&lt;/span> result&lt;span style="color:#f92672">.&lt;/span>get(&lt;span style="color:#e6db74">&amp;#39;result&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">else&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> playinfo &lt;span style="color:#f92672">=&lt;/span> result&lt;span style="color:#f92672">.&lt;/span>get(&lt;span style="color:#e6db74">&amp;#39;data&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> playinfo &lt;span style="color:#f92672">is&lt;/span> &lt;span style="color:#66d9ef">None&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> print(aid, &lt;span style="color:#e6db74">&amp;#39;Not Found&lt;/span>&lt;span style="color:#ae81ff">\n&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">False&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> playinfo&lt;span style="color:#f92672">.&lt;/span>get(&lt;span style="color:#e6db74">&amp;#39;dash&amp;#39;&lt;/span>):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> aids &lt;span style="color:#f92672">=&lt;/span> [x[&lt;span style="color:#e6db74">&amp;#39;id&amp;#39;&lt;/span>] &lt;span style="color:#66d9ef">for&lt;/span> x &lt;span style="color:#f92672">in&lt;/span> playinfo[&lt;span style="color:#e6db74">&amp;#39;dash&amp;#39;&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;audio&amp;#39;&lt;/span>]]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> aurl &lt;span style="color:#f92672">=&lt;/span> playinfo[&lt;span style="color:#e6db74">&amp;#39;dash&amp;#39;&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;audio&amp;#39;&lt;/span>][aids&lt;span style="color:#f92672">.&lt;/span>index(max(aids))][&lt;span style="color:#e6db74">&amp;#39;baseUrl&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> vids &lt;span style="color:#f92672">=&lt;/span> [x[&lt;span style="color:#e6db74">&amp;#39;id&amp;#39;&lt;/span>] &lt;span style="color:#66d9ef">for&lt;/span> x &lt;span style="color:#f92672">in&lt;/span> playinfo[&lt;span style="color:#e6db74">&amp;#39;dash&amp;#39;&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;video&amp;#39;&lt;/span>]]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> vurl &lt;span style="color:#f92672">=&lt;/span> playinfo[&lt;span style="color:#e6db74">&amp;#39;dash&amp;#39;&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;video&amp;#39;&lt;/span>][vids&lt;span style="color:#f92672">.&lt;/span>index(max(vids))][&lt;span style="color:#e6db74">&amp;#39;baseUrl&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ap &lt;span style="color:#f92672">=&lt;/span> subprocess&lt;span style="color:#f92672">.&lt;/span>Popen(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;aria2c.exe -x10 -k1M --file-allocation=none --auto-file-renaming=false &amp;#34;&lt;/span>&lt;span style="color:#e6db74">{aurl}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --header=&amp;#34;User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --header=&amp;#34;Accept: */*&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --header=&amp;#34;Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --header=&amp;#34;Referer: https://www.bilibili.com/video/av&lt;/span>&lt;span style="color:#e6db74">{aid}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --header=&amp;#34;Origin: https://www.bilibili.com&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --header=&amp;#34;DNT: 1&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --header=&amp;#34;Connection: keep-alive&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --header=&amp;#34;Pragma: no-cache&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --header=&amp;#34;Cache-Control: no-cache&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --out ./&lt;/span>&lt;span style="color:#e6db74">{today}&lt;/span>&lt;span style="color:#e6db74">/&lt;/span>&lt;span style="color:#e6db74">{cid}&lt;/span>&lt;span style="color:#e6db74">_a.m4s&amp;#39;&amp;#39;&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(today&lt;span style="color:#f92672">=&lt;/span>today, aurl&lt;span style="color:#f92672">=&lt;/span>aurl, aid&lt;span style="color:#f92672">=&lt;/span>aid, cid&lt;span style="color:#f92672">=&lt;/span>cid), shell&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">True&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> vp &lt;span style="color:#f92672">=&lt;/span> subprocess&lt;span style="color:#f92672">.&lt;/span>Popen(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;aria2c -x10 -k1M --file-allocation=none --auto-file-renaming=false &amp;#34;&lt;/span>&lt;span style="color:#e6db74">{vurl}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --header=&amp;#34;User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --header=&amp;#34;Accept: */*&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --header=&amp;#34;Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --header=&amp;#34;Referer: https://www.bilibili.com/video/av&lt;/span>&lt;span style="color:#e6db74">{aid}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --header=&amp;#34;Origin: https://www.bilibili.com&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --header=&amp;#34;DNT: 1&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --header=&amp;#34;Connection: keep-alive&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --header=&amp;#34;Pragma: no-cache&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --header=&amp;#34;Cache-Control: no-cache&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --out ./&lt;/span>&lt;span style="color:#e6db74">{today}&lt;/span>&lt;span style="color:#e6db74">/&lt;/span>&lt;span style="color:#e6db74">{cid}&lt;/span>&lt;span style="color:#e6db74">_v.m4s&amp;#39;&amp;#39;&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(today&lt;span style="color:#f92672">=&lt;/span>today, vurl&lt;span style="color:#f92672">=&lt;/span>vurl, aid&lt;span style="color:#f92672">=&lt;/span>aid, cid&lt;span style="color:#f92672">=&lt;/span>cid), shell&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">True&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ap&lt;span style="color:#f92672">.&lt;/span>wait()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> vp&lt;span style="color:#f92672">.&lt;/span>wait()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> vt &lt;span style="color:#f92672">=&lt;/span> subprocess&lt;span style="color:#f92672">.&lt;/span>Popen(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;ffprobe.exe -v error -select_streams v:0 -show_entries stream=codec_name&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> -of default=nokey=1:noprint_wrappers=1&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> ./&lt;/span>&lt;span style="color:#e6db74">{today}&lt;/span>&lt;span style="color:#e6db74">/&lt;/span>&lt;span style="color:#e6db74">{cid}&lt;/span>&lt;span style="color:#e6db74">_v.m4s &amp;gt;&amp;gt; ./&lt;/span>&lt;span style="color:#e6db74">{today}&lt;/span>&lt;span style="color:#e6db74">/&lt;/span>&lt;span style="color:#e6db74">{cid}&lt;/span>&lt;span style="color:#e6db74">_t.txt&amp;#39;&amp;#39;&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(today&lt;span style="color:#f92672">=&lt;/span>today, cid&lt;span style="color:#f92672">=&lt;/span>cid), shell&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">True&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> vt&lt;span style="color:#f92672">.&lt;/span>wait()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">with&lt;/span> open(&lt;span style="color:#e6db74">&amp;#39;./&lt;/span>&lt;span style="color:#e6db74">{today}&lt;/span>&lt;span style="color:#e6db74">/&lt;/span>&lt;span style="color:#e6db74">{cid}&lt;/span>&lt;span style="color:#e6db74">_t.txt&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(today&lt;span style="color:#f92672">=&lt;/span>today, cid&lt;span style="color:#f92672">=&lt;/span>cid), &lt;span style="color:#e6db74">&amp;#39;r&amp;#39;&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> f:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> v_type &lt;span style="color:#f92672">=&lt;/span> str(f&lt;span style="color:#f92672">.&lt;/span>read())&lt;span style="color:#f92672">.&lt;/span>replace(&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#ae81ff">\n&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> v_type &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#39;hevc&amp;#39;&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> fp &lt;span style="color:#f92672">=&lt;/span> subprocess&lt;span style="color:#f92672">.&lt;/span>Popen(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;ffmpeg -n -hide_banner -i ./&lt;/span>&lt;span style="color:#e6db74">{today}&lt;/span>&lt;span style="color:#e6db74">/&lt;/span>&lt;span style="color:#e6db74">{cid}&lt;/span>&lt;span style="color:#e6db74">_v.m4s -i ./&lt;/span>&lt;span style="color:#e6db74">{today}&lt;/span>&lt;span style="color:#e6db74">/&lt;/span>&lt;span style="color:#e6db74">{cid}&lt;/span>&lt;span style="color:#e6db74">_a.m4s -c:v libx264 -c:a copy&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> ./&lt;/span>&lt;span style="color:#e6db74">{today}&lt;/span>&lt;span style="color:#e6db74">/av&lt;/span>&lt;span style="color:#e6db74">{aid}&lt;/span>&lt;span style="color:#e6db74">.mp4&amp;#39;&amp;#39;&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(today&lt;span style="color:#f92672">=&lt;/span>today, cid&lt;span style="color:#f92672">=&lt;/span>cid, aid&lt;span style="color:#f92672">=&lt;/span>aid), shell&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">True&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">else&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> fp &lt;span style="color:#f92672">=&lt;/span> subprocess&lt;span style="color:#f92672">.&lt;/span>Popen(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;ffmpeg -n -hide_banner -i ./&lt;/span>&lt;span style="color:#e6db74">{today}&lt;/span>&lt;span style="color:#e6db74">/&lt;/span>&lt;span style="color:#e6db74">{cid}&lt;/span>&lt;span style="color:#e6db74">_v.m4s -i ./&lt;/span>&lt;span style="color:#e6db74">{today}&lt;/span>&lt;span style="color:#e6db74">/&lt;/span>&lt;span style="color:#e6db74">{cid}&lt;/span>&lt;span style="color:#e6db74">_a.m4s -c:v copy -c:a copy&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> ./&lt;/span>&lt;span style="color:#e6db74">{today}&lt;/span>&lt;span style="color:#e6db74">/av&lt;/span>&lt;span style="color:#e6db74">{aid}&lt;/span>&lt;span style="color:#e6db74">.mp4&amp;#39;&amp;#39;&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(today&lt;span style="color:#f92672">=&lt;/span>today, cid&lt;span style="color:#f92672">=&lt;/span>cid, aid&lt;span style="color:#f92672">=&lt;/span>aid), shell&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">True&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> os&lt;span style="color:#f92672">.&lt;/span>remove(&lt;span style="color:#e6db74">&amp;#39;./&lt;/span>&lt;span style="color:#e6db74">{today}&lt;/span>&lt;span style="color:#e6db74">/&lt;/span>&lt;span style="color:#e6db74">{cid}&lt;/span>&lt;span style="color:#e6db74">_t.txt&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(today&lt;span style="color:#f92672">=&lt;/span>today, cid&lt;span style="color:#f92672">=&lt;/span>cid))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> fp&lt;span style="color:#f92672">.&lt;/span>wait()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> os&lt;span style="color:#f92672">.&lt;/span>remove(&lt;span style="color:#e6db74">&amp;#39;./&lt;/span>&lt;span style="color:#e6db74">{today}&lt;/span>&lt;span style="color:#e6db74">/&lt;/span>&lt;span style="color:#e6db74">{cid}&lt;/span>&lt;span style="color:#e6db74">_a.m4s&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(today&lt;span style="color:#f92672">=&lt;/span>today, cid&lt;span style="color:#f92672">=&lt;/span>cid))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> os&lt;span style="color:#f92672">.&lt;/span>remove(&lt;span style="color:#e6db74">&amp;#39;./&lt;/span>&lt;span style="color:#e6db74">{today}&lt;/span>&lt;span style="color:#e6db74">/&lt;/span>&lt;span style="color:#e6db74">{cid}&lt;/span>&lt;span style="color:#e6db74">_v.m4s&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(today&lt;span style="color:#f92672">=&lt;/span>today, cid&lt;span style="color:#f92672">=&lt;/span>cid))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">elif&lt;/span> playinfo&lt;span style="color:#f92672">.&lt;/span>get(&lt;span style="color:#e6db74">&amp;#39;durl&amp;#39;&lt;/span>):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> vlink &lt;span style="color:#f92672">=&lt;/span> [x[&lt;span style="color:#e6db74">&amp;#39;url&amp;#39;&lt;/span>] &lt;span style="color:#66d9ef">for&lt;/span> x &lt;span style="color:#f92672">in&lt;/span> playinfo[&lt;span style="color:#e6db74">&amp;#39;durl&amp;#39;&lt;/span>]]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">with&lt;/span> open(&lt;span style="color:#e6db74">&amp;#39;./&lt;/span>&lt;span style="color:#e6db74">{today}&lt;/span>&lt;span style="color:#e6db74">/&lt;/span>&lt;span style="color:#e6db74">{aid}&lt;/span>&lt;span style="color:#e6db74">_merge.txt&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(today&lt;span style="color:#f92672">=&lt;/span>today, aid&lt;span style="color:#f92672">=&lt;/span>aid), &lt;span style="color:#e6db74">&amp;#39;a&amp;#39;&lt;/span>, encoding&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;utf-8&amp;#39;&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> t:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> p, link &lt;span style="color:#f92672">in&lt;/span> enumerate(vlink):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> t&lt;span style="color:#f92672">.&lt;/span>write(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&amp;#34;file &amp;#39;./av&lt;/span>&lt;span style="color:#e6db74">{aid}&lt;/span>&lt;span style="color:#e6db74">_&lt;/span>&lt;span style="color:#e6db74">{p}&lt;/span>&lt;span style="color:#e6db74">.flv&amp;#39;&lt;/span>&lt;span style="color:#ae81ff">\n&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&amp;#34;&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(aid&lt;span style="color:#f92672">=&lt;/span>aid, p&lt;span style="color:#f92672">=&lt;/span>p))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> p, link &lt;span style="color:#f92672">in&lt;/span> enumerate(vlink):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> subprocess&lt;span style="color:#f92672">.&lt;/span>check_call(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;aria2c.exe -x10 -k1M --file-allocation=none --auto-file-renaming=false &amp;#34;&lt;/span>&lt;span style="color:#e6db74">{link}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --header=&amp;#34;User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --header=&amp;#34;Accept: */*&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --header=&amp;#34;Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --header=&amp;#34;Referer: https://www.bilibili.com/video/av&lt;/span>&lt;span style="color:#e6db74">{aid}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --header=&amp;#34;Origin: https://www.bilibili.com&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --header=&amp;#34;DNT: 1&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --header=&amp;#34;Connection: keep-alive&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --header=&amp;#34;Pragma: no-cache&amp;#34; --header=&amp;#34;Cache-Control: no-cache&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> --out ./&lt;/span>&lt;span style="color:#e6db74">{today}&lt;/span>&lt;span style="color:#e6db74">/av&lt;/span>&lt;span style="color:#e6db74">{aid}&lt;/span>&lt;span style="color:#e6db74">_&lt;/span>&lt;span style="color:#e6db74">{p}&lt;/span>&lt;span style="color:#e6db74">.flv&amp;#39;&amp;#39;&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(today&lt;span style="color:#f92672">=&lt;/span>today, link&lt;span style="color:#f92672">=&lt;/span>link, aid&lt;span style="color:#f92672">=&lt;/span>aid, p&lt;span style="color:#f92672">=&lt;/span>p), shell&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">True&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> fp &lt;span style="color:#f92672">=&lt;/span> subprocess&lt;span style="color:#f92672">.&lt;/span>Popen(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;ffmpeg -safe 0 -hide_banner -f concat -i ./&lt;/span>&lt;span style="color:#e6db74">{today}&lt;/span>&lt;span style="color:#e6db74">/&lt;/span>&lt;span style="color:#e6db74">{aid}&lt;/span>&lt;span style="color:#e6db74">_merge.txt -c copy&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>&lt;span style="color:#e6db74"> ./&lt;/span>&lt;span style="color:#e6db74">{today}&lt;/span>&lt;span style="color:#e6db74">/av&lt;/span>&lt;span style="color:#e6db74">{aid}&lt;/span>&lt;span style="color:#e6db74">.mp4&amp;#39;&amp;#39;&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(today&lt;span style="color:#f92672">=&lt;/span>today, aid&lt;span style="color:#f92672">=&lt;/span>aid), shell&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">True&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> fp&lt;span style="color:#f92672">.&lt;/span>wait()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> os&lt;span style="color:#f92672">.&lt;/span>remove(&lt;span style="color:#e6db74">&amp;#39;./&lt;/span>&lt;span style="color:#e6db74">{today}&lt;/span>&lt;span style="color:#e6db74">/&lt;/span>&lt;span style="color:#e6db74">{aid}&lt;/span>&lt;span style="color:#e6db74">_merge.txt&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(today&lt;span style="color:#f92672">=&lt;/span>today, aid&lt;span style="color:#f92672">=&lt;/span>aid))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> p, link &lt;span style="color:#f92672">in&lt;/span> enumerate(vlink):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> os&lt;span style="color:#f92672">.&lt;/span>remove(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;./&lt;/span>&lt;span style="color:#e6db74">{today}&lt;/span>&lt;span style="color:#e6db74">/av&lt;/span>&lt;span style="color:#e6db74">{aid}&lt;/span>&lt;span style="color:#e6db74">_&lt;/span>&lt;span style="color:#e6db74">{p}&lt;/span>&lt;span style="color:#e6db74">.flv&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(today&lt;span style="color:#f92672">=&lt;/span>today, aid&lt;span style="color:#f92672">=&lt;/span>aid, p&lt;span style="color:#f92672">=&lt;/span>p))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> pool &lt;span style="color:#f92672">=&lt;/span> ThreadPool(processes&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">5&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">with&lt;/span> open(&lt;span style="color:#e6db74">&amp;#39;down.txt&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;r&amp;#39;&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> f:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> aids &lt;span style="color:#f92672">=&lt;/span> re&lt;span style="color:#f92672">.&lt;/span>findall(&lt;span style="color:#e6db74">r&lt;/span>&lt;span style="color:#e6db74">&amp;#39;av(\d+)&amp;#39;&lt;/span>, f&lt;span style="color:#f92672">.&lt;/span>read())
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> x &lt;span style="color:#f92672">in&lt;/span> aids:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> pool&lt;span style="color:#f92672">.&lt;/span>apply_async(videourl, (x, videocid(x)))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> pool&lt;span style="color:#f92672">.&lt;/span>close()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> pool&lt;span style="color:#f92672">.&lt;/span>join()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> __name__ &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#39;__main__&amp;#39;&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> main()
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="todo">TODO&lt;/h2>
+&lt;ul>
+&lt;li>&lt;del>部分视频的视频流是 HEVC 编码而不是 x264，Windows 读不出 MP4 缩略图，考虑要不要判断自动转码。&lt;/del>&lt;/li>
+&lt;li>&lt;del>aria2 和 ffmpeg 的参数单独存文件方便修改，不然每次都要重新编译 exe。&lt;/del>&lt;/li>
+&lt;li>分 P 选择和清晰度选择&lt;/li>
+&lt;/ul>
+&lt;h2 id="eof">EOF&lt;/h2></description></item><item><title>哔哩哔哩下载工具</title><link>https://naizi.moe/2019/04/07/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7/</link><pubDate>Sun, 07 Apr 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/04/07/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7/</guid><description>&lt;p>给哔哩哔哩周刊组写的下载工具。每次都要下载十几个视频，一个个手动来实在是太麻烦了。&lt;/p>
+&lt;p>看了下，发现下载最高清一路的视频源还是需要 cookie 认证，写不来登录，只能用 dirty 的方式读 cookie 文件了。&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;h2 id="分析">分析&lt;/h2>
+&lt;p>获取视频需要知道视频的 av 号和视频 id，api 接口里分别是&lt;code>avid&lt;/code>和&lt;code>cid&lt;/code>，有了两者之后就可以通过 api 获得视频不同清晰度的 url 地址。&lt;/p>
+&lt;p>B 站现在新视频全部使用了 dash，但是老视频没有 dash，还是单个 flv，两者在 api 上返回有区别，前者是&lt;code>dash&lt;/code>字段，后者是&lt;code>durl&lt;/code>字段，需要判断是哪一种视频流。&lt;/p>
+&lt;p>对于 dash，音频和视频流分割两路，都是 m4s 格式，下载后需要合并。而 flv 根据视频时长会有多个分段文件，同样也需要合并。&lt;/p>
+&lt;h2 id="代码">代码&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#!/usr/bin/python&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">## -*- coding: utf-8 -*-&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> json
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> os
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> re
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> requests
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">from&lt;/span> lxml &lt;span style="color:#f92672">import&lt;/span> etree
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>session &lt;span style="color:#f92672">=&lt;/span> requests&lt;span style="color:#f92672">.&lt;/span>session()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>session&lt;span style="color:#f92672">.&lt;/span>headers &lt;span style="color:#f92672">=&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;User-Agent&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Accept&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;application/json, text/plain, */*&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Accept-Language&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># &amp;#39;Referer&amp;#39;: &amp;#39;https://www.bilibili.com/video/av42038790&amp;#39;,&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Origin&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;https://www.bilibili.com&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;DNT&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;1&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Connection&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;keep-alive&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Pragma&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;no-cache&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Cache-Control&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;no-cache&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">with&lt;/span> open(&lt;span style="color:#e6db74">&amp;#39;cookies&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;r&amp;#39;&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> f:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cookies &lt;span style="color:#f92672">=&lt;/span> f&lt;span style="color:#f92672">.&lt;/span>read()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>session&lt;span style="color:#f92672">.&lt;/span>headers[&lt;span style="color:#e6db74">&amp;#34;cookie&amp;#34;&lt;/span>] &lt;span style="color:#f92672">=&lt;/span> cookies
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">videocid&lt;/span>(aid&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">42038790&lt;/span>, part&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> params &lt;span style="color:#f92672">=&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;aid&amp;#39;&lt;/span>, aid),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;jsonp&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;jsonp&amp;#39;&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> response &lt;span style="color:#f92672">=&lt;/span> session&lt;span style="color:#f92672">.&lt;/span>get(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;https://api.bilibili.com/x/player/pagelist&amp;#39;&lt;/span>, params&lt;span style="color:#f92672">=&lt;/span>params, ) &lt;span style="color:#75715e"># cookies=cookies)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> result &lt;span style="color:#f92672">=&lt;/span> json&lt;span style="color:#f92672">.&lt;/span>loads(response&lt;span style="color:#f92672">.&lt;/span>content)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cid &lt;span style="color:#f92672">=&lt;/span> result[&lt;span style="color:#e6db74">&amp;#39;data&amp;#39;&lt;/span>][part &lt;span style="color:#f92672">-&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;cid&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> cid
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">videourl&lt;/span>(aid&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">42038790&lt;/span>, cid&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">73802454&lt;/span>):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> params &lt;span style="color:#f92672">=&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;avid&amp;#39;&lt;/span>, aid),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;cid&amp;#39;&lt;/span>, cid),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;qn&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;112&amp;#39;&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;fnver&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;0&amp;#39;&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;fnval&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;16&amp;#39;&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;type&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;otype&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;json&amp;#39;&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> response &lt;span style="color:#f92672">=&lt;/span> session&lt;span style="color:#f92672">.&lt;/span>get(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;https://api.bilibili.com/x/player/playurl&amp;#39;&lt;/span>, params&lt;span style="color:#f92672">=&lt;/span>params,) &lt;span style="color:#75715e"># cookies=cookies)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> result &lt;span style="color:#f92672">=&lt;/span> json&lt;span style="color:#f92672">.&lt;/span>loads(response&lt;span style="color:#f92672">.&lt;/span>content)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> result&lt;span style="color:#f92672">.&lt;/span>get(&lt;span style="color:#e6db74">&amp;#39;data&amp;#39;&lt;/span>) &lt;span style="color:#f92672">is&lt;/span> &lt;span style="color:#66d9ef">None&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> response &lt;span style="color:#f92672">=&lt;/span> session&lt;span style="color:#f92672">.&lt;/span>get(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;https://api.bilibili.com/pgc/player/web/playurl&amp;#39;&lt;/span>, params&lt;span style="color:#f92672">=&lt;/span>params,) &lt;span style="color:#75715e"># cookies=cookies)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> result &lt;span style="color:#f92672">=&lt;/span> json&lt;span style="color:#f92672">.&lt;/span>loads(response&lt;span style="color:#f92672">.&lt;/span>content)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> playinfo &lt;span style="color:#f92672">=&lt;/span> result&lt;span style="color:#f92672">.&lt;/span>get(&lt;span style="color:#e6db74">&amp;#39;result&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">else&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> playinfo &lt;span style="color:#f92672">=&lt;/span> result&lt;span style="color:#f92672">.&lt;/span>get(&lt;span style="color:#e6db74">&amp;#39;data&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> playinfo &lt;span style="color:#f92672">is&lt;/span> &lt;span style="color:#66d9ef">None&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> print(aid, &lt;span style="color:#e6db74">&amp;#39;Not Found&lt;/span>&lt;span style="color:#ae81ff">\n&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">False&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> playinfo&lt;span style="color:#f92672">.&lt;/span>get(&lt;span style="color:#e6db74">&amp;#39;dash&amp;#39;&lt;/span>):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> vids &lt;span style="color:#f92672">=&lt;/span> [x[&lt;span style="color:#e6db74">&amp;#39;id&amp;#39;&lt;/span>] &lt;span style="color:#66d9ef">for&lt;/span> x &lt;span style="color:#f92672">in&lt;/span> playinfo[&lt;span style="color:#e6db74">&amp;#39;dash&amp;#39;&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;video&amp;#39;&lt;/span>]]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> vurl &lt;span style="color:#f92672">=&lt;/span> playinfo[&lt;span style="color:#e6db74">&amp;#39;dash&amp;#39;&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;video&amp;#39;&lt;/span>][vids&lt;span style="color:#f92672">.&lt;/span>index(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> max(vids))][&lt;span style="color:#e6db74">&amp;#39;baseUrl&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> aids &lt;span style="color:#f92672">=&lt;/span> [x[&lt;span style="color:#e6db74">&amp;#39;id&amp;#39;&lt;/span>] &lt;span style="color:#66d9ef">for&lt;/span> x &lt;span style="color:#f92672">in&lt;/span> playinfo[&lt;span style="color:#e6db74">&amp;#39;dash&amp;#39;&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;audio&amp;#39;&lt;/span>]]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> aurl &lt;span style="color:#f92672">=&lt;/span> playinfo[&lt;span style="color:#e6db74">&amp;#39;dash&amp;#39;&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;audio&amp;#39;&lt;/span>][aids&lt;span style="color:#f92672">.&lt;/span>index(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> max(aids))][&lt;span style="color:#e6db74">&amp;#39;baseUrl&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> os&lt;span style="color:#f92672">.&lt;/span>system(&lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;aria2c -x10 -k1M --file-allocation=none &amp;#34;&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#34; --header=&amp;#34;User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0&amp;#34; --header=&amp;#34;Accept: */*&amp;#34; --header=&amp;#34;Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2&amp;#34; --header=&amp;#34;Referer: https://www.bilibili.com/video/av&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#34; --header=&amp;#34;Origin: https://www.bilibili.com&amp;#34; --header=&amp;#34;DNT: 1&amp;#34; --header=&amp;#34;Connection: keep-alive&amp;#34; --header=&amp;#34;Pragma: no-cache&amp;#34; --header=&amp;#34;Cache-Control: no-cache&amp;#34; --out &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">_v.m4s&amp;#39;&amp;#39;&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(vurl, aid, cid))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> os&lt;span style="color:#f92672">.&lt;/span>system(&lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;aria2c.exe -x10 -k1M --file-allocation=none &amp;#34;&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#34; --header=&amp;#34;User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0&amp;#34; --header=&amp;#34;Accept: */*&amp;#34; --header=&amp;#34;Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2&amp;#34; --header=&amp;#34;Referer: https://www.bilibili.com/video/av&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#34; --header=&amp;#34;Origin: https://www.bilibili.com&amp;#34; --header=&amp;#34;DNT: 1&amp;#34; --header=&amp;#34;Connection: keep-alive&amp;#34; --header=&amp;#34;Pragma: no-cache&amp;#34; --header=&amp;#34;Cache-Control: no-cache&amp;#34; --out &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">_a.m4s&amp;#39;&amp;#39;&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(aurl, aid, cid))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> os&lt;span style="color:#f92672">.&lt;/span>system(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;ffmpeg -i &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">_v.m4s -i &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">_a.m4s -c:v copy -c:a copy -strict experimental av&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">.mp4&amp;#39;&amp;#39;&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(cid, cid, aid))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> os&lt;span style="color:#f92672">.&lt;/span>remove(&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">_a.m4s&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(cid))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> os&lt;span style="color:#f92672">.&lt;/span>remove(&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">_v.m4s&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(cid))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">elif&lt;/span> playinfo&lt;span style="color:#f92672">.&lt;/span>get(&lt;span style="color:#e6db74">&amp;#39;durl&amp;#39;&lt;/span>):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> vlink &lt;span style="color:#f92672">=&lt;/span> [x[&lt;span style="color:#e6db74">&amp;#39;url&amp;#39;&lt;/span>] &lt;span style="color:#66d9ef">for&lt;/span> x &lt;span style="color:#f92672">in&lt;/span> playinfo[&lt;span style="color:#e6db74">&amp;#39;durl&amp;#39;&lt;/span>]]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> print(vlink)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> p, link &lt;span style="color:#f92672">in&lt;/span> enumerate(vlink):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> os&lt;span style="color:#f92672">.&lt;/span>system(&lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;aria2c.exe -x10 -k1M --file-allocation=none &amp;#34;&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#34; --header=&amp;#34;User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0&amp;#34; --header=&amp;#34;Accept: */*&amp;#34; --header=&amp;#34;Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2&amp;#34; --header=&amp;#34;Referer: https://www.bilibili.com/video/av&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#34; --header=&amp;#34;Origin: https://www.bilibili.com&amp;#34; --header=&amp;#34;DNT: 1&amp;#34; --header=&amp;#34;Connection: keep-alive&amp;#34; --header=&amp;#34;Pragma: no-cache&amp;#34; --header=&amp;#34;Cache-Control: no-cache&amp;#34; --out av&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">_&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">.flv&amp;#39;&amp;#39;&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(link, aid, aid, p))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">with&lt;/span> open(&lt;span style="color:#e6db74">&amp;#39;merge.txt&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;a&amp;#39;&lt;/span>, encoding&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;utf-8&amp;#39;&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> t:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> x &lt;span style="color:#f92672">in&lt;/span> os&lt;span style="color:#f92672">.&lt;/span>listdir(&lt;span style="color:#e6db74">&amp;#39;.&amp;#39;&lt;/span>):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> str(aid) &lt;span style="color:#f92672">in&lt;/span> x:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> t&lt;span style="color:#f92672">.&lt;/span>write(&lt;span style="color:#e6db74">&amp;#34;file &amp;#39;&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#ae81ff">\n&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(x))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> os&lt;span style="color:#f92672">.&lt;/span>system(&lt;span style="color:#e6db74">&amp;#39;ffmpeg -f concat -i merge.txt -c copy av&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">.mp4&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(aid))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> os&lt;span style="color:#f92672">.&lt;/span>remove(&lt;span style="color:#e6db74">&amp;#39;merge.txt&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> x &lt;span style="color:#f92672">in&lt;/span> os&lt;span style="color:#f92672">.&lt;/span>listdir(&lt;span style="color:#e6db74">&amp;#39;.&amp;#39;&lt;/span>):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> x&lt;span style="color:#f92672">.&lt;/span>endswith(&lt;span style="color:#e6db74">&amp;#39;.flv&amp;#39;&lt;/span>):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">pass&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> os&lt;span style="color:#f92672">.&lt;/span>remove(x)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">with&lt;/span> open(&lt;span style="color:#e6db74">&amp;#39;down.txt&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;r&amp;#39;&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> f:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> aids &lt;span style="color:#f92672">=&lt;/span> re&lt;span style="color:#f92672">.&lt;/span>findall(&lt;span style="color:#e6db74">r&lt;/span>&lt;span style="color:#e6db74">&amp;#39;av(\d+)&amp;#39;&lt;/span>, f&lt;span style="color:#f92672">.&lt;/span>read())
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> x &lt;span style="color:#f92672">in&lt;/span> aids:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> videourl(x, videocid(x))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> __name__ &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#39;__main__&amp;#39;&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> main()
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="todo">TODO&lt;/h2>
+&lt;ul>
+&lt;li>部分视频的视频流是 HEVC 编码而不是 x264，Windows 读不出 MP4 缩略图，考虑要不要判断自动转码。&lt;/li>
+&lt;li>aria2 和 ffmpeg 的参数单独存文件方便修改，不然每次都要重新编译 exe。&lt;/li>
+&lt;li>分 P 选择和清晰度选择&lt;/li>
+&lt;/ul>
+&lt;h2 id="eof">EOF&lt;/h2></description></item><item><title>微博信息流广告抓取</title><link>https://naizi.moe/2019/01/05/%E5%BE%AE%E5%8D%9A%E4%BF%A1%E6%81%AF%E6%B5%81%E5%B9%BF%E5%91%8A%E6%8A%93%E5%8F%96/</link><pubDate>Sat, 05 Jan 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/01/05/%E5%BE%AE%E5%8D%9A%E4%BF%A1%E6%81%AF%E6%B5%81%E5%B9%BF%E5%91%8A%E6%8A%93%E5%8F%96/</guid><description>&lt;p>微博注册了个小号，为了看看都是什么牛鬼蛇神在微博里推送信息流广告，尝试抓取一下。&lt;/p>
+&lt;p>虽然有&lt;a class="link" href="https://github.com/tiansh/yaofang" target="_blank" rel="noopener"
+>YAWF（Yet Another Weibo Filter）&lt;/a>这样好用的脚本可以屏蔽广告，但屏蔽了就看不到了。&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;h2 id="找到-api-接口">找到 API 接口&lt;/h2>
+&lt;p>F12 切换到 Network，在首页刷新页面，筛选捕捉到 api 接口&lt;code>https://weibo.com/aj/mblog/fsearch&lt;/code>。&lt;/p>
+&lt;p>新建标签页访问，去掉不必要的参数（包括一堆用来指定上下文区间和已读分界线的 id），只留下必要的部分。&lt;/p>
+&lt;p>然后直接上代码开始爬取内容：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>headers &lt;span style="color:#f92672">=&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;User-Agent&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Accept&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Accept-Language&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;en-US,en;q=0.5&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;DNT&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;1&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Connection&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;keep-alive&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Upgrade-Insecure-Requests&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;1&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Cache-Control&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;max-age=0&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Cookie&amp;#39;&lt;/span>: cookie
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>params &lt;span style="color:#f92672">=&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;ajwvr&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;6&amp;#39;&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;pre_page&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;0&amp;#39;&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;page&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;1&amp;#39;&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;pagebar&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;0&amp;#39;&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>response &lt;span style="color:#f92672">=&lt;/span> requests&lt;span style="color:#f92672">.&lt;/span>get(&lt;span style="color:#e6db74">&amp;#39;https://weibo.com/aj/mblog/fsearch&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> headers&lt;span style="color:#f92672">=&lt;/span>headers, params&lt;span style="color:#f92672">=&lt;/span>params)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>返回数据是 json 结构，在&lt;code>data&lt;/code>字段里存放了页面内容，这里用 lxml 库解析，保存 html 文件进行下一步。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> json
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">from&lt;/span> lxml &lt;span style="color:#f92672">import&lt;/span> etree
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>result &lt;span style="color:#f92672">=&lt;/span> json&lt;span style="color:#f92672">.&lt;/span>loads(response&lt;span style="color:#f92672">.&lt;/span>content)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>html &lt;span style="color:#f92672">=&lt;/span> etree&lt;span style="color:#f92672">.&lt;/span>HTML(result[&lt;span style="color:#e6db74">&amp;#39;data&amp;#39;&lt;/span>])
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">with&lt;/span> open(&lt;span style="color:#e6db74">&amp;#39;feed.html&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;w&amp;#39;&lt;/span>, encoding&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;utf-8-sig&amp;#39;&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> f:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f&lt;span style="color:#f92672">.&lt;/span>write(etree&lt;span style="color:#f92672">.&lt;/span>tostring(html, encoding&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;unicode&amp;#39;&lt;/span>))
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="css-筛选广告内容">CSS 筛选广告内容&lt;/h2>
+&lt;p>打开保存的 html，格式化一下代码，找到存在&lt;code>feedtype=&amp;quot;ad&amp;quot;&lt;/code>属性的节点（因为不是每次获取都会有信息流广告，所以可能需要获取很多次）。&lt;/p>
+&lt;p>然后继续往下看子节点，直到找到具体的微博链接：&lt;/p>
+&lt;p>&lt;img src="https://naizi.moe/2019-01-05-weibo-feed-adver/2019-01-05_17-47.png"
+loading="lazy"
+alt="信息流HTML"
+>&lt;/p>
+&lt;p>获取此节点的 xpath：&lt;code>&amp;quot;//div[@feedtype]//a[@action-history='rec=1']/@action-data&amp;quot;&lt;/code>&lt;/p>
+&lt;p>结合正则表达式提取链接：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> re
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>html &lt;span style="color:#f92672">=&lt;/span> etree&lt;span style="color:#f92672">.&lt;/span>HTML(result[&lt;span style="color:#e6db74">&amp;#39;data&amp;#39;&lt;/span>])
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>links &lt;span style="color:#f92672">=&lt;/span> html&lt;span style="color:#f92672">.&lt;/span>xpath(&lt;span style="color:#e6db74">&amp;#34;//div[@feedtype]//a[@action-history=&amp;#39;rec=1&amp;#39;]/@action-data&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">for&lt;/span> link &lt;span style="color:#f92672">in&lt;/span> links:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> adver &lt;span style="color:#f92672">=&lt;/span> re&lt;span style="color:#f92672">.&lt;/span>findall(&lt;span style="color:#e6db74">r&lt;/span>&lt;span style="color:#e6db74">&amp;#39;url=([^&amp;amp;]+)&amp;amp;&amp;#39;&lt;/span>, link)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">with&lt;/span> open(&lt;span style="color:#e6db74">&amp;#39;adver.list&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;a&amp;#39;&lt;/span>, encoding&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;utf-8-sig&amp;#39;&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> f:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f&lt;span style="color:#f92672">.&lt;/span>write(str(adver)&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#ae81ff">\n&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>最后通过 crontab 设置成定时任务自动监测。&lt;/p>
+&lt;pre tabindex="0">&lt;code class="language-crontab.conf" data-lang="crontab.conf">* * * * * python weibo_adver.py
+&lt;/code>&lt;/pre>&lt;h2 id="自动更新-cookie">自动更新 cookie&lt;/h2>
+&lt;p>高频率的连续访问可能会造成微博提示帐号异常，而且运行时间久了 cookie 也会过期，需要自动重新登录获取 cookie。&lt;/p>
+&lt;p>微博的自动登录轮子很多，不用自己另写。cookie 过期的判断就比较粗暴了，如果读取返回的 json 抛出异常，就可以认为是 cookie 过期造成的。&lt;/p>
+&lt;p>另外测试发现，不带 cookie 的 api 访问是会返回正常的 json 数据的（但不包含 html 内容）。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> os
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">login&lt;/span>(username, password):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&amp;#34;somecode balabala&amp;#34;&amp;#34;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">with&lt;/span> open(&lt;span style="color:#e6db74">&amp;#39;cookies&amp;#39;&lt;/span>,&lt;span style="color:#e6db74">&amp;#39;w&amp;#39;&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> f:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f&lt;span style="color:#f92672">.&lt;/span>write(cookies)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> os&lt;span style="color:#f92672">.&lt;/span>path&lt;span style="color:#f92672">.&lt;/span>exists(&lt;span style="color:#e6db74">&amp;#39;./cookies&amp;#39;&lt;/span>):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">with&lt;/span> open(&lt;span style="color:#e6db74">&amp;#39;./cookies&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;r&amp;#39;&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> f:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cookie &lt;span style="color:#f92672">=&lt;/span> f&lt;span style="color:#f92672">.&lt;/span>read()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">else&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">False&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&amp;#34;somecode balabala&amp;#34;&amp;#34;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> response &lt;span style="color:#f92672">=&lt;/span> requests&lt;span style="color:#f92672">.&lt;/span>get(&lt;span style="color:#e6db74">&amp;#39;https://weibo.com/aj/mblog/fsearch&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> headers&lt;span style="color:#f92672">=&lt;/span>headers, params&lt;span style="color:#f92672">=&lt;/span>params)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">try&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> result &lt;span style="color:#f92672">=&lt;/span> json&lt;span style="color:#f92672">.&lt;/span>loads(response&lt;span style="color:#f92672">.&lt;/span>content)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">except&lt;/span> json&lt;span style="color:#f92672">.&lt;/span>decoder&lt;span style="color:#f92672">.&lt;/span>JSONDecodeError:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> login(username, password)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">False&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&amp;#34;somecode balabala&amp;#34;&amp;#34;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> __name__ &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#34;__main__&amp;#34;&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> main()
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="eof">EOF&lt;/h2>
+&lt;p>就结果而言效果还不错，但也发现信息流广告里还会有一些关注了的博主的正常微博内容，可以考虑和自己的关注列表对比来筛除。&lt;/p>
+&lt;p>&lt;img src="https://naizi.moe/2019-01-05-weibo-feed-adver/2019-01-05_18-03.png"
+loading="lazy"
+alt="信息流广告"
+>&lt;/p></description></item></channel></rss>

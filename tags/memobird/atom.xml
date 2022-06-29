@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>memobird on H⁺ + OH⁻ → H₂O</title><link>https://naizi.moe/tags/memobird/</link><description>Recent content in memobird on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 02 Oct 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://naizi.moe/tags/memobird/atom.xml" rel="self" type="application/rss+xml"/><item><title>RSS咕咕机</title><link>https://naizi.moe/2019/10/02/rss%E5%92%95%E5%92%95%E6%9C%BA/</link><pubDate>Wed, 02 Oct 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/10/02/rss%E5%92%95%E5%92%95%E6%9C%BA/</guid><description>&lt;p>之前从同事那里二手买了个咕咕机，当玩具玩。享受了几天使用 APP 打印各种沙雕照片和表情包带来的乐趣后，它毫无意外的开始吃灰，就和桌子旁边的树莓派一样染上历史的颜色。&lt;/p>
+&lt;p>还是拿出来用用吧……&lt;/p>
+&lt;p>咕咕机 APP 里的一部分订阅号的确有点意思，比如订阅每天天气，早上 8 点自动打印一条天气内容之类的。那么拿来订阅微博更新好像也没什么不对的。&lt;/p>
+&lt;p>反正一天有 12 小时在公司，闲着也是闲着，不定时的来一段小纸条也不错。&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;h2 id="开发者申请">开发者申请&lt;/h2>
+&lt;p>为了做到这些，首先要去咕咕机的&lt;a class="link" href="http://open.memobird.cn" target="_blank" rel="noopener"
+>开发者页面&lt;/a>申请 APPKEY。填写必要的信息然后提交申请就行了。等了一周左右申请就通过了。&lt;/p>
+&lt;p>拿到 APPKEY 之后，可以查阅官方给的文档，可用的 API 其实不多，更多还是要靠自己去生成内容。&lt;/p>
+&lt;p>&lt;a class="link" href="https://github.com/Windfarer/pymobird" target="_blank" rel="noopener"
+>GitHub&lt;/a>上也有其他开发者写的 SDK，可以不用自己重复按照官方文档造轮子。&lt;/p>
+&lt;h2 id="rss">RSS&lt;/h2>
+&lt;p>打个比方，订阅&lt;a class="link" href="https://space.bilibili.com/332704117/dynamic" target="_blank" rel="noopener"
+>小狐狸&lt;/a>的 B 站动态。&lt;/p>
+&lt;p>熟练的打开小狐狸的空间，F12，刷新，过滤 XHR，找到 API 接口&lt;code>https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history&lt;/code>。B 站的动态有多种类型，需要根据类型判断爬取的内容。&lt;/p>
+&lt;p>&lt;code>['data']['cards']['desc']['type']&lt;/code>的值表明了动态是何种类型，比如 1 是指转发，2 是带图动态，4 是纯文字动态，8 是投稿视频推送。&lt;/p>
+&lt;p>在 &lt;code>['data']['cards']['card']&lt;/code> 中是一串 JSON 数据，动态的文本内容根据上面不同的类型存在不同的键值里，比如&lt;code>['dynamic']&lt;/code>、&lt;code>['item']['content']&lt;/code>、&lt;code>['item']['description']&lt;/code>这几个位置。&lt;/p>
+&lt;h2 id="图片存储">图片存储&lt;/h2>
+&lt;p>只有文本内容的纸条太单调了，信息量也不够，还是需要能够同时打印图片内容。但图片打印会增加打印时间和下载时间，折衷选择只保存附带图片的第一张。&lt;/p>
+&lt;p>为了保持目录整洁，图片数据全部用 sqlite3 存储。&lt;/p>
+&lt;h2 id="内容更新">内容更新&lt;/h2>
+&lt;p>为了避免重复打印浪费纸张，每次爬取数据时需要判断是否有新的内容。&lt;/p>
+&lt;p>建数据表，只存储必要的时间、日期、文字内容和图片数据，加上动态的 ID 作为主键来进行去重。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sql" data-lang="sql">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">CREATE&lt;/span> &lt;span style="color:#66d9ef">TABLE&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">IF&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">NOT&lt;/span> &lt;span style="color:#66d9ef">EXISTS&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">白上吹雪&lt;/span>Official (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">day&lt;/span> VARCHAR,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> _id VARCHAR &lt;span style="color:#66d9ef">PRIMARY&lt;/span> &lt;span style="color:#66d9ef">KEY&lt;/span> &lt;span style="color:#66d9ef">UNIQUE&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> msg VARCHAR,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> pic BLOB,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> title VARCHAR);
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>然后人工插入一条 id 为 0 的数据，用来记录是否获取到新内容，每次先单独查询这一行，有新数据再取出内容进行打印。&lt;/p>
+&lt;h2 id="post-请求打印">POST 请求打印&lt;/h2>
+&lt;p>利用之前提到的 SDK，将文字和图片的复合内容整合后一起 POST 给服务器。&lt;/p>
+&lt;h3 id="小花样">小花样&lt;/h3>
+&lt;p>为了区分普通的带图动态和视频投稿的推送，仿照动态的样式给视频投稿的图像加上了角标。同时因为咕咕机采用的是 WiFi 打印，为了减小文件体积，POST 数据前对图片尺寸进行缩小。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">from&lt;/span> pymobird &lt;span style="color:#f92672">import&lt;/span> Content
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">from&lt;/span> pymobird &lt;span style="color:#f92672">import&lt;/span> Content
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>bird &lt;span style="color:#f92672">=&lt;/span> SimplePymobird(appkey, device_id, user_id)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>content &lt;span style="color:#f92672">=&lt;/span> Content()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>content&lt;span style="color:#f92672">.&lt;/span>add_text(&lt;span style="color:#e6db74">&amp;#39;【&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">】&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uname)) &lt;span style="color:#75715e"># 用户名&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>content&lt;span style="color:#f92672">.&lt;/span>add_text(time&lt;span style="color:#f92672">.&lt;/span>strftime(&lt;span style="color:#e6db74">&amp;#39;%Y-%m-&lt;/span>&lt;span style="color:#e6db74">%d&lt;/span>&lt;span style="color:#e6db74"> %H:%M&amp;#39;&lt;/span>,time&lt;span style="color:#f92672">.&lt;/span>gmtime(int(day)))) &lt;span style="color:#75715e"># 日期&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>content&lt;span style="color:#f92672">.&lt;/span>add_text(&lt;span style="color:#e6db74">&amp;#39;https://t.bilibili.com/&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(_id)) &lt;span style="color:#75715e"># 链接&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>content&lt;span style="color:#f92672">.&lt;/span>add_text(msg) &lt;span style="color:#75715e"># 文字内容&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">from&lt;/span> PIL &lt;span style="color:#f92672">import&lt;/span> Image
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">from&lt;/span> PIL &lt;span style="color:#f92672">import&lt;/span> ImageDraw
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">from&lt;/span> PIL &lt;span style="color:#f92672">import&lt;/span> ImageFont
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>img &lt;span style="color:#f92672">=&lt;/span> Image&lt;span style="color:#f92672">.&lt;/span>open(&lt;span style="color:#e6db74">&amp;#39;peitu.jpg&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>img&lt;span style="color:#f92672">.&lt;/span>thumbnail((&lt;span style="color:#ae81ff">400&lt;/span>, &lt;span style="color:#ae81ff">400&lt;/span>), Image&lt;span style="color:#f92672">.&lt;/span>ANTIALIAS)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>font &lt;span style="color:#f92672">=&lt;/span> ImageFont&lt;span style="color:#f92672">.&lt;/span>truetype(&lt;span style="color:#e6db74">&amp;#39;SourceHanSansCN-Regular.otf&amp;#39;&lt;/span>, &lt;span style="color:#ae81ff">22&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>draw &lt;span style="color:#f92672">=&lt;/span> ImageDraw&lt;span style="color:#f92672">.&lt;/span>Draw(img)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>draw&lt;span style="color:#f92672">.&lt;/span>rectangle(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#ae81ff">268&lt;/span>, &lt;span style="color:#ae81ff">15&lt;/span>, &lt;span style="color:#ae81ff">368&lt;/span>, &lt;span style="color:#ae81ff">47&lt;/span>), fill&lt;span style="color:#f92672">=&lt;/span>(&lt;span style="color:#ae81ff">250&lt;/span>, &lt;span style="color:#ae81ff">115&lt;/span>, &lt;span style="color:#ae81ff">150&lt;/span>), outline&lt;span style="color:#f92672">=&lt;/span>(&lt;span style="color:#ae81ff">250&lt;/span>, &lt;span style="color:#ae81ff">140&lt;/span>, &lt;span style="color:#ae81ff">160&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>draw&lt;span style="color:#f92672">.&lt;/span>text((&lt;span style="color:#ae81ff">274&lt;/span>, &lt;span style="color:#ae81ff">14&lt;/span>), &lt;span style="color:#e6db74">&amp;#39;投稿视频&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;#FFFFFF&amp;#39;&lt;/span>, font&lt;span style="color:#f92672">=&lt;/span>font)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>img&lt;span style="color:#f92672">.&lt;/span>save(&lt;span style="color:#e6db74">&amp;#39;peitu.png&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;PNG&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>content&lt;span style="color:#f92672">.&lt;/span>add_image(&lt;span style="color:#e6db74">&amp;#39;peitu.png&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>result &lt;span style="color:#f92672">=&lt;/span> bird&lt;span style="color:#f92672">.&lt;/span>print_multi_part_content(content)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="crontab-定时任务">Crontab 定时任务&lt;/h2>
+&lt;p>开 SSH 把脚本扔进富有历史感的树莓派。&lt;/p>
+&lt;blockquote>
+&lt;p>crontab -e&lt;/p>
+&lt;p>*/5 * * * * python3 bilibili_fubuki.py&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="完整代码">完整代码&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#!/usr/bin/python&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">## -*- coding: utf-8 -*-&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> json
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> os
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> re
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> requests
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> sqlite3
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> time
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">## bilibili&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>uname &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;白上吹雪Official&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>uid &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;332704117&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">## memobird&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>appkey &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>device_id &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>user_id &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>headers &lt;span style="color:#f92672">=&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;User-Agent&amp;#39;&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:69.0) Gecko/20100101 Firefox/69.0&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Accept&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;application/json, text/plain, */*&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Accept-Language&amp;#39;&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Origin&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;https://space.bilibili.com&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;DNT&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;1&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Connection&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;keep-alive&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Referer&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;https://space.bilibili.com/&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>newfile &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#f92672">not&lt;/span> os&lt;span style="color:#f92672">.&lt;/span>path&lt;span style="color:#f92672">.&lt;/span>exists(&lt;span style="color:#e6db74">&amp;#39;bilibili_&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">.sqlite&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uname))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>db &lt;span style="color:#f92672">=&lt;/span> sqlite3&lt;span style="color:#f92672">.&lt;/span>connect(&lt;span style="color:#e6db74">&amp;#39;bilibili_&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">.sqlite&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uname), isolation_level&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">None&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cur &lt;span style="color:#f92672">=&lt;/span> db&lt;span style="color:#f92672">.&lt;/span>cursor()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cur&lt;span style="color:#f92672">.&lt;/span>execute(&lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">CREATE TABLE
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">IF
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> NOT EXISTS &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74"> (
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> day VARCHAR,
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> _id VARCHAR PRIMARY KEY UNIQUE,
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> msg VARCHAR,
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> pic BLOB,
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> title VARCHAR);&amp;#39;&amp;#39;&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uname))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> newfile:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cur&lt;span style="color:#f92672">.&lt;/span>execute(&lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;INSERT INTO &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74"> VALUES ( ?, ?, ?, ?, ? );&amp;#39;&amp;#39;&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uname),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#66d9ef">None&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;0&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;1&amp;#39;&lt;/span>, &lt;span style="color:#66d9ef">None&lt;/span>, &lt;span style="color:#66d9ef">None&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">bili_pic&lt;/span>(link):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> file &lt;span style="color:#f92672">=&lt;/span> requests&lt;span style="color:#f92672">.&lt;/span>get(link, headers&lt;span style="color:#f92672">=&lt;/span>headers)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> file&lt;span style="color:#f92672">.&lt;/span>content
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> params &lt;span style="color:#f92672">=&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;visitor_uid&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;0&amp;#39;&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;host_uid&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uid)),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;offset_dynamic_id&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;0&amp;#39;&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> response &lt;span style="color:#f92672">=&lt;/span> requests&lt;span style="color:#f92672">.&lt;/span>get(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> headers&lt;span style="color:#f92672">=&lt;/span>headers,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> params&lt;span style="color:#f92672">=&lt;/span>params)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> result &lt;span style="color:#f92672">=&lt;/span> json&lt;span style="color:#f92672">.&lt;/span>loads(response&lt;span style="color:#f92672">.&lt;/span>content)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> result&lt;span style="color:#f92672">.&lt;/span>get(&lt;span style="color:#e6db74">&amp;#39;code&amp;#39;&lt;/span>) &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> print(result&lt;span style="color:#f92672">.&lt;/span>get(&lt;span style="color:#e6db74">&amp;#39;message&amp;#39;&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">False&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> card &lt;span style="color:#f92672">in&lt;/span> result[&lt;span style="color:#e6db74">&amp;#39;data&amp;#39;&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;cards&amp;#39;&lt;/span>]:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> card_time &lt;span style="color:#f92672">=&lt;/span> card[&lt;span style="color:#e6db74">&amp;#39;desc&amp;#39;&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;timestamp&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> card_id &lt;span style="color:#f92672">=&lt;/span> card[&lt;span style="color:#e6db74">&amp;#39;desc&amp;#39;&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;dynamic_id_str&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> card_type &lt;span style="color:#f92672">=&lt;/span> card[&lt;span style="color:#e6db74">&amp;#39;desc&amp;#39;&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;type&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> data &lt;span style="color:#f92672">=&lt;/span> json&lt;span style="color:#f92672">.&lt;/span>loads(card[&lt;span style="color:#e6db74">&amp;#39;card&amp;#39;&lt;/span>])
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> card_type &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">8&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> title &lt;span style="color:#f92672">=&lt;/span> data[&lt;span style="color:#e6db74">&amp;#39;title&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> pic &lt;span style="color:#f92672">=&lt;/span> data[&lt;span style="color:#e6db74">&amp;#39;pic&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> text &lt;span style="color:#f92672">=&lt;/span> data[&lt;span style="color:#e6db74">&amp;#39;dynamic&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">elif&lt;/span> card_type &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">4&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> title &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">None&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> pic &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">None&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> text &lt;span style="color:#f92672">=&lt;/span> data[&lt;span style="color:#e6db74">&amp;#39;item&amp;#39;&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;content&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">elif&lt;/span> card_type &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">2&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> title &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">None&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> data[&lt;span style="color:#e6db74">&amp;#39;item&amp;#39;&lt;/span>]&lt;span style="color:#f92672">.&lt;/span>get(&lt;span style="color:#e6db74">&amp;#39;pictures&amp;#39;&lt;/span>):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> pic &lt;span style="color:#f92672">=&lt;/span> data[&lt;span style="color:#e6db74">&amp;#39;item&amp;#39;&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;pictures&amp;#39;&lt;/span>][&lt;span style="color:#ae81ff">0&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;img_src&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> text &lt;span style="color:#f92672">=&lt;/span> data[&lt;span style="color:#e6db74">&amp;#39;item&amp;#39;&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;description&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">elif&lt;/span> card_type &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> title &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">None&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> pic &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">None&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> text &lt;span style="color:#f92672">=&lt;/span> data[&lt;span style="color:#e6db74">&amp;#39;item&amp;#39;&lt;/span>][&lt;span style="color:#e6db74">&amp;#39;content&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">else&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> print(card_time, card_id, card_type)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">continue&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> img &lt;span style="color:#f92672">=&lt;/span> bili_pic(pic) &lt;span style="color:#66d9ef">if&lt;/span> pic &lt;span style="color:#66d9ef">else&lt;/span> &lt;span style="color:#66d9ef">None&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cur&lt;span style="color:#f92672">.&lt;/span>execute(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;INSERT OR REPLACE INTO &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74"> VALUES ( ?, ?, ?, ?, ? );&amp;#39;&amp;#39;&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> uname), (card_time, card_id, text, img, title))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> new &lt;span style="color:#f92672">=&lt;/span> cur&lt;span style="color:#f92672">.&lt;/span>execute(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;SELECT COUNT(_id) FROM &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">;&amp;#39;&amp;#39;&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uname))&lt;span style="color:#f92672">.&lt;/span>fetchone()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> old &lt;span style="color:#f92672">=&lt;/span> cur&lt;span style="color:#f92672">.&lt;/span>execute(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;SELECT msg FROM &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74"> WHERE _id = 0;&amp;#39;&amp;#39;&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uname))&lt;span style="color:#f92672">.&lt;/span>fetchone()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> int(new[&lt;span style="color:#ae81ff">0&lt;/span>]) &lt;span style="color:#f92672">==&lt;/span> int(old[&lt;span style="color:#ae81ff">0&lt;/span>]):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">False&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cur&lt;span style="color:#f92672">.&lt;/span>execute(&lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;UPDATE &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74"> SET msg = ? WHERE _id = 0&amp;#39;&amp;#39;&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uname),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (str(new[&lt;span style="color:#ae81ff">0&lt;/span>]), ))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> limit &lt;span style="color:#f92672">=&lt;/span> int(new[&lt;span style="color:#ae81ff">0&lt;/span>]) &lt;span style="color:#f92672">-&lt;/span> int(old[&lt;span style="color:#ae81ff">0&lt;/span>])
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> limit &lt;span style="color:#f92672">&amp;lt;&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">False&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> limit &lt;span style="color:#f92672">=&lt;/span> limit &lt;span style="color:#66d9ef">if&lt;/span> limit &lt;span style="color:#f92672">&amp;lt;&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#66d9ef">else&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">from&lt;/span> pymobird &lt;span style="color:#f92672">import&lt;/span> Content
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">from&lt;/span> pymobird &lt;span style="color:#f92672">import&lt;/span> SimplePymobird
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> bird &lt;span style="color:#f92672">=&lt;/span> SimplePymobird(ak&lt;span style="color:#f92672">=&lt;/span>appkey, device_id&lt;span style="color:#f92672">=&lt;/span>device_id, user_id&lt;span style="color:#f92672">=&lt;/span>user_id)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> data &lt;span style="color:#f92672">=&lt;/span> cur&lt;span style="color:#f92672">.&lt;/span>execute(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;SELECT day, _id, msg, pic, title FROM &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74"> ORDER BY _id DESC LIMIT &lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">;&amp;#39;&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">.&lt;/span>format(uname, limit))&lt;span style="color:#f92672">.&lt;/span>fetchall()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> dynamic &lt;span style="color:#f92672">in&lt;/span> data[::&lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>]:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> day, _id, msg, pic, title &lt;span style="color:#f92672">=&lt;/span> dynamic
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> content &lt;span style="color:#f92672">=&lt;/span> Content()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> content&lt;span style="color:#f92672">.&lt;/span>add_text(&lt;span style="color:#e6db74">&amp;#39;【&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">】&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uname))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> content&lt;span style="color:#f92672">.&lt;/span>add_text(time&lt;span style="color:#f92672">.&lt;/span>strftime(&lt;span style="color:#e6db74">&amp;#39;%Y-%m-&lt;/span>&lt;span style="color:#e6db74">%d&lt;/span>&lt;span style="color:#e6db74"> %H:%M&amp;#39;&lt;/span>,time&lt;span style="color:#f92672">.&lt;/span>gmtime(int(day))))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> content&lt;span style="color:#f92672">.&lt;/span>add_text(&lt;span style="color:#e6db74">&amp;#39;https://t.bilibili.com/&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(_id))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> content&lt;span style="color:#f92672">.&lt;/span>add_text(msg)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> pic:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">with&lt;/span> open(&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">.jpg&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uname), &lt;span style="color:#e6db74">&amp;#39;wb&amp;#39;&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> f:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f&lt;span style="color:#f92672">.&lt;/span>write(pic)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> img &lt;span style="color:#f92672">=&lt;/span> Image&lt;span style="color:#f92672">.&lt;/span>open(&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">.jpg&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uname))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> img&lt;span style="color:#f92672">.&lt;/span>thumbnail((&lt;span style="color:#ae81ff">400&lt;/span>, &lt;span style="color:#ae81ff">400&lt;/span>), Image&lt;span style="color:#f92672">.&lt;/span>ANTIALIAS)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> title:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">from&lt;/span> PIL &lt;span style="color:#f92672">import&lt;/span> Image
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">from&lt;/span> PIL &lt;span style="color:#f92672">import&lt;/span> ImageDraw
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">from&lt;/span> PIL &lt;span style="color:#f92672">import&lt;/span> ImageFont
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> content&lt;span style="color:#f92672">.&lt;/span>add_text(title)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> font &lt;span style="color:#f92672">=&lt;/span> ImageFont&lt;span style="color:#f92672">.&lt;/span>truetype(&lt;span style="color:#e6db74">&amp;#39;SourceHanSansCN-Regular.otf&amp;#39;&lt;/span>, &lt;span style="color:#ae81ff">22&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> draw &lt;span style="color:#f92672">=&lt;/span> ImageDraw&lt;span style="color:#f92672">.&lt;/span>Draw(img)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> draw&lt;span style="color:#f92672">.&lt;/span>rectangle((&lt;span style="color:#ae81ff">268&lt;/span>, &lt;span style="color:#ae81ff">15&lt;/span>, &lt;span style="color:#ae81ff">368&lt;/span>, &lt;span style="color:#ae81ff">47&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> fill&lt;span style="color:#f92672">=&lt;/span>(&lt;span style="color:#ae81ff">250&lt;/span>, &lt;span style="color:#ae81ff">115&lt;/span>, &lt;span style="color:#ae81ff">150&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> outline&lt;span style="color:#f92672">=&lt;/span>(&lt;span style="color:#ae81ff">250&lt;/span>, &lt;span style="color:#ae81ff">140&lt;/span>, &lt;span style="color:#ae81ff">160&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> draw&lt;span style="color:#f92672">.&lt;/span>text((&lt;span style="color:#ae81ff">274&lt;/span>, &lt;span style="color:#ae81ff">14&lt;/span>), &lt;span style="color:#e6db74">&amp;#39;投稿视频&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;#FFFFFF&amp;#39;&lt;/span>, font&lt;span style="color:#f92672">=&lt;/span>font)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> img&lt;span style="color:#f92672">.&lt;/span>save(&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">.png&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uname), &lt;span style="color:#e6db74">&amp;#39;PNG&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> content&lt;span style="color:#f92672">.&lt;/span>add_image(&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">.png&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(uname))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> result &lt;span style="color:#f92672">=&lt;/span> bird&lt;span style="color:#f92672">.&lt;/span>print_multi_part_content(content)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> print(result)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> time&lt;span style="color:#f92672">.&lt;/span>sleep(&lt;span style="color:#ae81ff">5&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> __name__ &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#39;__main__&amp;#39;&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> main()
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="eof">EOF&lt;/h2>
+&lt;p>&lt;img src="https://naizi.moe/2019-10-02-memobird-rss/2019-10-02_20-38.gif"
+loading="lazy"
+alt="gugugu"
+>&lt;/p></description></item></channel></rss>

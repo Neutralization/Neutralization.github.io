@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>微博 on H⁺ + OH⁻ → H₂O</title><link>https://naizi.moe/tags/%E5%BE%AE%E5%8D%9A/</link><description>Recent content in 微博 on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 05 Jan 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://naizi.moe/tags/%E5%BE%AE%E5%8D%9A/atom.xml" rel="self" type="application/rss+xml"/><item><title>微博信息流广告抓取</title><link>https://naizi.moe/2019/01/05/%E5%BE%AE%E5%8D%9A%E4%BF%A1%E6%81%AF%E6%B5%81%E5%B9%BF%E5%91%8A%E6%8A%93%E5%8F%96/</link><pubDate>Sat, 05 Jan 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/01/05/%E5%BE%AE%E5%8D%9A%E4%BF%A1%E6%81%AF%E6%B5%81%E5%B9%BF%E5%91%8A%E6%8A%93%E5%8F%96/</guid><description>&lt;p>微博注册了个小号，为了看看都是什么牛鬼蛇神在微博里推送信息流广告，尝试抓取一下。&lt;/p>
+&lt;p>虽然有&lt;a class="link" href="https://github.com/tiansh/yaofang" target="_blank" rel="noopener"
+>YAWF（Yet Another Weibo Filter）&lt;/a>这样好用的脚本可以屏蔽广告，但屏蔽了就看不到了。&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;h2 id="找到-api-接口">找到 API 接口&lt;/h2>
+&lt;p>F12 切换到 Network，在首页刷新页面，筛选捕捉到 api 接口&lt;code>https://weibo.com/aj/mblog/fsearch&lt;/code>。&lt;/p>
+&lt;p>新建标签页访问，去掉不必要的参数（包括一堆用来指定上下文区间和已读分界线的 id），只留下必要的部分。&lt;/p>
+&lt;p>然后直接上代码开始爬取内容：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>headers &lt;span style="color:#f92672">=&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;User-Agent&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Accept&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Accept-Language&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;en-US,en;q=0.5&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;DNT&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;1&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Connection&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;keep-alive&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Upgrade-Insecure-Requests&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;1&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Cache-Control&amp;#39;&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;max-age=0&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;Cookie&amp;#39;&lt;/span>: cookie
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>params &lt;span style="color:#f92672">=&lt;/span> (
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;ajwvr&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;6&amp;#39;&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;pre_page&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;0&amp;#39;&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;page&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;1&amp;#39;&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#e6db74">&amp;#39;pagebar&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;0&amp;#39;&lt;/span>),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>response &lt;span style="color:#f92672">=&lt;/span> requests&lt;span style="color:#f92672">.&lt;/span>get(&lt;span style="color:#e6db74">&amp;#39;https://weibo.com/aj/mblog/fsearch&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> headers&lt;span style="color:#f92672">=&lt;/span>headers, params&lt;span style="color:#f92672">=&lt;/span>params)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>返回数据是 json 结构，在&lt;code>data&lt;/code>字段里存放了页面内容，这里用 lxml 库解析，保存 html 文件进行下一步。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> json
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">from&lt;/span> lxml &lt;span style="color:#f92672">import&lt;/span> etree
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>result &lt;span style="color:#f92672">=&lt;/span> json&lt;span style="color:#f92672">.&lt;/span>loads(response&lt;span style="color:#f92672">.&lt;/span>content)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>html &lt;span style="color:#f92672">=&lt;/span> etree&lt;span style="color:#f92672">.&lt;/span>HTML(result[&lt;span style="color:#e6db74">&amp;#39;data&amp;#39;&lt;/span>])
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">with&lt;/span> open(&lt;span style="color:#e6db74">&amp;#39;feed.html&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;w&amp;#39;&lt;/span>, encoding&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;utf-8-sig&amp;#39;&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> f:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f&lt;span style="color:#f92672">.&lt;/span>write(etree&lt;span style="color:#f92672">.&lt;/span>tostring(html, encoding&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;unicode&amp;#39;&lt;/span>))
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="css-筛选广告内容">CSS 筛选广告内容&lt;/h2>
+&lt;p>打开保存的 html，格式化一下代码，找到存在&lt;code>feedtype=&amp;quot;ad&amp;quot;&lt;/code>属性的节点（因为不是每次获取都会有信息流广告，所以可能需要获取很多次）。&lt;/p>
+&lt;p>然后继续往下看子节点，直到找到具体的微博链接：&lt;/p>
+&lt;p>&lt;img src="https://naizi.moe/2019-01-05-weibo-feed-adver/2019-01-05_17-47.png"
+loading="lazy"
+alt="信息流HTML"
+>&lt;/p>
+&lt;p>获取此节点的 xpath：&lt;code>&amp;quot;//div[@feedtype]//a[@action-history='rec=1']/@action-data&amp;quot;&lt;/code>&lt;/p>
+&lt;p>结合正则表达式提取链接：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> re
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>html &lt;span style="color:#f92672">=&lt;/span> etree&lt;span style="color:#f92672">.&lt;/span>HTML(result[&lt;span style="color:#e6db74">&amp;#39;data&amp;#39;&lt;/span>])
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>links &lt;span style="color:#f92672">=&lt;/span> html&lt;span style="color:#f92672">.&lt;/span>xpath(&lt;span style="color:#e6db74">&amp;#34;//div[@feedtype]//a[@action-history=&amp;#39;rec=1&amp;#39;]/@action-data&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">for&lt;/span> link &lt;span style="color:#f92672">in&lt;/span> links:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> adver &lt;span style="color:#f92672">=&lt;/span> re&lt;span style="color:#f92672">.&lt;/span>findall(&lt;span style="color:#e6db74">r&lt;/span>&lt;span style="color:#e6db74">&amp;#39;url=([^&amp;amp;]+)&amp;amp;&amp;#39;&lt;/span>, link)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">with&lt;/span> open(&lt;span style="color:#e6db74">&amp;#39;adver.list&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;a&amp;#39;&lt;/span>, encoding&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;utf-8-sig&amp;#39;&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> f:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f&lt;span style="color:#f92672">.&lt;/span>write(str(adver)&lt;span style="color:#f92672">+&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#ae81ff">\n&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>最后通过 crontab 设置成定时任务自动监测。&lt;/p>
+&lt;pre tabindex="0">&lt;code class="language-crontab.conf" data-lang="crontab.conf">* * * * * python weibo_adver.py
+&lt;/code>&lt;/pre>&lt;h2 id="自动更新-cookie">自动更新 cookie&lt;/h2>
+&lt;p>高频率的连续访问可能会造成微博提示帐号异常，而且运行时间久了 cookie 也会过期，需要自动重新登录获取 cookie。&lt;/p>
+&lt;p>微博的自动登录轮子很多，不用自己另写。cookie 过期的判断就比较粗暴了，如果读取返回的 json 抛出异常，就可以认为是 cookie 过期造成的。&lt;/p>
+&lt;p>另外测试发现，不带 cookie 的 api 访问是会返回正常的 json 数据的（但不包含 html 内容）。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> os
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">login&lt;/span>(username, password):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&amp;#34;somecode balabala&amp;#34;&amp;#34;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">with&lt;/span> open(&lt;span style="color:#e6db74">&amp;#39;cookies&amp;#39;&lt;/span>,&lt;span style="color:#e6db74">&amp;#39;w&amp;#39;&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> f:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f&lt;span style="color:#f92672">.&lt;/span>write(cookies)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> os&lt;span style="color:#f92672">.&lt;/span>path&lt;span style="color:#f92672">.&lt;/span>exists(&lt;span style="color:#e6db74">&amp;#39;./cookies&amp;#39;&lt;/span>):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">with&lt;/span> open(&lt;span style="color:#e6db74">&amp;#39;./cookies&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;r&amp;#39;&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> f:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cookie &lt;span style="color:#f92672">=&lt;/span> f&lt;span style="color:#f92672">.&lt;/span>read()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">else&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">False&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&amp;#34;somecode balabala&amp;#34;&amp;#34;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> response &lt;span style="color:#f92672">=&lt;/span> requests&lt;span style="color:#f92672">.&lt;/span>get(&lt;span style="color:#e6db74">&amp;#39;https://weibo.com/aj/mblog/fsearch&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> headers&lt;span style="color:#f92672">=&lt;/span>headers, params&lt;span style="color:#f92672">=&lt;/span>params)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">try&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> result &lt;span style="color:#f92672">=&lt;/span> json&lt;span style="color:#f92672">.&lt;/span>loads(response&lt;span style="color:#f92672">.&lt;/span>content)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">except&lt;/span> json&lt;span style="color:#f92672">.&lt;/span>decoder&lt;span style="color:#f92672">.&lt;/span>JSONDecodeError:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> login(username, password)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">False&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&amp;#34;somecode balabala&amp;#34;&amp;#34;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> __name__ &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#34;__main__&amp;#34;&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> main()
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="eof">EOF&lt;/h2>
+&lt;p>就结果而言效果还不错，但也发现信息流广告里还会有一些关注了的博主的正常微博内容，可以考虑和自己的关注列表对比来筛除。&lt;/p>
+&lt;p>&lt;img src="https://naizi.moe/2019-01-05-weibo-feed-adver/2019-01-05_18-03.png"
+loading="lazy"
+alt="信息流广告"
+>&lt;/p></description></item></channel></rss>

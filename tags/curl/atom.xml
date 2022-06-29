@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>curl on H⁺ + OH⁻ → H₂O</title><link>https://naizi.moe/tags/curl/</link><description>Recent content in curl on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 16 Nov 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://naizi.moe/tags/curl/atom.xml" rel="self" type="application/rss+xml"/><item><title>哔哩哔哩下载工具 三</title><link>https://naizi.moe/2019/11/16/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7-%E4%B8%89/</link><pubDate>Sat, 16 Nov 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/11/16/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7-%E4%B8%89/</guid><description>&lt;p>有生之年我最后居然是用 Shell 来填了分 P 的 TODO……&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;h2 id="curl---命令行下的文件传输工具">cURL - 命令行下的文件传输工具&lt;/h2>
+&lt;p>cURL 这个工具太过强大，我也不知道该怎么去解释它比较好。几乎所有的网络访问，上传下载，都能够使用 cURL 来完成。&lt;/p>
+&lt;p>也难怪诸如 Chrome 和 Firefox 等浏览器，会支持复制网络访问为 cURL。而其实我也一直依靠这个功能，通过&lt;a class="link" href="https://curl.trillworks.com/" target="_blank" rel="noopener"
+>https://curl.trillworks.com/&lt;/a>来快速写我的 python 爬虫。&lt;/p>
+&lt;p>大部分的工作都可以直接靠右键复制为 cURL 来完成，所以只需要简单的查看下 cURL 的说明，便于进行一些小的修改就行。&lt;/p>
+&lt;p>然后开始对照之前写的 python 脚本的逻辑，一步步转成 Shell 脚本。&lt;/p>
+&lt;h2 id="jq---命令行下的-json-处理工具">jq - 命令行下的 JSON 处理工具&lt;/h2>
+&lt;p>B 站 API 接口的各种返回数据以 JSON 为主，直接靠 awk/sed 手撸解析是一件很痛苦的事。所以我们需要用上 jq 这个工具减轻负担。&lt;/p>
+&lt;p>jq 解析 JSON 数据非常的便捷，比如获取分 P 数据时：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-json" data-lang="json">&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;code&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">0&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;message&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;0&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;ttl&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;data&amp;#34;&lt;/span>: [
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;cid&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">73802454&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;page&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;from&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;vupload&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;part&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;3&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;duration&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">66&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;vid&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;weblink&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;dimension&amp;#34;&lt;/span>: {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;width&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">1920&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;height&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">1080&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;rotate&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>↑ jq 的另一个作用就是格式化 json 数据，比如上面的代码就是通过&lt;code>cat result.json | jq .&lt;/code>自动格式化出来的。&lt;/p>
+&lt;p>要取得分 P 的 cid，我们可以：
+&lt;code>curl -sL 'https://api.bilibili.com/x/player/pagelist?aid=42038790&amp;amp;jsonp=jsonp' | jq -r '.data[0].cid'&lt;/code>&lt;/p>
+&lt;p>如果有多个分 P，我们可以这样取得所有的 cid：
+&lt;code>curl -sL 'https://api.bilibili.com/x/player/pagelist?aid=42038790&amp;amp;jsonp=jsonp' | jq -r '.data[].cid'&lt;/code>&lt;/p>
+&lt;p>真的是非常方便。&lt;/p>
+&lt;h2 id="sed---支持正则表达式的流编辑器">sed - 支持正则表达式的流编辑器&lt;/h2>
+&lt;p>考虑到 windows 上的兼容性，如果用视频标题做文件名，势必要排除&lt;code>/?!.*|:&lt;/code>等特殊字符。这时我们就可以用 sed 来完成：
+&lt;code>curl -sL -H https://api.bilibili.com/x/web-interface/view?aid=42038790 | jq -r '.data.title' | sed 's/[/?!.*|:]//g'&lt;/code>&lt;/p>
+&lt;p>再后面我们会更多的用到 sed。&lt;code>(Flag)&lt;/code>&lt;/p>
+&lt;h2 id="编写-shell-脚本">编写 Shell 脚本&lt;/h2>
+&lt;p>&lt;code>$1&lt;/code> 代表了命令行传给脚本的第一个参数，使用场景类似 &lt;code>bash download.sh av42038790&lt;/code>
+通过 sed，我们可以兼容 &lt;code>bash download.sh https://www.bilibili.com/video/av42038790?from=search&amp;amp;seid=3037567923943401758&lt;/code> 的链接模式。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>aid&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $1 | sed -e &lt;span style="color:#e6db74">&amp;#39;s/.*av//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/[a-zA-Z?/].*//g&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Shell 脚本中声明变量时等号前后都不能有空格，使用变量时在变量前加上&lt;code>$&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>pagelist&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;https://api.bilibili.com/x/player/pagelist?aid=&amp;#39;&lt;/span>$aid&lt;span style="color:#e6db74">&amp;#39;&amp;amp;jsonp=jsonp&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cids&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>curl -sL $pagelist | jq -r &lt;span style="color:#e6db74">&amp;#39;.data[].cid&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>这里的 cids 只是一个包含空格分隔的字符串&lt;code>123 234 345&lt;/code>，为了让 Shell 正确计数，把它转为数组&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>cids_arr&lt;span style="color:#f92672">=(&lt;/span>$cids&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>这样一来通过&lt;code>${ #cids_arr[@] }&lt;/code>就能够正确得出 cids 中的元素个数&lt;/p>
+&lt;p>接下来通过 for 循环遍历 cids 中的元素，为了能同时计算元素的个数，需要另行计数：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>part&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">for&lt;/span> cid in $cids
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> episode&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">$((&lt;/span> &lt;span style="color:#f92672">++&lt;/span>part &lt;span style="color:#66d9ef">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">#some code&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">done&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Shell 中的 if else 判断以 if 开始，fi 结束：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">${#&lt;/span>cids_arr[@]&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#34;1&amp;#34;&lt;/span> &lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> filename&lt;span style="color:#f92672">=&lt;/span>av$aid.$title.mp4 &lt;span style="color:#75715e"># 视频只有1P时，不标注分P&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> filename&lt;span style="color:#f92672">=&lt;/span>av$aid.$title【P$episode】.mp4 &lt;span style="color:#75715e"># 多P视频标注分P&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>判断视频是 DASH 还是 FLV：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>json_url&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;https://api.bilibili.com/x/player/playurl?avid=&amp;#39;&lt;/span>$aid&lt;span style="color:#e6db74">&amp;#39;&amp;amp;cid=&amp;#39;&lt;/span>$cid&lt;span style="color:#e6db74">&amp;#39;&amp;amp;qn=116&amp;amp;fnver=0&amp;amp;fnval=16&amp;amp;otype=json&amp;amp;type=&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>json&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>curl -sL $json_url&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dash&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | jq &lt;span style="color:#e6db74">&amp;#39;.data|has(&amp;#34;dash&amp;#34;)&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>durl&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | jq &lt;span style="color:#e6db74">&amp;#39;.data|has(&amp;#34;durl&amp;#34;)&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>处理 DASH 视频：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$dash&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#34;true&amp;#34;&lt;/span> &lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> vp&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | jq -r &lt;span style="color:#e6db74">&amp;#39;.data.dash.video[0].baseUrl&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span> &lt;span style="color:#75715e"># 视频&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ap&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | jq -r &lt;span style="color:#e6db74">&amp;#39;.data.dash.audio[0].baseUrl&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span> &lt;span style="color:#75715e"># 音频&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>aria2c --args $vp --out ./v_$cid.m4s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>aria2c --args $vp --out ./a_$cid.m4s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ffmpeg -i ./v_$cid.m4s -i ./a_$cid.m4s -c:v copy -c:a copy ./$filename
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>rm *.m4s
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>处理 FLV 视频：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">elif&lt;/span> &lt;span style="color:#f92672">[&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$durl&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#34;true&amp;#34;&lt;/span> &lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> flvs&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | jq -r &lt;span style="color:#e6db74">&amp;#39;.data.durl[].url&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> flv in $flvs
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">&amp;#34;file &amp;#39;./&amp;#34;&lt;/span>$flvname&lt;span style="color:#e6db74">&amp;#34;&amp;#39;&amp;#34;&lt;/span> &amp;gt;./merge_$cid.txt
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> flvname&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $flv | sed -e &lt;span style="color:#e6db74">&amp;#39;s/\?.*//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/.*\///g&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> aria2c --args $flv --out ./$flvname
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ffmpeg -safe &lt;span style="color:#ae81ff">0&lt;/span> -f concat -i ./merge_$cid.txt -c copy ./$filename
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> rm *.flv
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> rm ./merge_$cid.txt
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="使用-shift">使用 shift&lt;/h2>
+&lt;p>shift 命令的作用是左移参数，举例来说，如果我们传给脚本 3 个参数 a,b,c，脚本接收到的参数为：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>echo $1 $2 $3
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>a b c
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>当我们执行 shift 后&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>shift
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>echo $1 $2 $3
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>b c
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>这样就可以在循环中一直只处理$1，直到所有参数左移完毕。&lt;/p>
+&lt;p>先判断没有参数时退出脚本：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[&lt;/span> $# -eq &lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Need AVID to download!\n&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> exit &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>加上 shift 和循环：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">until&lt;/span> &lt;span style="color:#f92672">[&lt;/span> $# -eq &lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> aid&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $1 | sed -e &lt;span style="color:#e6db74">&amp;#39;s/.*av//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/[a-zA-Z?/].*//g&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">#some code&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> shift
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">done&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="记得加上-cookies">记得加上 Cookies&lt;/h2>
+&lt;p>要获得高清源必须在访问 API 时加上 Cookies，cURL 要做到这点很简单。&lt;/p>
+&lt;p>测试得知判断的关键是 Cookies 的如下键值：
+&lt;code>DedeUserID=; DedeUserID__ckMd5=; SESSDATA=; bili_jct=&lt;/code>&lt;/p>
+&lt;p>F12 打开浏览器，找到对应的键值，保存成 Cookies 的文本文件，然后修改代码：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>cookies&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>cat ./cookies&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>curl -sL -H &lt;span style="color:#e6db74">&amp;#34;Cookie: &amp;#34;&lt;/span>$cookies
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>aria2c --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Cookie: &amp;#34;&lt;/span>$cookies
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="完整代码">完整代码&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#!/bin/sh
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>IFS&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">$&amp;#39;\n&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[&lt;/span> $# -eq &lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Need AVID to download!\n&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> exit &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">until&lt;/span> &lt;span style="color:#f92672">[&lt;/span> $# -eq &lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> aid&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $1 | sed -e &lt;span style="color:#e6db74">&amp;#39;s/.*av//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/[a-zA-Z?/].*//g&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cookies&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>cat ./cookies&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> pagelist&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;https://api.bilibili.com/x/player/pagelist?aid=&amp;#39;&lt;/span>$aid&lt;span style="color:#e6db74">&amp;#39;&amp;amp;jsonp=jsonp&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Getting video list: \n&amp;#34;&lt;/span>$pagelist
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cids&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>curl -sL -H &lt;span style="color:#e6db74">&amp;#34;Cookie: &amp;#34;&lt;/span>$cookies $pagelist | jq -r &lt;span style="color:#e6db74">&amp;#39;.data[].cid&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> title&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>curl -sL -H &lt;span style="color:#e6db74">&amp;#34;Cookie: &amp;#34;&lt;/span>$cookies &lt;span style="color:#e6db74">&amp;#39;https://api.bilibili.com/x/web-interface/view?aid=&amp;#39;&lt;/span>$aid | jq -r &lt;span style="color:#e6db74">&amp;#39;.data.title&amp;#39;&lt;/span> | sed &lt;span style="color:#e6db74">&amp;#39;s/[/?!.*|:]//g&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cids_arr&lt;span style="color:#f92672">=(&lt;/span>$cids&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Found video pages: &amp;#34;&lt;/span>&lt;span style="color:#e6db74">${#&lt;/span>cids_arr[@]&lt;span style="color:#e6db74">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> part&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> cid in $cids
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> episode&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">$((&lt;/span> &lt;span style="color:#f92672">++&lt;/span>part &lt;span style="color:#66d9ef">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Download video page: &amp;#34;&lt;/span>$episode
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">${#&lt;/span>cids_arr[@]&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#34;1&amp;#34;&lt;/span> &lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> filename&lt;span style="color:#f92672">=&lt;/span>av$aid.$title.mp4
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> filename&lt;span style="color:#f92672">=&lt;/span>av$aid.$title【P$episode】.mp4
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> json_url&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;https://api.bilibili.com/x/player/playurl?avid=&amp;#39;&lt;/span>$aid&lt;span style="color:#e6db74">&amp;#39;&amp;amp;cid=&amp;#39;&lt;/span>$cid&lt;span style="color:#e6db74">&amp;#39;&amp;amp;qn=116&amp;amp;fnver=0&amp;amp;fnval=16&amp;amp;otype=json&amp;amp;type=&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Getting video source: \n&amp;#34;&lt;/span>$json_url
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> json&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>curl -sL -H &lt;span style="color:#e6db74">&amp;#34;Cookie: &amp;#34;&lt;/span>$cookies $json_url&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> dash&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | jq &lt;span style="color:#e6db74">&amp;#39;.data|has(&amp;#34;dash&amp;#34;)&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> durl&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | jq &lt;span style="color:#e6db74">&amp;#39;.data|has(&amp;#34;durl&amp;#34;)&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$dash&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#34;true&amp;#34;&lt;/span> &lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> vp&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | jq -r &lt;span style="color:#e6db74">&amp;#39;.data.dash.video[0].baseUrl&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ap&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | jq -r &lt;span style="color:#e6db74">&amp;#39;.data.dash.audio[0].baseUrl&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Downloading Video Dash&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> aria2c -x10 -k1M --file-allocation&lt;span style="color:#f92672">=&lt;/span>none --auto-file-renaming&lt;span style="color:#f92672">=&lt;/span>false --allow-overwrite&lt;span style="color:#f92672">=&lt;/span>true $vp&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --show-console-readout false --quiet &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Accept: */*&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Referer: https://www.bilibili.com/video/av&amp;#34;&lt;/span>$aid&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Origin: https://www.bilibili.com&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;DNT: 1&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Connection: keep-alive&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Pragma: no-cache&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Cache-Control: no-cache&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Cookie: &amp;#34;&lt;/span>$cookies &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --out ./v_$cid.m4s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Downloading Audio Dash&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> aria2c -x10 -k1M --file-allocation&lt;span style="color:#f92672">=&lt;/span>none --auto-file-renaming&lt;span style="color:#f92672">=&lt;/span>false --allow-overwrite&lt;span style="color:#f92672">=&lt;/span>true $ap&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --show-console-readout false --quiet &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Accept: */*&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Referer: https://www.bilibili.com/video/av&amp;#34;&lt;/span>$aid&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Origin: https://www.bilibili.com&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;DNT: 1&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Connection: keep-alive&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Pragma: no-cache&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Cache-Control: no-cache&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Cookie: &amp;#34;&lt;/span>$cookies &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --out ./a_$cid.m4s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Merge into file: &amp;#34;&lt;/span>$filename
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ffmpeg -i ./v_$cid.m4s -i ./a_$cid.m4s -c:v copy -c:a copy&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> -y -hide_banner -loglevel panic &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> ./$filename
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Removing temp files\n&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> rm *.m4s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">elif&lt;/span> &lt;span style="color:#f92672">[&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$durl&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#34;true&amp;#34;&lt;/span> &lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> flvs&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | jq -r &lt;span style="color:#e6db74">&amp;#39;.data.durl[].url&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> flv in $flvs
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> flvname&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $flv | sed -e &lt;span style="color:#e6db74">&amp;#39;s/\?.*//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/.*\///g&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">&amp;#34;file &amp;#39;./&amp;#34;&lt;/span>$flvname&lt;span style="color:#e6db74">&amp;#34;&amp;#39;&amp;#34;&lt;/span> &amp;gt;./merge_$cid.txt
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Downloading Video Part: &amp;#34;&lt;/span>$flvname
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> aria2c -x10 -k1M --file-allocation&lt;span style="color:#f92672">=&lt;/span>none --auto-file-renaming&lt;span style="color:#f92672">=&lt;/span>false --allow-overwrite&lt;span style="color:#f92672">=&lt;/span>true $flv&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --show-console-readout false --quiet &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Accept: */*&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Referer: https://www.bilibili.com/video/av&amp;#34;&lt;/span>$aid&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Origin: https://www.bilibili.com&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;DNT: 1&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Connection: keep-alive&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Pragma: no-cache&amp;#34;&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Cache-Control: no-cache&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Cookie: &amp;#34;&lt;/span>$cookies &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> --out ./$flvname
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">done&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Merge into file: &amp;#34;&lt;/span>$filename
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ffmpeg -safe &lt;span style="color:#ae81ff">0&lt;/span> -f concat -i ./merge_$cid.txt -c copy&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> -y -hide_banner -loglevel panic &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> ./$filename
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Removing temp files\n&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> rm *.flv
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> rm ./merge_$cid.txt
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Error: Video not found!\n&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">done&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> shift
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">done&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="eof">EOF&lt;/h2>
+&lt;p>清晰度选择我觉得就真的没必要了吧.jpg&lt;/p>
+&lt;p>但是 jq 毕竟是个第三方工具，难道真的不能用 awk/sed 来解析 json 吗？&lt;/p>
+&lt;p>可以，但没必要。&lt;/p>
+&lt;p>但今天就尝试一次，用 awk 和 sed 组合，替换掉 jq 的工作：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 获取cids&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cids&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>curl -sL -H &lt;span style="color:#e6db74">&amp;#34;Cookie: &amp;#34;&lt;/span>$cookies $pagelist | sed &lt;span style="color:#e6db74">&amp;#39;s/[{,}]/\n/g&amp;#39;&lt;/span> | awk -F: &lt;span style="color:#e6db74">&amp;#39;/&amp;#34;cid&amp;#34;/ {print $2}&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 获取视频标题&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>title&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>curl -sL -H &lt;span style="color:#e6db74">&amp;#34;Cookie: &amp;#34;&lt;/span>$cookies &lt;span style="color:#e6db74">&amp;#39;https://api.bilibili.com/x/web-interface/view?aid=&amp;#39;&lt;/span>$aid | sed -e &lt;span style="color:#e6db74">&amp;#39;s/[{}]//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/,&amp;#34;/\n&amp;#34;/g&amp;#39;&lt;/span> | awk -F: &lt;span style="color:#e6db74">&amp;#39;/&amp;#34;title&amp;#34;/ {print $2}&amp;#39;&lt;/span> | sed -e &lt;span style="color:#e6db74">&amp;#39;s/&amp;#34;//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/[/?!.*|:]/-/g&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 是否是DASH&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dash&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | sed -e &lt;span style="color:#e6db74">&amp;#39;s/[{}]//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/,&amp;#34;/\n&amp;#34;/g&amp;#39;&lt;/span> | awk &lt;span style="color:#e6db74">&amp;#39;/&amp;#34;dash&amp;#34;/&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 是否是FLV&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>durl&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | sed -e &lt;span style="color:#e6db74">&amp;#39;s/[{}]//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/,&amp;#34;/\n&amp;#34;/g&amp;#39;&lt;/span> | awk &lt;span style="color:#e6db74">&amp;#39;/&amp;#34;durl&amp;#34;/&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$dash&lt;span style="color:#e6db74">&amp;#34;&lt;/span> !&lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span> &lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># 视频 DASH&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> vp&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | sed -e &lt;span style="color:#e6db74">&amp;#39;s/[{}]//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/,&amp;#34;/\n&amp;#34;/g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/\]//g&amp;#39;&lt;/span> | awk &lt;span style="color:#e6db74">&amp;#39;/&amp;#34;video&amp;#34;/,/&amp;#34;audio&amp;#34;/&amp;#39;&lt;/span> | awk &lt;span style="color:#e6db74">&amp;#39;/&amp;#34;baseUrl&amp;#34;/&amp;#39;&lt;/span> | sed -e &lt;span style="color:#e6db74">&amp;#39;s/&amp;#34;baseUrl&amp;#34;://g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/&amp;#34;//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/\u0026/\&amp;amp;/g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/\\\\//g&amp;#39;&lt;/span> | awk &lt;span style="color:#e6db74">&amp;#39;NR==1&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># 音频 DASH&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ap&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | sed -e &lt;span style="color:#e6db74">&amp;#39;s/[{}]//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/,&amp;#34;/\n&amp;#34;/g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/\]//g&amp;#39;&lt;/span> | awk &lt;span style="color:#e6db74">&amp;#39;/&amp;#34;audio&amp;#34;/,/&amp;#34;&amp;#34;/&amp;#39;&lt;/span> | awk &lt;span style="color:#e6db74">&amp;#39;/&amp;#34;baseUrl&amp;#34;/&amp;#39;&lt;/span> | sed -e &lt;span style="color:#e6db74">&amp;#39;s/&amp;#34;baseUrl&amp;#34;://g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/&amp;#34;//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/\u0026/\&amp;amp;/g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/\\\\//g&amp;#39;&lt;/span> | awk &lt;span style="color:#e6db74">&amp;#39;NR==1&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">elif&lt;/span> &lt;span style="color:#f92672">[&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$durl&lt;span style="color:#e6db74">&amp;#34;&lt;/span> !&lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span> &lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># FLV 视频&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> flvs&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>echo $json | sed -e &lt;span style="color:#e6db74">&amp;#39;s/[{}]//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/,&amp;#34;/\n&amp;#34;/g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/\]//g&amp;#39;&lt;/span> | awk &lt;span style="color:#e6db74">&amp;#39;/&amp;#34;url&amp;#34;/&amp;#39;&lt;/span> | sed -e &lt;span style="color:#e6db74">&amp;#39;s/&amp;#34;url&amp;#34;://g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/&amp;#34;//g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/\u0026/\&amp;amp;/g&amp;#39;&lt;/span> -e &lt;span style="color:#e6db74">&amp;#39;s/\\\\//g&amp;#39;&lt;/span>&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Error: Video not found!\n&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item></channel></rss>
