@@ -1,0 +1,186 @@
+baseurl: https://naizi.moe
+languageCode: zh-cn
+theme: hugo-theme-stack
+paginate: 5
+title: H⁺ + OH⁻ → H₂O
+
+DefaultContentLanguage: zh-cn
+
+hasCJKLanguage: true
+
+permalinks:
+    post: /:year/:month/:day/:title/
+    page: /:slug/
+
+module:
+    hugoVersion:
+        extended: true
+        min: "0.87.0"
+
+frontmatter:
+    date: [":filename", ":default", ":fileModTime"]
+
+outputFormats:
+    RSS:
+        mediatype: application/rss
+        baseName: atom
+
+params:
+    mainSections:
+        - post
+    featuredImageField: image
+    rssFullContent: true
+    favicon:
+
+    footer:
+        since: 2018
+        customText:
+
+    dateFormat:
+        published: Jan 02, 2006
+        lastUpdated: Jan 02, 2006 15:04 MST
+
+    sidebar:
+        compact: false
+        emoji: 1
+        subtitle: Neutralized
+        avatar:
+            enabled: true
+            local: true
+            src: img/avatar.png
+
+    article:
+        math: false
+        toc: true
+        readingTime: false
+        license:
+            enabled: false
+            default: Licensed under CC BY-NC-SA 4.0
+
+    comments:
+        enabled: false
+        provider: disqus
+
+        disqusjs:
+            shortname:
+            apiUrl:
+            apiKey:
+            admin:
+            adminLabel:
+
+        utterances:
+            repo:
+            issueTerm: pathname
+            label:
+
+        remark42:
+            host:
+            site:
+            locale:
+
+        vssue:
+            platform:
+            owner:
+            repo:
+            clientId:
+            clientSecret:
+            autoCreateIssue: false
+
+        # Waline client configuration see: https://waline.js.org/en/reference/client.html
+        waline:
+            serverURL:
+            lang:
+            visitor:
+            avatar:
+            emoji:
+                - https://cdn.jsdelivr.net/gh/walinejs/emojis/weibo
+            requiredMeta:
+                - name
+                - email
+                - url
+            placeholder:
+            locale:
+                admin: Admin
+
+        twikoo:
+            envId:
+            region:
+            path:
+            lang:
+
+        giscus:
+            repo:
+            repoID:
+            category:
+            categoryID:
+            mapping:
+            lightTheme:
+            darkTheme:
+            reactionsEnabled: 1
+            emitMetadata: 0
+            lang:
+
+        gitalk:
+            owner:
+            admin:
+            repo:
+            clientID:
+            clientSecret:
+
+        cusdis:
+            host:
+            id:
+
+    widgets:
+        homepage:
+            - type: tag-cloud
+              params:
+                  limit: 10
+        page:
+            - type: toc
+
+    opengraph:
+        twitter:
+            # Your Twitter username
+            site:
+
+            # Available values: summary, summary_large_image
+            card: summary_large_image
+
+    defaultImage:
+        opengraph:
+            enabled: false
+            local: false
+            src:
+
+    colorScheme:
+        # Display toggle
+        toggle: true
+
+        # Available values: auto, light, dark
+        default: auto
+
+    imageProcessing:
+        cover:
+            enabled: true
+        content:
+            enabled: true
+
+### Custom menu
+### See https://docs.stack.jimmycai.com/configuration/custom-menu.html
+### To remove about, archive and search page menu item, remove `menu` field from their FrontMatter
+menu:
+    main: []
+
+    social:
+        - identifier: github
+          name: GitHub
+          url: https://github.com/Neutralization
+          params:
+              icon: brand-github
+
+        - identifier: twitter
+          name: bilibili
+          url: https://space.bilibili.com/36736561
+          params:
+              icon: device-tv
