@@ -1,6 +1,9 @@
 name: BlogCI
 
-on: [push]
+on:
+  push:
+    branches:
+      - source
 
 jobs:
   build:
@@ -19,8 +22,8 @@ jobs:
         node-version: "16.x"
 
     - name: Set Env
-      env: 
-        GPAGES_TOKEN: ${{ secrets.GPAGES_TOKEN }}  
+      env:
+        GPAGES_TOKEN: ${{ secrets.GPAGES_TOKEN }}
       run: |
         git config --global user.name 'Neutralization'
         git config --global user.email 'Neutralization@users.noreply.github.com'
