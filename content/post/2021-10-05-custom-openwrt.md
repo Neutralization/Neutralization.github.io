@@ -30,14 +30,14 @@ tags:
 
 4. [准备编译工具](https://openwrt.org/docs/guide-developer/build-system/install-buildsystem#debianubuntu)
 
-    > **sudo** apt install -y ack antlr3 asciidoc autoconf automake \\\
-    autopoint binutils bison build-essential bzip2 ccache cmake cpio \\\
-    curl device-tree-compiler fastjar flex gawk gettext gcc-multilib \\\
-    g++-multilib git gperf haveged help2man intltool libc6-dev-i386 \\\
-    libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev \\\
-    libncurses5-dev libncursesw5-dev libreadline-dev libssl-dev libtool \\\
-    lrzsz mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf \\\
-    python2.7 python3 python3-pip qemu-utils rsync scons squashfs-tools \
+    > **sudo** apt install -y ack antlr3 asciidoc autoconf automake \\  
+    autopoint binutils bison build-essential bzip2 ccache cmake cpio \\  
+    curl device-tree-compiler fastjar flex gawk gettext gcc-multilib \\  
+    g++-multilib git gperf haveged help2man intltool libc6-dev-i386 \\  
+    libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev \\  
+    libncurses5-dev libncursesw5-dev libreadline-dev libssl-dev libtool \\  
+    lrzsz mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf \\  
+    python2.7 python3 python3-pip qemu-utils rsync scons squashfs-tools \\  
     subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
 
 <!-- more -->
@@ -51,7 +51,6 @@ tags:
     git clone https://github.com/coolsnowwolf/lede openwrt
     cd openwrt
     git pull
-    git checkout v21.02.0
     ```
 
 2. 下载 [OpenClash](https://github.com/vernesong/OpenClash) 源码
@@ -112,6 +111,7 @@ tags:
         Cryptographic API modules  --->
             ALL
     LuCI  --->
+        2. Modules  --->
             Translations  --->
                 <*> Simplified Chinese (zh-cn)
             <*> luci-compat
@@ -122,6 +122,8 @@ tags:
             [*] UnblockNeteaseMusic NodeJS Version
             <*> luci-app-wireguard
             <*> luci-app-zerotier
+        4. Themes  --->
+            <*> luci-theme-argon
     Utilities  --->
         Editors  --->
             <*> nano-full
@@ -137,7 +139,9 @@ tags:
 
 ## 收尾工作
 
-opkg 安装部分官方包的时候会提示 Kernel 版本不对`kernel is not compatible`，这是因为自己编译的 kernel 指纹和官方不一致造成的，[替换成官方指纹即可](https://github.com/iyuangang/openwrt/issues/8#issuecomment-605431578)，比如目前 kernel 版本是`5.4.143-1-fb881fbbae69f30da18e7c6eb01310c1`
+opkg 安装部分官方包的时候会提示 Kernel 版本不对`kernel is not compatible`，这是因为自己编译的 kernel 指纹和官方不一致造成的，[替换成官方指纹即可](https://github.com/iyuangang/openwrt/issues/8#issuecomment-605431578)。
+
+比如目前 kernel 版本是`5.4.143-1-fb881fbbae69f30da18e7c6eb01310c1`
 
 > **sed** -i s/`编译的kernel hash`/fb881fbbae69f30da18e7c6eb01310c1/g /usr/lib/opkg/status
 
