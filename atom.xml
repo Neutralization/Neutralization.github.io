@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>H⁺ + OH⁻ → H₂O</title>
+  <icon>https://naizi.moe/icon.png</icon>
+  
+  <link href="https://naizi.moe/atom.xml" rel="self"/>
+  
+  <link href="https://naizi.moe/"/>
+  <updated>2022-06-29T09:24:22.652Z</updated>
+  <id>https://naizi.moe/</id>
+  
+  <author>
+    <name>Neutralized</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>OpenWrt 折腾笔记</title>
+    <link href="https://naizi.moe/2021/10/05/2021-10-05-custom-openwrt/"/>
+    <id>https://naizi.moe/2021/10/05/2021-10-05-custom-openwrt/</id>
+    <published>2021-10-05T08:58:21.000Z</published>
+    <updated>2022-06-29T09:24:22.652Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;准备工作&quot;&gt;&lt;a href=&quot;#准备工作&quot; class=&quot;headerlink&quot; title=&quot;准备工作&quot;&gt;&lt;/a&gt;准备工作&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;安装 WSL，不再赘述。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a href=&quot;https://openwrt.org/docs/guide-developer/build-system/wsl#setting_up_path&quot;&gt;移除 WSL 环境变量中包含的 Windows 路径&lt;/a&gt;，为编译做准备。&lt;/p&gt;
+&lt;p&gt; 打开 WSL 终端，新建&lt;code&gt;/etc/wsl.conf&lt;/code&gt;文件，输入如下内容并保存。&lt;/p&gt;
+ &lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;[interop]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;appendWindowsPath &amp;#x3D; false&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+
+&lt;p&gt; 然后执行&lt;code&gt;wsl --shutdown&lt;/code&gt;，再重新启动 wsl，执行&lt;code&gt;echo $&amp;#123;PATH&amp;#125;&lt;/code&gt;检查是否含有 Windows 路径。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;更新系统&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;sudo&lt;/strong&gt; apt update&lt;br&gt;&lt;strong&gt;sudo&lt;/strong&gt; apt full-upgrade -y&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a href=&quot;https://openwrt.org/docs/guide-developer/build-system/install-buildsystem#debianubuntu&quot;&gt;准备编译工具&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;sudo&lt;/strong&gt; apt install -y ack antlr3 asciidoc autoconf automake \&lt;br&gt; autopoint binutils bison build-essential bzip2 ccache cmake cpio \&lt;br&gt; curl device-tree-compiler fastjar flex gawk gettext gcc-multilib \&lt;br&gt; g++-multilib git gperf haveged help2man intltool libc6-dev-i386 \&lt;br&gt; libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev \&lt;br&gt; libncurses5-dev libncursesw5-dev libreadline-dev libssl-dev libtool \&lt;br&gt; lrzsz mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf \&lt;br&gt; python2.7 python3 python3-pip qemu-utils rsync scons squashfs-tools &lt;br&gt; subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;/ol&gt;</summary>
+    
+    
+    
+    <category term="DIY" scheme="https://naizi.moe/categories/DIY/"/>
+    
+    
+    <category term="wsl" scheme="https://naizi.moe/tags/wsl/"/>
+    
+    <category term="openwrt" scheme="https://naizi.moe/tags/openwrt/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>升级3D打印机固件及远程打印方案</title>
+    <link href="https://naizi.moe/2021/08/28/2021-08-28-upgrade-3d-printer/"/>
+    <id>https://naizi.moe/2021/08/28/2021-08-28-upgrade-3d-printer/</id>
+    <published>2021-08-28T06:13:33.000Z</published>
+    <updated>2022-06-29T09:24:22.652Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;Ender 3 不愧是创想三维家的经典款 3D 打印机，一直没关注产品消息，不知道什么时候已经出了 V2 款了。&lt;/p&gt;
+&lt;p&gt;买当然是不会买的，原来的版本还是挺好用，购买的时候正好京东打折，当时 1k</summary>
+        
+      
+    
+    
+    
+    <category term="DIY" scheme="https://naizi.moe/categories/DIY/"/>
+    
+    
+    <category term="树莓派" scheme="https://naizi.moe/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/"/>
+    
+    <category term="3D print" scheme="https://naizi.moe/tags/3D-print/"/>
+    
+    <category term="Arduino" scheme="https://naizi.moe/tags/Arduino/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>圆周率里的麻将</title>
+    <link href="https://naizi.moe/2021/03/16/2021-03-17-mahjong-in-pai/"/>
+    <id>https://naizi.moe/2021/03/16/2021-03-17-mahjong-in-pai/</id>
+    <published>2021-03-16T16:25:57.000Z</published>
+    <updated>2022-06-29T09:24:22.648Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;2 月的时候，群友看 VTB 直播雀魂，发现主播为了防止互动的时候窥屏看到手牌，PS 了一张看起来像手牌的图来挡住真实的手牌。&lt;/p&gt;
+&lt;p&gt;群友受此启发，纷纷讨论自己也要这么玩，PS 各种役种的牌扮老虎，比如大家都喜欢的国士无双：&lt;/p&gt;
+&lt;center&gt;&lt;img data-src=&quot;/2021/03/16/2021-03-17-mahjong-in-pai/19m19p19s1234567z_1p.png&quot; class=&quot;&quot;&gt;&lt;/center&gt;
+
+&lt;p&gt;大家云集响应，因为之前正好写过&lt;a href=&quot;https://github.com/Neutralization/majsoul-generator&quot;&gt;生成器&lt;/a&gt;，趁此机会我就说群友要啥我就帮群友 PS，都可以做。后来群友觉得正经的役没意思，想搞点不一样的，说要搞个圆周率。这就有意思了。话题很自然的转到了那能不能胡牌的问题上，因为只有数字，先默认牌型是清一色，一试，发现小数点后最开始的14位数字就真的能凑成一副胡牌：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;3.&lt;code&gt;14159265358979&lt;/code&gt; -&amp;gt; 234 678 555 999 11&lt;/p&gt;
+&lt;/blockquote&gt;</summary>
+    
+    
+    
+    <category term="DIY" scheme="https://naizi.moe/categories/DIY/"/>
+    
+    
+    <category term="π" scheme="https://naizi.moe/tags/%CF%80/"/>
+    
+    <category term="麻将" scheme="https://naizi.moe/tags/%E9%BA%BB%E5%B0%86/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>自动化制作周刊哔哩哔哩排行榜</title>
+    <link href="https://naizi.moe/2021/03/06/2021-03-07-auto-bilibili-ranking/"/>
+    <id>https://naizi.moe/2021/03/06/2021-03-07-auto-bilibili-ranking/</id>
+    <published>2021-03-06T18:50:25.000Z</published>
+    <updated>2022-06-29T09:24:22.648Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;总结一下周刊哔哩哔哩排行榜制作流程自动化过程中遇到的一些问题。&lt;/p&gt;
+&lt;p&gt;之前的周刊制作过程中，组员各自领取不同部分的制作任务，每一部分的内容格式包含在不同的 yml 文件中。&lt;/p&gt;
+&lt;p&gt;通常先把 yml 中的 av 号取出，去下载对应的视频到本地，然后人工浏览选择实际制作时选取的片段，记录下片段的开始时间，修改 yml 中的对应字段。然后上传修改完成的 yml，转换成之后导入 Vegas 时需要的 xml 文件。&lt;/p&gt;
+&lt;p&gt;由于旧流程的局限性，没有考虑到视频尺寸的适配，因此在导入 Vegas 后，往往要手动对齐所有视频。另外由于不同部分的效果不一致（比如是否有过渡场景），也没有在 yml 中进行区分，往往还要再手动调整。工作量本质不大，但其实都是可以进行优化的场景。&lt;/p&gt;
+&lt;p&gt;早几年的时候一直听说 Adobe After Effects 脚本如何如何强大，表达式如何如何好用。怎奈 javascript 从未接触，一直没能下决心去了解。这次也算是终于下了决心，开始了 AE 自动化制作周刊之路。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="杂记" scheme="https://naizi.moe/categories/%E6%9D%82%E8%AE%B0/"/>
+    
+    
+    <category term="bilibili" scheme="https://naizi.moe/tags/bilibili/"/>
+    
+    <category term="ffmpeg" scheme="https://naizi.moe/tags/ffmpeg/"/>
+    
+    <category term="javascript" scheme="https://naizi.moe/tags/javascript/"/>
+    
+    <category term="powershell" scheme="https://naizi.moe/tags/powershell/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>试做了一个明日方舟的小夜灯</title>
+    <link href="https://naizi.moe/2021/01/11/2021-01-12-arknight-lamp/"/>
+    <id>https://naizi.moe/2021/01/11/2021-01-12-arknight-lamp/</id>
+    <published>2021-01-11T16:32:09.000Z</published>
+    <updated>2022-06-29T09:24:22.644Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;之前也有在尝试用 3D 打印做奇怪的东西，建模一直在用的是 AutoDesk 家的线上工具&lt;a href=&quot;https://www.tinkercad.com/&quot;&gt;Tinkercad&lt;/a&gt;，属于那种拖拖拽拽就能拼出差不多模型的工具，还挺好用。&lt;/p&gt;
+&lt;p&gt;这次尝试做小夜灯，原本是打算做成游戏关卡结算时的三星标志，后来想了想，为了更显而易见的突出方舟元素，用了游戏里医疗干员的标志。主要因为医疗干员的标志几何对称性很好，估摸着可以偷懒。&lt;/p&gt;
+&lt;p&gt;软件用了同事推荐的&lt;a href=&quot;https://www.openscad.org/&quot;&gt;OpenSCAD&lt;/a&gt;，通过代码的方式来进行建模。我基本上是一边查文档一边写，很容易就上手找到需要的功能写出来了。&lt;/p&gt;
+&lt;p&gt;除了没有代码自动格式化这一点略有不习惯，代码逻辑支持实体的交并补操作，渲染后可以意见导出 stl 格式文档进行后续打印工作，实在是方便的很。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="DIY" scheme="https://naizi.moe/categories/DIY/"/>
+    
+    
+    <category term="3D print" scheme="https://naizi.moe/tags/3D-print/"/>
+    
+    <category term="openscad" scheme="https://naizi.moe/tags/openscad/"/>
+    
+  </entry>
+  
+</feed>
