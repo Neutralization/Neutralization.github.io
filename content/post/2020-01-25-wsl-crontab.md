@@ -18,11 +18,11 @@ tags:
 
 安装 WSL 并没有想象中的复杂。进入控制面板->程序和功能->启用或关闭 Windows 功能，勾选`适用于Linux的Windows子系统`，等待安装完毕，然后重启系统。
 
-![适用于Linux的Windows子系统](/2020-01-25-wsl-crontab/Snipaste_2020-01-25_19-14-26.png)
+![适用于Linux的Windows子系统](/pic/2020-01-25-wsl-crontab/Snipaste_2020-01-25_19-14-26.png)
 
 重启完毕，开始菜单选择 MicrosoftStore，搜索 linux 就能够找到可供使用的 linux 发行版，我这里选择了 Ubuntu18.04LTS。
 
-![MicrosoftStore](/2020-01-25-wsl-crontab/Snipaste_2020-01-25_02-08-03.png)
+![MicrosoftStore](/pic/2020-01-25-wsl-crontab/Snipaste_2020-01-25_02-08-03.png)
 
 应用安装完毕后，启动应用会要求设定基础的用户名和密码，接着，一个可供使用的 WSL 就准备就绪了。
 
@@ -46,7 +46,7 @@ tags:
 
 这样我们就能够保证 crontab 在每次 Windows 启动后常驻后台了。一切正常的话重启 Windows，在任务管理器能看到一个名称为 cron 的进程。
 
-![任务管理器](/2020-01-25-wsl-crontab/Snipaste_2020-01-25_19-16-06.png)
+![任务管理器](/pic/2020-01-25-wsl-crontab/Snipaste_2020-01-25_19-16-06.png)
 
 ## 使用 crontab
 

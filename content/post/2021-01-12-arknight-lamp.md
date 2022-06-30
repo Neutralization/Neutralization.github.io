@@ -22,8 +22,8 @@ tags:
 
 电池盒是圣诞节的时候那种细绳装饰灯的电池，考虑到亮度和分散光源，接了一个 COB 灯板。
 
-![lamp](/2021-01-12-arknight-lamp/battery.jpg)
+![lamp](/pic/2021-01-12-arknight-lamp/battery.jpg)
 
-![lamp](/2021-01-12-arknight-lamp/lamp.jpg)
+![lamp](/pic/2021-01-12-arknight-lamp/lamp.jpg)
 
 工程文件放在[github](https://github.com/Neutralization/Arknights-lamp)上了。

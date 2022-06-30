@@ -62,7 +62,7 @@ with open('feed.html', 'w', encoding='utf-8-sig') as f:
 
 然后继续往下看子节点，直到找到具体的微博链接：
 
-![信息流HTML](/2019-01-05-weibo-feed-adver/2019-01-05_17-47.png)
+![信息流HTML](/pic/2019-01-05-weibo-feed-adver/2019-01-05_17-47.png)
 
 获取此节点的 xpath：`"//div[@feedtype]//a[@action-history='rec=1']/@action-data"`
 
@@ -126,4 +126,4 @@ if __name__ == "__main__":
 
 就结果而言效果还不错，但也发现信息流广告里还会有一些关注了的博主的正常微博内容，可以考虑和自己的关注列表对比来筛除。
 
-![信息流广告](/2019-01-05-weibo-feed-adver/2019-01-05_18-03.png)
+![信息流广告](/pic/2019-01-05-weibo-feed-adver/2019-01-05_18-03.png)
