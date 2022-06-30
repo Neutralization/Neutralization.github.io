@@ -36,7 +36,7 @@
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="css-筛选广告内容">CSS 筛选广告内容&lt;/h2>
 &lt;p>打开保存的 html，格式化一下代码，找到存在&lt;code>feedtype=&amp;quot;ad&amp;quot;&lt;/code>属性的节点（因为不是每次获取都会有信息流广告，所以可能需要获取很多次）。&lt;/p>
 &lt;p>然后继续往下看子节点，直到找到具体的微博链接：&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/2019-01-05-weibo-feed-adver/2019-01-05_17-47.png"
+&lt;p>&lt;img src="https://naizi.moe/pic/2019-01-05-weibo-feed-adver/2019-01-05_17-47.png"
 loading="lazy"
 alt="信息流HTML"
 >&lt;/p>
@@ -84,7 +84,7 @@ alt="信息流HTML"
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> main()
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="eof">EOF&lt;/h2>
 &lt;p>就结果而言效果还不错，但也发现信息流广告里还会有一些关注了的博主的正常微博内容，可以考虑和自己的关注列表对比来筛除。&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/2019-01-05-weibo-feed-adver/2019-01-05_18-03.png"
+&lt;p>&lt;img src="https://naizi.moe/pic/2019-01-05-weibo-feed-adver/2019-01-05_18-03.png"
 loading="lazy"
 alt="信息流广告"
 >&lt;/p></description></item></channel></rss>

@@ -88,12 +88,12 @@
 &lt;!-- raw HTML omitted -->
 &lt;h2 id="安装-wsl">安装 WSL&lt;/h2>
 &lt;p>安装 WSL 并没有想象中的复杂。进入控制面板-&amp;gt;程序和功能-&amp;gt;启用或关闭 Windows 功能，勾选&lt;code>适用于Linux的Windows子系统&lt;/code>，等待安装完毕，然后重启系统。&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/2020-01-25-wsl-crontab/Snipaste_2020-01-25_19-14-26.png"
+&lt;p>&lt;img src="https://naizi.moe/pic/2020-01-25-wsl-crontab/Snipaste_2020-01-25_19-14-26.png"
 loading="lazy"
 alt="适用于Linux的Windows子系统"
 >&lt;/p>
 &lt;p>重启完毕，开始菜单选择 MicrosoftStore，搜索 linux 就能够找到可供使用的 linux 发行版，我这里选择了 Ubuntu18.04LTS。&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/2020-01-25-wsl-crontab/Snipaste_2020-01-25_02-08-03.png"
+&lt;p>&lt;img src="https://naizi.moe/pic/2020-01-25-wsl-crontab/Snipaste_2020-01-25_02-08-03.png"
 loading="lazy"
 alt="MicrosoftStore"
 >&lt;/p>
@@ -115,7 +115,7 @@ alt="MicrosoftStore"
 &lt;p>C:\Windows\System32\wsl.exe sudo /etc/init.d/cron start&lt;/p>
 &lt;/blockquote>
 &lt;p>这样我们就能够保证 crontab 在每次 Windows 启动后常驻后台了。一切正常的话重启 Windows，在任务管理器能看到一个名称为 cron 的进程。&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/2020-01-25-wsl-crontab/Snipaste_2020-01-25_19-16-06.png"
+&lt;p>&lt;img src="https://naizi.moe/pic/2020-01-25-wsl-crontab/Snipaste_2020-01-25_19-16-06.png"
 loading="lazy"
 alt="任务管理器"
 >&lt;/p>

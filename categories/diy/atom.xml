@@ -166,12 +166,12 @@ Editors ---&amp;gt;
 >https://octopi.local/&lt;/a> ，如果摄像头正常的话，就能看到打印状态了。&lt;/p>
 &lt;p>界面里可以一览无余的看到打印机当前的喷嘴和热床温度，打印状态，Gcode 图示等等。也可以直接通过网页上传 Gcode 文件直接打印，由于是通过 USB 连接到打印机，免去了反复插拔 SD 卡传输文件的步骤，真的是方便了很多。&lt;/p>
 &lt;p>OctoPrint 还提供视频录制，开启后可以录制打印过程中的摄像头画面，生成延时视频。&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/2021-08-28-upgrade-3d-printer/Snipaste_2021-08-28_14-55-44.png"
+&lt;p>&lt;img src="https://naizi.moe/pic/2021-08-28-upgrade-3d-printer/Snipaste_2021-08-28_14-55-44.png"
 loading="lazy"
 alt="Timelapse"
 >&lt;/p></description></item><item><title>圆周率里的麻将</title><link>https://naizi.moe/2021/03/17/%E5%9C%86%E5%91%A8%E7%8E%87%E9%87%8C%E7%9A%84%E9%BA%BB%E5%B0%86/</link><pubDate>Wed, 17 Mar 2021 00:00:00 +0000</pubDate><guid>https://naizi.moe/2021/03/17/%E5%9C%86%E5%91%A8%E7%8E%87%E9%87%8C%E7%9A%84%E9%BA%BB%E5%B0%86/</guid><description>&lt;p>2 月的时候，群友看 VTB 直播雀魂，发现主播为了防止互动的时候窥屏看到手牌，PS 了一张看起来像手牌的图来挡住真实的手牌。&lt;/p>
 &lt;p>群友受此启发，纷纷讨论自己也要这么玩，PS 各种役种的牌扮老虎，比如大家都喜欢的国士无双：&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/2021-03-17-mahjong-in-pai/19m19p19s1234567z_1p.png"
+&lt;p>&lt;img src="https://naizi.moe/pic/2021-03-17-mahjong-in-pai/19m19p19s1234567z_1p.png"
 loading="lazy"
 alt="国士无双"
 >&lt;/p>
@@ -194,7 +194,7 @@ alt="国士无双"
 &lt;p>&lt;code>九莲宝灯&lt;/code>在第 32452 位小数，数列是&lt;code>9 2 1 9 5 1 9 6 7 5 1 4 8 3&lt;/code>，牌型是&lt;code>111 234 55 678 999&lt;/code>，还是个最漂亮的九莲宝灯。&lt;/p>
 &lt;p>&lt;code>四暗刻绿一色&lt;/code>在第 162552 位小数，数列是&lt;code>4 2 4 3 3 3 4 8 8 2 2 6 6 6&lt;/code>，牌型是&lt;code>222 333 444 666 88&lt;/code>，显然这还是个纯绿一色。&lt;/p>
 &lt;p>最后回顾下一切的开端：&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/2021-03-17-mahjong-in-pai/screenshot.jpg"
+&lt;p>&lt;img src="https://naizi.moe/pic/2021-03-17-mahjong-in-pai/screenshot.jpg"
 loading="lazy"
 alt="开端"
 >&lt;/p></description></item><item><title>试做了一个明日方舟的小夜灯</title><link>https://naizi.moe/2021/01/12/%E8%AF%95%E5%81%9A%E4%BA%86%E4%B8%80%E4%B8%AA%E6%98%8E%E6%97%A5%E6%96%B9%E8%88%9F%E7%9A%84%E5%B0%8F%E5%A4%9C%E7%81%AF/</link><pubDate>Tue, 12 Jan 2021 00:00:00 +0000</pubDate><guid>https://naizi.moe/2021/01/12/%E8%AF%95%E5%81%9A%E4%BA%86%E4%B8%80%E4%B8%AA%E6%98%8E%E6%97%A5%E6%96%B9%E8%88%9F%E7%9A%84%E5%B0%8F%E5%A4%9C%E7%81%AF/</guid><description>&lt;p>之前也有在尝试用 3D 打印做奇怪的东西，建模一直在用的是 AutoDesk 家的线上工具&lt;a class="link" href="https://www.tinkercad.com/" target="_blank" rel="noopener"
@@ -206,11 +206,11 @@ alt="开端"
 &lt;!-- raw HTML omitted -->
 &lt;p>放两张成果图，使用的是创想三维的 Ender-3 打印机。冬天材料热涨冷缩比较严重结果留下了两道印子，有点可惜。&lt;/p>
 &lt;p>电池盒是圣诞节的时候那种细绳装饰灯的电池，考虑到亮度和分散光源，接了一个 COB 灯板。&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/2021-01-12-arknight-lamp/battery.jpg"
+&lt;p>&lt;img src="https://naizi.moe/pic/2021-01-12-arknight-lamp/battery.jpg"
 loading="lazy"
 alt="lamp"
 >&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/2021-01-12-arknight-lamp/lamp.jpg"
+&lt;p>&lt;img src="https://naizi.moe/pic/2021-01-12-arknight-lamp/lamp.jpg"
 loading="lazy"
 alt="lamp"
 >&lt;/p>

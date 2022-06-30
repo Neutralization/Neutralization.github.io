@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>H⁺ + OH⁻ → H₂O</title><link>https://naizi.moe/</link><description>Recent content on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 29 Jun 2022 09:35:38 +0000</lastBuildDate><atom:link href="https://naizi.moe/atom.xml" rel="self" type="application/rss+xml"/><item><title>Search</title><link>https://naizi.moe/search/</link><pubDate>Wed, 29 Jun 2022 09:35:38 +0000</pubDate><guid>https://naizi.moe/search/</guid><description/></item><item><title>OpenWrt 折腾笔记</title><link>https://naizi.moe/2021/10/05/openwrt-%E6%8A%98%E8%85%BE%E7%AC%94%E8%AE%B0/</link><pubDate>Tue, 05 Oct 2021 00:00:00 +0000</pubDate><guid>https://naizi.moe/2021/10/05/openwrt-%E6%8A%98%E8%85%BE%E7%AC%94%E8%AE%B0/</guid><description>&lt;h2 id="准备工作">准备工作&lt;/h2>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>H⁺ + OH⁻ → H₂O</title><link>https://naizi.moe/</link><description>Recent content on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Thu, 30 Jun 2022 03:52:46 +0000</lastBuildDate><atom:link href="https://naizi.moe/atom.xml" rel="self" type="application/rss+xml"/><item><title>Search</title><link>https://naizi.moe/search/</link><pubDate>Thu, 30 Jun 2022 03:52:46 +0000</pubDate><guid>https://naizi.moe/search/</guid><description/></item><item><title>OpenWrt 折腾笔记</title><link>https://naizi.moe/2021/10/05/openwrt-%E6%8A%98%E8%85%BE%E7%AC%94%E8%AE%B0/</link><pubDate>Tue, 05 Oct 2021 00:00:00 +0000</pubDate><guid>https://naizi.moe/2021/10/05/openwrt-%E6%8A%98%E8%85%BE%E7%AC%94%E8%AE%B0/</guid><description>&lt;h2 id="准备工作">准备工作&lt;/h2>
 &lt;ol>
 &lt;li>
 &lt;p>安装 WSL，不再赘述。&lt;/p>
@@ -166,12 +166,12 @@ Editors ---&amp;gt;
 >https://octopi.local/&lt;/a> ，如果摄像头正常的话，就能看到打印状态了。&lt;/p>
 &lt;p>界面里可以一览无余的看到打印机当前的喷嘴和热床温度，打印状态，Gcode 图示等等。也可以直接通过网页上传 Gcode 文件直接打印，由于是通过 USB 连接到打印机，免去了反复插拔 SD 卡传输文件的步骤，真的是方便了很多。&lt;/p>
 &lt;p>OctoPrint 还提供视频录制，开启后可以录制打印过程中的摄像头画面，生成延时视频。&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/2021-08-28-upgrade-3d-printer/Snipaste_2021-08-28_14-55-44.png"
+&lt;p>&lt;img src="https://naizi.moe/pic/2021-08-28-upgrade-3d-printer/Snipaste_2021-08-28_14-55-44.png"
 loading="lazy"
 alt="Timelapse"
 >&lt;/p></description></item><item><title>圆周率里的麻将</title><link>https://naizi.moe/2021/03/17/%E5%9C%86%E5%91%A8%E7%8E%87%E9%87%8C%E7%9A%84%E9%BA%BB%E5%B0%86/</link><pubDate>Wed, 17 Mar 2021 00:00:00 +0000</pubDate><guid>https://naizi.moe/2021/03/17/%E5%9C%86%E5%91%A8%E7%8E%87%E9%87%8C%E7%9A%84%E9%BA%BB%E5%B0%86/</guid><description>&lt;p>2 月的时候，群友看 VTB 直播雀魂，发现主播为了防止互动的时候窥屏看到手牌，PS 了一张看起来像手牌的图来挡住真实的手牌。&lt;/p>
 &lt;p>群友受此启发，纷纷讨论自己也要这么玩，PS 各种役种的牌扮老虎，比如大家都喜欢的国士无双：&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/2021-03-17-mahjong-in-pai/19m19p19s1234567z_1p.png"
+&lt;p>&lt;img src="https://naizi.moe/pic/2021-03-17-mahjong-in-pai/19m19p19s1234567z_1p.png"
 loading="lazy"
 alt="国士无双"
 >&lt;/p>
@@ -194,7 +194,7 @@ alt="国士无双"
 &lt;p>&lt;code>九莲宝灯&lt;/code>在第 32452 位小数，数列是&lt;code>9 2 1 9 5 1 9 6 7 5 1 4 8 3&lt;/code>，牌型是&lt;code>111 234 55 678 999&lt;/code>，还是个最漂亮的九莲宝灯。&lt;/p>
 &lt;p>&lt;code>四暗刻绿一色&lt;/code>在第 162552 位小数，数列是&lt;code>4 2 4 3 3 3 4 8 8 2 2 6 6 6&lt;/code>，牌型是&lt;code>222 333 444 666 88&lt;/code>，显然这还是个纯绿一色。&lt;/p>
 &lt;p>最后回顾下一切的开端：&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/2021-03-17-mahjong-in-pai/screenshot.jpg"
+&lt;p>&lt;img src="https://naizi.moe/pic/2021-03-17-mahjong-in-pai/screenshot.jpg"
 loading="lazy"
 alt="开端"
 >&lt;/p></description></item><item><title>自动化制作周刊哔哩哔哩排行榜</title><link>https://naizi.moe/2021/03/07/%E8%87%AA%E5%8A%A8%E5%8C%96%E5%88%B6%E4%BD%9C%E5%91%A8%E5%88%8A%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E6%8E%92%E8%A1%8C%E6%A6%9C/</link><pubDate>Sun, 07 Mar 2021 00:00:00 +0000</pubDate><guid>https://naizi.moe/2021/03/07/%E8%87%AA%E5%8A%A8%E5%8C%96%E5%88%B6%E4%BD%9C%E5%91%A8%E5%88%8A%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E6%8E%92%E8%A1%8C%E6%A6%9C/</guid><description>&lt;p>总结一下周刊哔哩哔哩排行榜制作流程自动化过程中遇到的一些问题。&lt;/p>
@@ -277,11 +277,11 @@ alt="开端"
 &lt;!-- raw HTML omitted -->
 &lt;p>放两张成果图，使用的是创想三维的 Ender-3 打印机。冬天材料热涨冷缩比较严重结果留下了两道印子，有点可惜。&lt;/p>
 &lt;p>电池盒是圣诞节的时候那种细绳装饰灯的电池，考虑到亮度和分散光源，接了一个 COB 灯板。&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/2021-01-12-arknight-lamp/battery.jpg"
+&lt;p>&lt;img src="https://naizi.moe/pic/2021-01-12-arknight-lamp/battery.jpg"
 loading="lazy"
 alt="lamp"
 >&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/2021-01-12-arknight-lamp/lamp.jpg"
+&lt;p>&lt;img src="https://naizi.moe/pic/2021-01-12-arknight-lamp/lamp.jpg"
 loading="lazy"
 alt="lamp"
 >&lt;/p>
@@ -394,12 +394,12 @@ alt="lamp"
 &lt;!-- raw HTML omitted -->
 &lt;h2 id="安装-wsl">安装 WSL&lt;/h2>
 &lt;p>安装 WSL 并没有想象中的复杂。进入控制面板-&amp;gt;程序和功能-&amp;gt;启用或关闭 Windows 功能，勾选&lt;code>适用于Linux的Windows子系统&lt;/code>，等待安装完毕，然后重启系统。&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/2020-01-25-wsl-crontab/Snipaste_2020-01-25_19-14-26.png"
+&lt;p>&lt;img src="https://naizi.moe/pic/2020-01-25-wsl-crontab/Snipaste_2020-01-25_19-14-26.png"
 loading="lazy"
 alt="适用于Linux的Windows子系统"
 >&lt;/p>
 &lt;p>重启完毕，开始菜单选择 MicrosoftStore，搜索 linux 就能够找到可供使用的 linux 发行版，我这里选择了 Ubuntu18.04LTS。&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/2020-01-25-wsl-crontab/Snipaste_2020-01-25_02-08-03.png"
+&lt;p>&lt;img src="https://naizi.moe/pic/2020-01-25-wsl-crontab/Snipaste_2020-01-25_02-08-03.png"
 loading="lazy"
 alt="MicrosoftStore"
 >&lt;/p>
@@ -421,7 +421,7 @@ alt="MicrosoftStore"
 &lt;p>C:\Windows\System32\wsl.exe sudo /etc/init.d/cron start&lt;/p>
 &lt;/blockquote>
 &lt;p>这样我们就能够保证 crontab 在每次 Windows 启动后常驻后台了。一切正常的话重启 Windows，在任务管理器能看到一个名称为 cron 的进程。&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/2020-01-25-wsl-crontab/Snipaste_2020-01-25_19-16-06.png"
+&lt;p>&lt;img src="https://naizi.moe/pic/2020-01-25-wsl-crontab/Snipaste_2020-01-25_19-16-06.png"
 loading="lazy"
 alt="任务管理器"
 >&lt;/p>
@@ -1211,7 +1211,7 @@ target="_blank" rel="noopener"
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> __name__ &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#39;__main__&amp;#39;&lt;/span>:
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> main()
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="eof">EOF&lt;/h2>
-&lt;p>&lt;img src="https://naizi.moe/2019-10-02-memobird-rss/2019-10-02_20-38.gif"
+&lt;p>&lt;img src="https://naizi.moe/pic/2019-10-02-memobird-rss/2019-10-02_20-38.gif"
 loading="lazy"
 alt="gugugu"
 >&lt;/p></description></item><item><title>Archives</title><link>https://naizi.moe/archives/</link><pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/archives/</guid><description/></item><item><title>哔哩哔哩下载工具 二</title><link>https://naizi.moe/2019/04/30/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7-%E4%BA%8C/</link><pubDate>Tue, 30 Apr 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/04/30/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7-%E4%BA%8C/</guid><description>&lt;p>主要解决一些之前遇到的坑，填一些留下的 TODO。&lt;/p>
@@ -1640,7 +1640,7 @@ file &amp;lsquo;part3.flv&amp;rsquo;&lt;/p>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="css-筛选广告内容">CSS 筛选广告内容&lt;/h2>
 &lt;p>打开保存的 html，格式化一下代码，找到存在&lt;code>feedtype=&amp;quot;ad&amp;quot;&lt;/code>属性的节点（因为不是每次获取都会有信息流广告，所以可能需要获取很多次）。&lt;/p>
 &lt;p>然后继续往下看子节点，直到找到具体的微博链接：&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/2019-01-05-weibo-feed-adver/2019-01-05_17-47.png"
+&lt;p>&lt;img src="https://naizi.moe/pic/2019-01-05-weibo-feed-adver/2019-01-05_17-47.png"
 loading="lazy"
 alt="信息流HTML"
 >&lt;/p>
@@ -1688,7 +1688,7 @@ alt="信息流HTML"
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> main()
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="eof">EOF&lt;/h2>
 &lt;p>就结果而言效果还不错，但也发现信息流广告里还会有一些关注了的博主的正常微博内容，可以考虑和自己的关注列表对比来筛除。&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/2019-01-05-weibo-feed-adver/2019-01-05_18-03.png"
+&lt;p>&lt;img src="https://naizi.moe/pic/2019-01-05-weibo-feed-adver/2019-01-05_18-03.png"
 loading="lazy"
 alt="信息流广告"
 >&lt;/p></description></item><item><title>从零开始 Raspberry Pi</title><link>https://naizi.moe/2018/12/08/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-raspberry-pi/</link><pubDate>Sat, 08 Dec 2018 00:00:00 +0000</pubDate><guid>https://naizi.moe/2018/12/08/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-raspberry-pi/</guid><description>&lt;p>为了让吃灰的树莓派重新开始工作，这回不瞎折腾了，直接用官方系统。&lt;/p>
