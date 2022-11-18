@@ -92,7 +92,7 @@ Combining 字符的问题也得到了解决，Unicode 官方规范中规定了 M
 
 但 Emoji 还是给我捣了乱，Emoji 因为都是全角宽度，无法判断像素位置是否顶格，这个问题只能留到之后再寻找合适的解法了。
 
-### Update 2011/10/03
+### Update 2022/10/03
 
 成了，生成图片然后切左右透明像素就是了，[问题解决](https://github.com/Neutralization/MADRankingScripts/commit/100cb976e83db6e9f45575e43742b2bed3ca598b#diff-627c0a0588769c50e32e1fc457e9c787835f1d5ad8ff6845142d32b63589b1ff)（
 
