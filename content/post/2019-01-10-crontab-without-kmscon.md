@@ -1,5 +1,5 @@
 ---
-title: 没有KMSCON的第一天，想他
+title: 没有 KMSCON 的第一天，想他
 date: 2019-01-10 00:24:24
 categories:
     - 杂记

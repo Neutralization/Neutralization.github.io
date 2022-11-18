@@ -1,5 +1,5 @@
 ---
-title: RSS咕咕机
+title: RSS 咕咕机
 date: 2019-10-02 20:38:00
 categories:
     - 爬虫
@@ -118,7 +118,7 @@ import sqlite3
 import time
 
 ## bilibili
-uname = '白上吹雪Official'
+uname = '白上吹雪 Official'
 uid = '332704117'
 
 ## memobird

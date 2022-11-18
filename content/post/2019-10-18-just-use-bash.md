@@ -1,5 +1,5 @@
 ---
-title: jojo，python的能力是有极限的
+title: jojo，python 的能力是有极限的
 date: 2019-10-18 12:18:24
 categories:
     - 杂记
@@ -28,7 +28,7 @@ tags:
 
 吭哧吭哧把原始数据整理完，搞成 csv 了，点个“导入”，给我来了个报错：
 
--   单次导入只支持 1000 条
+- 单次导入只支持 1000 条
 
 崽啊，9102 年末了，我 csv 里面近百万条数据，你跟我说一次 1000？我不下班啦？
 
@@ -61,7 +61,7 @@ for k,v in datas.items():
 
 ## 换成 bash
 
-要切割文件的话 split 的确很方便:
+要切割文件的话 split 的确很方便：
 
 > split test.csv -l 1000 -d -a 3 test\_\_
 
@@ -83,7 +83,7 @@ for k,v in datas.items():
 
 将他们组合一下：
 
-> split -l 1000 test.csv -d -a 3 test** && ls | grep test** | xargs -n1 -I file mv file file.csv
+> split -l 1000 test.csv -d -a 3 test**&& ls | grep test** | xargs -n1 -I file mv file file.csv
 
 回车执行，1 秒都不需要，爽死了。
 
@@ -91,7 +91,7 @@ for k,v in datas.items():
 
 但这样还是需要自己手打需要切割的文件名，不够爽。尝试把代码再变长一点：
 
-> ls | grep .csv$ | sed 's/.csv//g' | xargs -n1 -I file split -l 1000 file.csv -d -a 3 file** && ls | grep ** | xargs -n1 -I file mv file file.csv
+> ls | grep .csv$ | sed 's/.csv//g' | xargs -n1 -I file split -l 1000 file.csv -d -a 3 file**&& ls | grep** | xargs -n1 -I file mv file file.csv
 
 以管道命令分割解释一下：
 

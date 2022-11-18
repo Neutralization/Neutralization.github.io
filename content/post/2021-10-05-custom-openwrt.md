@@ -67,7 +67,7 @@ tags:
     git branch --set-upstream-to=origin/master master
     ```
 
-3. 修改路由IP地址
+3. 修改路由 IP 地址
 
     ```bash
    > sed -i 's/192.168.1.1/192.168.2.1/g' package/base-files/files/bin/config_generate
@@ -149,4 +149,4 @@ opkg 安装部分官方包的时候会提示 Kernel 版本不对`kernel is not c
 
 编译 run 了一万年，再不写点什么记下来，下次编译根本记不住了.jpg
 
-后来参考学习了 P3TERX 的 [这篇文章](https://p3terx.com/archives/build-openwrt-with-github-actions.html) 利用 Github Action 进行编译，并且按照 [LEDE的这个PR](https://github.com/coolsnowwolf/lede/pull/7796) 打开了缓存工具链，再也不用面对奇怪的环境问题和该参数重编又是四、五个小时的窘境了。
+后来参考学习了 P3TERX 的 [这篇文章](https://p3terx.com/archives/build-openwrt-with-github-actions.html) 利用 Github Action 进行编译，并且按照 [LEDE 的这个 PR](https://github.com/coolsnowwolf/lede/pull/7796) 打开了缓存工具链，再也不用面对奇怪的环境问题和该参数重编又是四、五个小时的窘境了。

@@ -21,7 +21,7 @@ tags:
 
 ## 安装 OpenSSH Server
 
-Windows 10(1809)虽然自带了 OpenSSH 的 Server 和 Client，但默认并没有安装。
+Windows 10(1809) 虽然自带了 OpenSSH 的 Server 和 Client，但默认并没有安装。
 
 参照[Microsoft 的文档](https://docs.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse)给两台电脑都安装 OpenSSH：
 

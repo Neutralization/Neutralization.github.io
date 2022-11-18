@@ -11,9 +11,9 @@ tags:
     - 周刊
 ---
 
-最开始给哔哩哔哩周刊写[`自动化脚本`](https://github.com/Neutralization/BiliBiliRankingScripts)的时候，还不觉得生成图片能遇到什么坑。毕竟之前也用过Pillow库，算是比较熟悉了。而且遇到的都是些在普通不过的正常文本。
+最开始给哔哩哔哩周刊写[`自动化脚本`](https://github.com/Neutralization/BiliBiliRankingScripts)的时候，还不觉得生成图片能遇到什么坑。毕竟之前也用过 Pillow 库，算是比较熟悉了。而且遇到的都是些在普通不过的正常文本。
 
-直到躲不开的emoji开始出现了。
+直到躲不开的 emoji 开始出现了。
 
 ## 一些普通的 Emoji
 
@@ -23,7 +23,7 @@ tags:
 
 但后来就开始遇到各种标题里的花活，什么上下标字符花体字粗斜体全来了。比如
 > [【𝟒𝐊 𝟔𝟎𝐅𝐏𝐒】这首《𝑭𝒂𝒍𝒍𝒊𝒏𝒈 𝑨𝒈𝒂𝒊𝒏》如今治愈了多少人！！! ℳ₯㎕-沉 沦](https://www.bilibili.com/video/BV1xV41167qm)
-> 
+>
 自此真正打响了与 Unicode 斗争的第一枪。
 
 ## 一些普通的 Unicode
@@ -40,7 +40,7 @@ tags:
 
 只能承认它杀死了比赛。但其实类似的标题并不是第一次见，在更早之前，我算是见过它的一位大前辈：
 
-[![【初音ミク】宇宙大规模11次元构造体【ATOLS】](/pic/2022-08-09-fight-with-unicode/Snipaste_2022-08-10_16-32-58.png)](https://www.nicovideo.jp/watch/sm28869680)
+[![【初音ミク】宇宙大规模 11 次元构造体【ATOLS】](/pic/2022-08-09-fight-with-unicode/Snipaste_2022-08-10_16-32-58.png)](https://www.nicovideo.jp/watch/sm28869680)
 
 这位前辈更是重量级，即便在写这篇记录的时候，我也不得不佩服这种和视频契合的标题风格确实是非常到位。
 
@@ -54,11 +54,11 @@ tags:
 
 ## MAD 周刊，新的挑战
 
-接手开始[ `MAD 周刊的自动化`](https://github.com/Neutralization/MADRankingScripts)后，很快又不得不面对 Unicode 带来的问题。然而实际上，应该说是 Unicode 和 Adobe 共同带来的问题。
+接手开始[`MAD 周刊的自动化`](https://github.com/Neutralization/MADRankingScripts)后，很快又不得不面对 Unicode 带来的问题。然而实际上，应该说是 Unicode 和 Adobe 共同带来的问题。
 
 为了保证原始 MAD 周刊工程文件的纯洁性，所有的文本都按照文本图层来进行修改。本来这也没有什么问题。
 
-但是原工程使用的大量表达式，是基于旧版的 ExtendScript 引擎，毕竟工程本身是2016年的产物。但之前做哔哩哔哩周刊时一直用的是 JavaScript 引擎的表达式，这就产生了几个问题：
+但是原工程使用的大量表达式，是基于旧版的 ExtendScript 引擎，毕竟工程本身是 2016 年的产物。但之前做哔哩哔哩周刊时一直用的是 JavaScript 引擎的表达式，这就产生了几个问题：
 
 1. 特殊的 Unicode 字符需要使用不同的字体才能正常显示
 2. ExtendScript 不能修改文本图层的部分字体样式属性
@@ -90,7 +90,11 @@ Combining 字符的问题也得到了解决，Unicode 官方规范中规定了 M
 
 于是决定同哔哩哔哩周刊一样通过前端截图来解决这个问题。同时考虑到排版影响，部分 MAD 标题常用全角符号，导致标题的起始像素位置其实并不顶格，便在脚本中加入了一个粗略的判断，进行一个 X 轴的移位使得视觉上显得更对齐一些。
 
-但 Emoji 还是给我捣了乱，Emoji因为都是全角宽度，无法判断像素位置是否顶格，这个问题只能留到之后再寻找合适的解法了。
+但 Emoji 还是给我捣了乱，Emoji 因为都是全角宽度，无法判断像素位置是否顶格，这个问题只能留到之后再寻找合适的解法了。
+
+### Update 2011/10/03
+
+成了，生成图片然后切左右透明像素就是了，[问题解决](https://github.com/Neutralization/MADRankingScripts/commit/100cb976e83db6e9f45575e43742b2bed3ca598b#diff-627c0a0588769c50e32e1fc457e9c787835f1d5ad8ff6845142d32b63589b1ff)（
 
 ## 未尽之事
 

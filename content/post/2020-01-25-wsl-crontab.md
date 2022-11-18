@@ -1,5 +1,5 @@
 ---
-title: Windows使用WSL配置crontab定时任务
+title: Windows 使用 WSL 配置 crontab 定时任务
 date: 2020-01-25 02:01:30
 categories:
     - 杂记
@@ -18,7 +18,7 @@ tags:
 
 安装 WSL 并没有想象中的复杂。进入控制面板->程序和功能->启用或关闭 Windows 功能，勾选`适用于Linux的Windows子系统`，等待安装完毕，然后重启系统。
 
-![适用于Linux的Windows子系统](/pic/2020-01-25-wsl-crontab/Snipaste_2020-01-25_19-14-26.png)
+![适用于 Linux 的 Windows 子系统](/pic/2020-01-25-wsl-crontab/Snipaste_2020-01-25_19-14-26.png)
 
 重启完毕，开始菜单选择 MicrosoftStore，搜索 linux 就能够找到可供使用的 linux 发行版，我这里选择了 Ubuntu18.04LTS。
 

@@ -44,7 +44,7 @@ Vegas 的导入视频过程，使用的是 xml 还是 yml 文件其实没有本�
 
 于是我分别编写了 `AddLayer`, `AddVideoProperty`, `AddAudioProperty` 三个函数，包装了 Adobe 的 `layers.add` 和 `property.setValueAtTime` 两个方法。
 
-在编写函数的过程中，因为是 Vegas->AfterEffects 复刻，Vegas 中的过渡曲线我在 AE 中没有找到一致的傻瓜式功能，只能自己去实现曲线的效果。这里就遇到了 Adobe 文档 “点到为止” 的问题：它没有提供详细的示例代码。
+在编写函数的过程中，因为是 Vegas->AfterEffects 复刻，Vegas 中的过渡曲线我在 AE 中没有找到一致的傻瓜式功能，只能自己去实现曲线的效果。这里就遇到了 Adobe 文档“点到为止”的问题：它没有提供详细的示例代码。
 
 原本是计划使用 AE 表达式（区别于 AE 脚本）来实现的，但是文档中对于如何添加表达式并没有解释的很详细，Google 和 StackOverflow 也没能提供有价值的信息。反复翻阅文档之后，我决定采用其他的方式来实现：通过微分法添加透明度/音频增益关键帧来逼近曲线效果。
 

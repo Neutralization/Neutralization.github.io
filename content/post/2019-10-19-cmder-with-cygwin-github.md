@@ -1,5 +1,5 @@
 ---
-title: 配置Cmder整合Cygwin与Github
+title: 配置 Cmder 整合 Cygwin 与 Github
 date: 2019-10-19 05:08:09
 categories:
     - 杂记
@@ -59,7 +59,7 @@ Cygwin 按照同样的方式加入系统环境变量，默认路径是`C:\cygwin
 
 接着安装 apt-cyg，有了它就可以像 Ubuntu 管理软件包一样随意 install 需要的命令了。
 
-apt-cyg 的项目主页是 https://github.com/transcode-open/apt-cyg ，在 Release 页面下载最新版，解压将`apt-cyg`文件移动到`C:\cygwin64\bin`，打开 cygwin 终端：
+apt-cyg 的项目主页是 <https://github.com/transcode-open/apt-cyg> ，在 Release 页面下载最新版，解压将`apt-cyg`文件移动到`C:\cygwin64\bin`，打开 cygwin 终端：
 
 > apt-cyg install nano
 
@@ -79,7 +79,7 @@ export LANG=zh_CN.UTF-8
 
 > apt-cyg install chere
 
-然后还是编辑`~/.bashrc`，追加内容：[参考1]
+然后还是编辑`~/.bashrc`，追加内容：[参考 1]
 
 ```~/.bashrc
 if [ -n "${ConEmuWorkDir}" ]; then
@@ -107,7 +107,7 @@ none / cygdrive binary 0 0
 
 打开 Cmder，右键选择`Settings`，选择`Startup`->`Tasks`。
 
-点击'+'号添加新的 Task，`Task Name`填一个能区分出是 Cygwin 的，比如`Cygwin::bash`，`Task parameters`填写`/icon C:\cygwin64\Cygwin-Terminal.ico`，在`Commands`中填写`set CHERE_INVOKING=1 & C:\cygwin64\Cygwin.bat -c "/bin/xhere /bin/bash.exe --login -i '%V'"`[参考2]
+点击'+'号添加新的 Task，`Task Name`填一个能区分出是 Cygwin 的，比如`Cygwin::bash`，`Task parameters`填写`/icon C:\cygwin64\Cygwin-Terminal.ico`，在`Commands`中填写`set CHERE_INVOKING=1 & C:\cygwin64\Cygwin.bat -c "/bin/xhere /bin/bash.exe --login -i '%V'"`[参考 2]
 
 然后勾选上`Default task for new console`和`Taskbar jump lists`。回到`Startup`，选择`Specified named task`->`Cygwin::bash`。
 
@@ -123,7 +123,7 @@ none / cygdrive binary 0 0
 
 然后选择`Startup`->`Environment`，添加如下内容：
 
-```
+```bash
 set PATH=%ConEmuBaseDir%\Scripts;%PATH%
 set LANG=zh_CN.UTF8
 ```
@@ -132,7 +132,7 @@ set LANG=zh_CN.UTF8
 
 选了 Powerline Fonts：
 
-> git clone https://github.com/powerline/fonts.git
+> git clone <https://github.com/powerline/fonts.git>
 
 我单独装了`Noto Mono for Powerline`，也可以选择执行`install.ps1`直接安装全部的字体。
 
@@ -162,16 +162,14 @@ set LANG=zh_CN.UTF8
 
 ## 其他
 
--   Cmder 有自己的`user_alias`("Cmder/config/user_alias.cmd")可以很方便的设定一些常用命令，可以在 cmd 或者 powershell 终端里使用，但是不能和 Cygwin 通用。Cygwin 需要 Alias 的话还是得老老实实编辑`~/.bashrc`。
+- Cmder 有自己的`user_alias`("Cmder/config/user_alias.cmd") 可以很方便的设定一些常用命令，可以在 cmd 或者 powershell 终端里使用，但是不能和 Cygwin 通用。Cygwin 需要 Alias 的话还是得老老实实编辑`~/.bashrc`。
 
--   Cmder 可以作为 Sublime Text 的终端来使用，Sublime 安装 Terminal 插件，设置终端路径为 Cmder 安装路径即可。默认呼出终端的快捷键是 Ctrl+Shift+T。
+- Cmder 可以作为 Sublime Text 的终端来使用，Sublime 安装 Terminal 插件，设置终端路径为 Cmder 安装路径即可。默认呼出终端的快捷键是 Ctrl+Shift+T。
 
--   Cygwin 有个已知问题，Ctrl+方向键没有绑定操作，需要手动添加，方法是编辑`~/.inputrc`添加两行内容`"\e[1;5C": forward-word`和`"\e[1;5D": backward-word`。[参考3]
+- Cygwin 有个已知问题，Ctrl+方向键没有绑定操作，需要手动添加，方法是编辑`~/.inputrc`添加两行内容`"\e[1;5C": forward-word`和`"\e[1;5D": backward-word`。[参考 3]
 
--   如果之前已经生成了 SSH KEY 的话，需要手动复制到`C:\cygwin64\home\<user name>\.ssh`或者直接指定 ssh key 才能让 git 识别到。
+- 如果之前已经生成了 SSH KEY 的话，需要手动复制到`C:\cygwin64\home\<user name>\.ssh`或者直接指定 ssh key 才能让 git 识别到。
 
 ## EOF
 
-[参考1]: https://conemu.github.io/en/CygwinStartDir.html "cygwin, mingw, ConEmu and start up directory"
-[参考2]: https://github.com/cmderdev/cmder/wiki/Integrating-Cygwin "Integrating Cygwin"
-[参考3]: http://trumaze.blogspot.com/2011/04/how-to-configure-cygwin-to-use-ctrl.html "How to configure cygwin to use ctrl + arrow to move cursor forward / backward"
+[参考 2]: https://github.com/cmderdev/cmder/wiki/Integrating-Cygwin "Integrating Cygwin"

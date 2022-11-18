@@ -62,7 +62,7 @@ with open('feed.html', 'w', encoding='utf-8-sig') as f:
 
 然后继续往下看子节点，直到找到具体的微博链接：
 
-![信息流HTML](/pic/2019-01-05-weibo-feed-adver/2019-01-05_17-47.png)
+![信息流 HTML](/pic/2019-01-05-weibo-feed-adver/2019-01-05_17-47.png)
 
 获取此节点的 xpath：`"//div[@feedtype]//a[@action-history='rec=1']/@action-data"`
 

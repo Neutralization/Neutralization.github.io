@@ -9,7 +9,7 @@ tags:
     - π
 ---
 
-逛微博看到了一些有意思的东西：山东卫视《国学小名士》第三季的节目，进行了一场 π(圆周率)的飞花令。
+逛微博看到了一些有意思的东西：山东卫视《国学小名士》第三季的节目，进行了一场 π(圆周率) 的飞花令。
 
 节目里选手们接到了小数点后 204 位，那，能不能更长一点？
 
@@ -71,7 +71,7 @@ with open('step.json', 'w', encoding='utf-8-sig') as f:
 
 ## π 值计算
 
-无脑套用了一下别人的代码：http://z-rui.github.io/post/2015/06/pi-digits/
+无脑套用了一下别人的代码：<http://z-rui.github.io/post/2015/06/pi-digits/>
 
 ```python
 def pidigits():
