@@ -18,7 +18,7 @@
 &lt;li>给视频图层添加音频过渡效果&lt;/li>
 &lt;/ol>
 &lt;p>于是我分别编写了 &lt;code>AddLayer&lt;/code>, &lt;code>AddVideoProperty&lt;/code>, &lt;code>AddAudioProperty&lt;/code> 三个函数，包装了 Adobe 的 &lt;code>layers.add&lt;/code> 和 &lt;code>property.setValueAtTime&lt;/code> 两个方法。&lt;/p>
-&lt;p>在编写函数的过程中，因为是 Vegas-&amp;gt;AfterEffects 复刻，Vegas 中的过渡曲线我在 AE 中没有找到一致的傻瓜式功能，只能自己去实现曲线的效果。这里就遇到了 Adobe 文档 “点到为止” 的问题：它没有提供详细的示例代码。&lt;/p>
+&lt;p>在编写函数的过程中，因为是 Vegas-&amp;gt;AfterEffects 复刻，Vegas 中的过渡曲线我在 AE 中没有找到一致的傻瓜式功能，只能自己去实现曲线的效果。这里就遇到了 Adobe 文档“点到为止”的问题：它没有提供详细的示例代码。&lt;/p>
 &lt;p>原本是计划使用 AE 表达式（区别于 AE 脚本）来实现的，但是文档中对于如何添加表达式并没有解释的很详细，Google 和 StackOverflow 也没能提供有价值的信息。反复翻阅文档之后，我决定采用其他的方式来实现：通过微分法添加透明度/音频增益关键帧来逼近曲线效果。&lt;/p>
 &lt;p>于是 &lt;code>AddVideoProperty&lt;/code>, &lt;code>AddAudioProperty&lt;/code> 的主要代码就变成了基于三角函数的 &lt;code>property.setValueAtTime&lt;/code>，复习正/余弦曲线方程的过程还真是有些令人怀念 (￣_,￣ )&lt;/p>
 &lt;h3 id="函数的函数">函数的函数&lt;/h3>

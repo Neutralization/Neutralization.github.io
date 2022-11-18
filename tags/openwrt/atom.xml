@@ -59,7 +59,7 @@ subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev&lt;
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git branch --set-upstream-to&lt;span style="color:#f92672">=&lt;/span>origin/master master
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
 &lt;li>
-&lt;p>修改路由IP地址&lt;/p>
+&lt;p>修改路由 IP 地址&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&amp;gt; sed -i &lt;span style="color:#e6db74">&amp;#39;s/192.168.1.1/192.168.2.1/g&amp;#39;&lt;/span> package/base-files/files/bin/config_generate
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
 &lt;/ol>
@@ -141,4 +141,4 @@ Editors ---&amp;gt;
 &lt;p>编译 run 了一万年，再不写点什么记下来，下次编译根本记不住了.jpg&lt;/p>
 &lt;p>后来参考学习了 P3TERX 的 &lt;a class="link" href="https://p3terx.com/archives/build-openwrt-with-github-actions.html" target="_blank" rel="noopener"
 >这篇文章&lt;/a> 利用 Github Action 进行编译，并且按照 &lt;a class="link" href="https://github.com/coolsnowwolf/lede/pull/7796" target="_blank" rel="noopener"
->LEDE的这个PR&lt;/a> 打开了缓存工具链，再也不用面对奇怪的环境问题和该参数重编又是四、五个小时的窘境了。&lt;/p></description></item></channel></rss>
+>LEDE 的这个 PR&lt;/a> 打开了缓存工具链，再也不用面对奇怪的环境问题和该参数重编又是四、五个小时的窘境了。&lt;/p></description></item></channel></rss>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>cygwin on H⁺ + OH⁻ → H₂O</title><link>https://naizi.moe/tags/cygwin/</link><description>Recent content in cygwin on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 19 Oct 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://naizi.moe/tags/cygwin/atom.xml" rel="self" type="application/rss+xml"/><item><title>配置Cmder整合Cygwin与Github</title><link>https://naizi.moe/2019/10/19/%E9%85%8D%E7%BD%AEcmder%E6%95%B4%E5%90%88cygwin%E4%B8%8Egithub/</link><pubDate>Sat, 19 Oct 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/10/19/%E9%85%8D%E7%BD%AEcmder%E6%95%B4%E5%90%88cygwin%E4%B8%8Egithub/</guid><description>&lt;p>记录下折腾 Cmder 的过程。&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>cygwin on H⁺ + OH⁻ → H₂O</title><link>https://naizi.moe/tags/cygwin/</link><description>Recent content in cygwin on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 19 Oct 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://naizi.moe/tags/cygwin/atom.xml" rel="self" type="application/rss+xml"/><item><title>配置 Cmder 整合 Cygwin 与 Github</title><link>https://naizi.moe/2019/10/19/%E9%85%8D%E7%BD%AE-cmder-%E6%95%B4%E5%90%88-cygwin-%E4%B8%8E-github/</link><pubDate>Sat, 19 Oct 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/10/19/%E9%85%8D%E7%BD%AE-cmder-%E6%95%B4%E5%90%88-cygwin-%E4%B8%8E-github/</guid><description>&lt;p>记录下折腾 Cmder 的过程。&lt;/p>
 &lt;p>虽然群友安利了许久的 WSL 和 Powershell，但对于前两者的 GUI 我实在看不下去。也许他们真的很棒，但好用的工具似乎注定了不能拥有好看的 UI。&lt;/p>
 &lt;p>而我，还是倾向于 UI 舒服的。毕竟只要它真的不是功能上缺胳膊少腿儿，剩下的事情，大部分都可以克服。&lt;/p>
 &lt;p>再说了，不多折腾折腾，不多踩几个坑，多 Google 和 Stackoverflow 一下，你怎么会知道原来世界上还能有这种问题呢.jpg&lt;/p>
@@ -46,9 +46,7 @@
 &lt;blockquote>
 &lt;p>apt-cyg install chere&lt;/p>
 &lt;/blockquote>
-&lt;p>然后还是编辑&lt;code>~/.bashrc&lt;/code>，追加内容：&lt;a class="link" href="https://conemu.github.io/en/CygwinStartDir.html" title="cygwin, mingw, ConEmu and start up directory"
-target="_blank" rel="noopener"
->参考1&lt;/a>&lt;/p>
+&lt;p>然后还是编辑&lt;code>~/.bashrc&lt;/code>，追加内容：[参考 1]&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-~/.bashrc" data-lang="~/.bashrc">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[&lt;/span> -n &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>ConEmuWorkDir&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &lt;span style="color:#f92672">]&lt;/span>; &lt;span style="color:#66d9ef">then&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cd &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$ConEmuWorkDir&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fi&lt;/span>
@@ -66,7 +64,7 @@ none / cygdrive binary 0 0
 &lt;p>打开 Cmder，右键选择&lt;code>Settings&lt;/code>，选择&lt;code>Startup&lt;/code>-&amp;gt;&lt;code>Tasks&lt;/code>。&lt;/p>
 &lt;p>点击&amp;rsquo;+&amp;lsquo;号添加新的 Task，&lt;code>Task Name&lt;/code>填一个能区分出是 Cygwin 的，比如&lt;code>Cygwin::bash&lt;/code>，&lt;code>Task parameters&lt;/code>填写&lt;code>/icon C:\cygwin64\Cygwin-Terminal.ico&lt;/code>，在&lt;code>Commands&lt;/code>中填写&lt;code>set CHERE_INVOKING=1 &amp;amp; C:\cygwin64\Cygwin.bat -c &amp;quot;/bin/xhere /bin/bash.exe --login -i '%V'&amp;quot;&lt;/code>&lt;a class="link" href="https://github.com/cmderdev/cmder/wiki/Integrating-Cygwin" title="Integrating Cygwin"
 target="_blank" rel="noopener"
->参考2&lt;/a>&lt;/p>
+>参考 2&lt;/a>&lt;/p>
 &lt;p>然后勾选上&lt;code>Default task for new console&lt;/code>和&lt;code>Taskbar jump lists&lt;/code>。回到&lt;code>Startup&lt;/code>，选择&lt;code>Specified named task&lt;/code>-&amp;gt;&lt;code>Cygwin::bash&lt;/code>。&lt;/p>
 &lt;p>这样一来 Cmder 的默认终端就是 Cygwin 了，git 命令和 windows 本身的支持也没有问题。&lt;/p>
 &lt;h2 id="进一步调整">进一步调整&lt;/h2>
@@ -74,9 +72,9 @@ target="_blank" rel="noopener"
 &lt;p>先解决编码问题，选择&lt;code>General&lt;/code>-&amp;gt;&lt;code>Fonts&lt;/code>-&amp;gt;&lt;code>Unicode ranges&lt;/code>-&amp;gt;&lt;code>CJK: 2E80-9FC3;AC00-D7A3;F900-FAFF;FE30-FE4F;FF01-FF60;FFE0-FFE6;&lt;/code>-&amp;gt;&lt;code>Apply&lt;/code>。&lt;/p>
 &lt;p>&lt;code>Font charset&lt;/code>还是保持 ANSI，否则 Cmder 会报错&lt;code>Failed to create font&lt;/code>然后 fail back 回缺省字体。&lt;/p>
 &lt;p>然后选择&lt;code>Startup&lt;/code>-&amp;gt;&lt;code>Environment&lt;/code>，添加如下内容：&lt;/p>
-&lt;pre tabindex="0">&lt;code>set PATH=%ConEmuBaseDir%\Scripts;%PATH%
-set LANG=zh_CN.UTF8
-&lt;/code>&lt;/pre>&lt;p>接着是字体，中文字体真的太少了，好看的就更少了。（有一说一，我觉得，确实，是这样的）&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>set PATH&lt;span style="color:#f92672">=&lt;/span>%ConEmuBaseDir%&lt;span style="color:#ae81ff">\S&lt;/span>cripts;%PATH%
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>set LANG&lt;span style="color:#f92672">=&lt;/span>zh_CN.UTF8
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>接着是字体，中文字体真的太少了，好看的就更少了。（有一说一，我觉得，确实，是这样的）&lt;/p>
 &lt;p>选了 Powerline Fonts：&lt;/p>
 &lt;blockquote>
 &lt;p>git clone &lt;a class="link" href="https://github.com/powerline/fonts.git" target="_blank" rel="noopener"
@@ -98,15 +96,13 @@ set LANG=zh_CN.UTF8
 &lt;h2 id="其他">其他&lt;/h2>
 &lt;ul>
 &lt;li>
-&lt;p>Cmder 有自己的&lt;code>user_alias&lt;/code>(&amp;ldquo;Cmder/config/user_alias.cmd&amp;rdquo;)可以很方便的设定一些常用命令，可以在 cmd 或者 powershell 终端里使用，但是不能和 Cygwin 通用。Cygwin 需要 Alias 的话还是得老老实实编辑&lt;code>~/.bashrc&lt;/code>。&lt;/p>
+&lt;p>Cmder 有自己的&lt;code>user_alias&lt;/code>(&amp;ldquo;Cmder/config/user_alias.cmd&amp;rdquo;) 可以很方便的设定一些常用命令，可以在 cmd 或者 powershell 终端里使用，但是不能和 Cygwin 通用。Cygwin 需要 Alias 的话还是得老老实实编辑&lt;code>~/.bashrc&lt;/code>。&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Cmder 可以作为 Sublime Text 的终端来使用，Sublime 安装 Terminal 插件，设置终端路径为 Cmder 安装路径即可。默认呼出终端的快捷键是 Ctrl+Shift+T。&lt;/p>
 &lt;/li>
 &lt;li>
-&lt;p>Cygwin 有个已知问题，Ctrl+方向键没有绑定操作，需要手动添加，方法是编辑&lt;code>~/.inputrc&lt;/code>添加两行内容&lt;code>&amp;quot;\e[1;5C&amp;quot;: forward-word&lt;/code>和&lt;code>&amp;quot;\e[1;5D&amp;quot;: backward-word&lt;/code>。&lt;a class="link" href="http://trumaze.blogspot.com/2011/04/how-to-configure-cygwin-to-use-ctrl.html" title="How to configure cygwin to use ctrl &amp;#43; arrow to move cursor forward / backward"
-target="_blank" rel="noopener"
->参考3&lt;/a>&lt;/p>
+&lt;p>Cygwin 有个已知问题，Ctrl+方向键没有绑定操作，需要手动添加，方法是编辑&lt;code>~/.inputrc&lt;/code>添加两行内容&lt;code>&amp;quot;\e[1;5C&amp;quot;: forward-word&lt;/code>和&lt;code>&amp;quot;\e[1;5D&amp;quot;: backward-word&lt;/code>。[参考 3]&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>如果之前已经生成了 SSH KEY 的话，需要手动复制到&lt;code>C:\cygwin64\home\&amp;lt;user name&amp;gt;\.ssh&lt;/code>或者直接指定 ssh key 才能让 git 识别到。&lt;/p>

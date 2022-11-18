@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>python on H⁺ + OH⁻ → H₂O</title><link>https://naizi.moe/tags/python/</link><description>Recent content in python on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 09 Aug 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://naizi.moe/tags/python/atom.xml" rel="self" type="application/rss+xml"/><item><title>记录一些和 Unicode 不断作斗争的日子</title><link>https://naizi.moe/2022/08/09/%E8%AE%B0%E5%BD%95%E4%B8%80%E4%BA%9B%E5%92%8C-unicode-%E4%B8%8D%E6%96%AD%E4%BD%9C%E6%96%97%E4%BA%89%E7%9A%84%E6%97%A5%E5%AD%90/</link><pubDate>Tue, 09 Aug 2022 00:00:00 +0000</pubDate><guid>https://naizi.moe/2022/08/09/%E8%AE%B0%E5%BD%95%E4%B8%80%E4%BA%9B%E5%92%8C-unicode-%E4%B8%8D%E6%96%AD%E4%BD%9C%E6%96%97%E4%BA%89%E7%9A%84%E6%97%A5%E5%AD%90/</guid><description>&lt;p>最开始给哔哩哔哩周刊写&lt;a class="link" href="https://github.com/Neutralization/BiliBiliRankingScripts" target="_blank" rel="noopener"
->&lt;code>自动化脚本&lt;/code>&lt;/a>的时候，还不觉得生成图片能遇到什么坑。毕竟之前也用过Pillow库，算是比较熟悉了。而且遇到的都是些在普通不过的正常文本。&lt;/p>
-&lt;p>直到躲不开的emoji开始出现了。&lt;/p>
+>&lt;code>自动化脚本&lt;/code>&lt;/a>的时候，还不觉得生成图片能遇到什么坑。毕竟之前也用过 Pillow 库，算是比较熟悉了。而且遇到的都是些在普通不过的正常文本。&lt;/p>
+&lt;p>直到躲不开的 emoji 开始出现了。&lt;/p>
 &lt;h2 id="一些普通的-emoji">一些普通的 Emoji&lt;/h2>
 &lt;p>☀☁☂☃☄☎☑☔☕☘&lt;/p>
 &lt;p>刚开始遇到这类也还好，因为很显然，只是文本的字体没有这部分 emoji，Pillow 就全部给显示成了方框。简单框了个范围，用另一个字体来渲染就是了。&lt;/p>
@@ -21,7 +21,7 @@
 &lt;p>&lt;a class="link" href="https://www.nicovideo.jp/watch/sm28869680" target="_blank" rel="noopener"
 >&lt;img src="https://naizi.moe/pic/2022-08-09-fight-with-unicode/Snipaste_2022-08-10_16-32-58.png"
 loading="lazy"
-alt="【初音ミク】宇宙大规模11次元构造体【ATOLS】"
+alt="【初音ミク】宇宙大规模 11 次元构造体【ATOLS】"
 >&lt;/a>&lt;/p>
 &lt;p>这位前辈更是重量级，即便在写这篇记录的时候，我也不得不佩服这种和视频契合的标题风格确实是非常到位。&lt;/p>
 &lt;p>能做到这种效果的原因是由于其中大量的 Combining 字符，比如日文的清浊音符号，部分小语种的音标和一些独特的组词方式。&lt;/p>
@@ -30,9 +30,9 @@ alt="【初音ミク】宇宙大规模11次元构造体【ATOLS】"
 &lt;p>简单糊了个页面，算是解决了这个问题。哔哩哔哩周刊与 Unicode 的斗争也算是告一段落了。&lt;/p>
 &lt;h2 id="mad-周刊新的挑战">MAD 周刊，新的挑战&lt;/h2>
 &lt;p>接手开始&lt;a class="link" href="https://github.com/Neutralization/MADRankingScripts" target="_blank" rel="noopener"
-> &lt;code>MAD 周刊的自动化&lt;/code>&lt;/a>后，很快又不得不面对 Unicode 带来的问题。然而实际上，应该说是 Unicode 和 Adobe 共同带来的问题。&lt;/p>
+>&lt;code>MAD 周刊的自动化&lt;/code>&lt;/a>后，很快又不得不面对 Unicode 带来的问题。然而实际上，应该说是 Unicode 和 Adobe 共同带来的问题。&lt;/p>
 &lt;p>为了保证原始 MAD 周刊工程文件的纯洁性，所有的文本都按照文本图层来进行修改。本来这也没有什么问题。&lt;/p>
-&lt;p>但是原工程使用的大量表达式，是基于旧版的 ExtendScript 引擎，毕竟工程本身是2016年的产物。但之前做哔哩哔哩周刊时一直用的是 JavaScript 引擎的表达式，这就产生了几个问题：&lt;/p>
+&lt;p>但是原工程使用的大量表达式，是基于旧版的 ExtendScript 引擎，毕竟工程本身是 2016 年的产物。但之前做哔哩哔哩周刊时一直用的是 JavaScript 引擎的表达式，这就产生了几个问题：&lt;/p>
 &lt;ol>
 &lt;li>特殊的 Unicode 字符需要使用不同的字体才能正常显示&lt;/li>
 &lt;li>ExtendScript 不能修改文本图层的部分字体样式属性&lt;/li>
@@ -53,7 +53,10 @@ alt="【初音ミク】宇宙大规模11次元构造体【ATOLS】"
 &lt;p>为什么哔哩哔哩周刊就应该渲染正常，MAD 周刊就要去掉这些字符呢？这种区别对待说白了，不过还是一种懒惰。&lt;/p>
 &lt;p>不同于我最初承认 ATOLS 玩的一手好标题，在 MAD 周刊上我反而以字符论标题优劣，不应是正确的解法。&lt;/p>
 &lt;p>于是决定同哔哩哔哩周刊一样通过前端截图来解决这个问题。同时考虑到排版影响，部分 MAD 标题常用全角符号，导致标题的起始像素位置其实并不顶格，便在脚本中加入了一个粗略的判断，进行一个 X 轴的移位使得视觉上显得更对齐一些。&lt;/p>
-&lt;p>但 Emoji 还是给我捣了乱，Emoji因为都是全角宽度，无法判断像素位置是否顶格，这个问题只能留到之后再寻找合适的解法了。&lt;/p>
+&lt;p>但 Emoji 还是给我捣了乱，Emoji 因为都是全角宽度，无法判断像素位置是否顶格，这个问题只能留到之后再寻找合适的解法了。&lt;/p>
+&lt;h3 id="update-20111003">Update 2011/10/03&lt;/h3>
+&lt;p>成了，生成图片然后切左右透明像素就是了，&lt;a class="link" href="https://github.com/Neutralization/MADRankingScripts/commit/100cb976e83db6e9f45575e43742b2bed3ca598b#diff-627c0a0588769c50e32e1fc457e9c787835f1d5ad8ff6845142d32b63589b1ff" target="_blank" rel="noopener"
+>问题解决&lt;/a>（&lt;/p>
 &lt;h2 id="未尽之事">未尽之事&lt;/h2>
 &lt;p>计划将哔哩哔哩周刊的图片生成也改为前端截图的方式。且不谈特殊字符的问题，前端这种方便可视化调整的形式，应该会对代码修改更友好一些，虽然想来是不会有什么改版和修改了。&lt;/p>
 &lt;p>而且通过 CSS，还能够实现一些 Pillow 做不到的文本样式效果，更好的还原 PSD 的设计样式。&lt;/p>
@@ -71,7 +74,7 @@ alt="【初音ミク】宇宙大规模11次元构造体【ATOLS】"
 &lt;/blockquote>
 &lt;p>所幸在 python-escpos 的 Github &lt;a class="link" href="https://github.com/python-escpos/python-escpos/issues/316" target="_blank" rel="noopener"
 >issue316&lt;/a>中有人提供了解决方式。直接修改源代码，删去对应的异常捕捉，就能够正常使用了。&lt;/p>
-&lt;p>此处留档以备不时之需。&lt;/p></description></item><item><title>来一场圆周率的飞花令</title><link>https://naizi.moe/2019/11/26/%E6%9D%A5%E4%B8%80%E5%9C%BA%E5%9C%86%E5%91%A8%E7%8E%87%E7%9A%84%E9%A3%9E%E8%8A%B1%E4%BB%A4/</link><pubDate>Tue, 26 Nov 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/11/26/%E6%9D%A5%E4%B8%80%E5%9C%BA%E5%9C%86%E5%91%A8%E7%8E%87%E7%9A%84%E9%A3%9E%E8%8A%B1%E4%BB%A4/</guid><description>&lt;p>逛微博看到了一些有意思的东西：山东卫视《国学小名士》第三季的节目，进行了一场 π(圆周率)的飞花令。&lt;/p>
+&lt;p>此处留档以备不时之需。&lt;/p></description></item><item><title>来一场圆周率的飞花令</title><link>https://naizi.moe/2019/11/26/%E6%9D%A5%E4%B8%80%E5%9C%BA%E5%9C%86%E5%91%A8%E7%8E%87%E7%9A%84%E9%A3%9E%E8%8A%B1%E4%BB%A4/</link><pubDate>Tue, 26 Nov 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/11/26/%E6%9D%A5%E4%B8%80%E5%9C%BA%E5%9C%86%E5%91%A8%E7%8E%87%E7%9A%84%E9%A3%9E%E8%8A%B1%E4%BB%A4/</guid><description>&lt;p>逛微博看到了一些有意思的东西：山东卫视《国学小名士》第三季的节目，进行了一场 π(圆周率) 的飞花令。&lt;/p>
 &lt;p>节目里选手们接到了小数点后 204 位，那，能不能更长一点？&lt;/p>
 &lt;!-- raw HTML omitted -->
 &lt;h2 id="数据储备">数据储备&lt;/h2>
@@ -120,7 +123,8 @@ alt="【初音ミク】宇宙大规模11次元构造体【ATOLS】"
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">with&lt;/span> open(&lt;span style="color:#e6db74">&amp;#39;step.json&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;w&amp;#39;&lt;/span>, encoding&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;utf-8-sig&amp;#39;&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> f:
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f&lt;span style="color:#f92672">.&lt;/span>write(json&lt;span style="color:#f92672">.&lt;/span>dumps(result, ensure_ascii&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">False&lt;/span>))
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="π-值计算">π 值计算&lt;/h2>
-&lt;p>无脑套用了一下别人的代码：http://z-rui.github.io/post/2015/06/pi-digits/&lt;/p>
+&lt;p>无脑套用了一下别人的代码：&lt;a class="link" href="http://z-rui.github.io/post/2015/06/pi-digits/" target="_blank" rel="noopener"
+>http://z-rui.github.io/post/2015/06/pi-digits/&lt;/a>&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">pidigits&lt;/span>():
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> q, r, t, u, i &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">180&lt;/span>, &lt;span style="color:#ae81ff">60&lt;/span>, &lt;span style="color:#ae81ff">168&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">while&lt;/span> &lt;span style="color:#66d9ef">True&lt;/span>:
@@ -178,7 +182,7 @@ alt="【初音ミク】宇宙大规模11次元构造体【ATOLS】"
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> n &lt;span style="color:#f92672">&amp;gt;&lt;/span> &lt;span style="color:#ae81ff">1000&lt;/span>:
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f&lt;span style="color:#f92672">.&lt;/span>close()
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> sys&lt;span style="color:#f92672">.&lt;/span>exit()
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="eof">EOF&lt;/h2></description></item><item><title>jojo，python的能力是有极限的</title><link>https://naizi.moe/2019/10/18/jojopython%E7%9A%84%E8%83%BD%E5%8A%9B%E6%98%AF%E6%9C%89%E6%9E%81%E9%99%90%E7%9A%84/</link><pubDate>Fri, 18 Oct 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/10/18/jojopython%E7%9A%84%E8%83%BD%E5%8A%9B%E6%98%AF%E6%9C%89%E6%9E%81%E9%99%90%E7%9A%84/</guid><description>&lt;p>&amp;ndash;&amp;gt; jojo，python 的能力是有极限的。&lt;/p>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="eof">EOF&lt;/h2></description></item><item><title>jojo，python 的能力是有极限的</title><link>https://naizi.moe/2019/10/18/jojopython-%E7%9A%84%E8%83%BD%E5%8A%9B%E6%98%AF%E6%9C%89%E6%9E%81%E9%99%90%E7%9A%84/</link><pubDate>Fri, 18 Oct 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/10/18/jojopython-%E7%9A%84%E8%83%BD%E5%8A%9B%E6%98%AF%E6%9C%89%E6%9E%81%E9%99%90%E7%9A%84/</guid><description>&lt;p>&amp;ndash;&amp;gt; jojo，python 的能力是有极限的。&lt;/p>
 &lt;p>&amp;ndash;&amp;gt; 我从短暂的人生当中学到一件事&amp;hellip;&amp;hellip;&lt;/p>
 &lt;p>&amp;ndash;&amp;gt; 越是玩弄代码，就越会发现 python 的不足&amp;hellip;&amp;hellip;&lt;/p>
 &lt;p>&amp;ndash;&amp;gt; 除非超越 python。&lt;/p>
@@ -210,7 +214,7 @@ alt="【初音ミク】宇宙大规模11次元构造体【ATOLS】"
 &lt;p>虽然很明显原因在于我（毕竟瞎糊凑合用），想看能不能更快一点。&lt;/p>
 &lt;p>于是想起了 bash，想起了 split 和 xargs。&lt;/p>
 &lt;h2 id="换成-bash">换成 bash&lt;/h2>
-&lt;p>要切割文件的话 split 的确很方便:&lt;/p>
+&lt;p>要切割文件的话 split 的确很方便：&lt;/p>
 &lt;blockquote>
 &lt;p>split test.csv -l 1000 -d -a 3 test__&lt;/p>
 &lt;/blockquote>
@@ -230,13 +234,13 @@ alt="【初音ミク】宇宙大规模11次元构造体【ATOLS】"
 &lt;/blockquote>
 &lt;p>将他们组合一下：&lt;/p>
 &lt;blockquote>
-&lt;p>split -l 1000 test.csv -d -a 3 test** &amp;amp;&amp;amp; ls | grep test** | xargs -n1 -I file mv file file.csv&lt;/p>
+&lt;p>split -l 1000 test.csv -d -a 3 test**&amp;amp;&amp;amp; ls | grep test** | xargs -n1 -I file mv file file.csv&lt;/p>
 &lt;/blockquote>
 &lt;p>回车执行，1 秒都不需要，爽死了。&lt;/p>
 &lt;h2 id="人类是懒惰的动物">人类是懒惰的动物&lt;/h2>
 &lt;p>但这样还是需要自己手打需要切割的文件名，不够爽。尝试把代码再变长一点：&lt;/p>
 &lt;blockquote>
-&lt;p>ls | grep .csv$ | sed &amp;rsquo;s/.csv//g&amp;rsquo; | xargs -n1 -I file split -l 1000 file.csv -d -a 3 file** &amp;amp;&amp;amp; ls | grep ** | xargs -n1 -I file mv file file.csv&lt;/p>
+&lt;p>ls | grep .csv$ | sed &amp;rsquo;s/.csv//g&amp;rsquo; | xargs -n1 -I file split -l 1000 file.csv -d -a 3 file**&amp;amp;&amp;amp; ls | grep** | xargs -n1 -I file mv file file.csv&lt;/p>
 &lt;/blockquote>
 &lt;p>以管道命令分割解释一下：&lt;/p>
 &lt;ol>
@@ -250,7 +254,7 @@ alt="【初音ミク】宇宙大规模11次元构造体【ATOLS】"
 &lt;/ol>
 &lt;p>爽又死了。&lt;/p>
 &lt;h2 id="eof">EOF&lt;/h2>
-&lt;p>尝试在 windows 上（Cmder+Github）做类似的操作，发现远没有在虚拟机（Ubuntu）里执行快，垃圾微软.jpg&lt;/p></description></item><item><title>RSS咕咕机</title><link>https://naizi.moe/2019/10/02/rss%E5%92%95%E5%92%95%E6%9C%BA/</link><pubDate>Wed, 02 Oct 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/10/02/rss%E5%92%95%E5%92%95%E6%9C%BA/</guid><description>&lt;p>之前从同事那里二手买了个咕咕机，当玩具玩。享受了几天使用 APP 打印各种沙雕照片和表情包带来的乐趣后，它毫无意外的开始吃灰，就和桌子旁边的树莓派一样染上历史的颜色。&lt;/p>
+&lt;p>尝试在 windows 上（Cmder+Github）做类似的操作，发现远没有在虚拟机（Ubuntu）里执行快，垃圾微软.jpg&lt;/p></description></item><item><title>RSS 咕咕机</title><link>https://naizi.moe/2019/10/02/rss-%E5%92%95%E5%92%95%E6%9C%BA/</link><pubDate>Wed, 02 Oct 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/10/02/rss-%E5%92%95%E5%92%95%E6%9C%BA/</guid><description>&lt;p>之前从同事那里二手买了个咕咕机，当玩具玩。享受了几天使用 APP 打印各种沙雕照片和表情包带来的乐趣后，它毫无意外的开始吃灰，就和桌子旁边的树莓派一样染上历史的颜色。&lt;/p>
 &lt;p>还是拿出来用用吧……&lt;/p>
 &lt;p>咕咕机 APP 里的一部分订阅号的确有点意思，比如订阅每天天气，早上 8 点自动打印一条天气内容之类的。那么拿来订阅微博更新好像也没什么不对的。&lt;/p>
 &lt;p>反正一天有 12 小时在公司，闲着也是闲着，不定时的来一段小纸条也不错。&lt;/p>
@@ -327,7 +331,7 @@ alt="【初音ミク】宇宙大规模11次元构造体【ATOLS】"
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> time
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">## bilibili&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>uname &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;白上吹雪Official&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>uname &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;白上吹雪 Official&amp;#39;&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>uid &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;332704117&amp;#39;&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">## memobird&lt;/span>
@@ -753,7 +757,7 @@ file &amp;lsquo;part3.flv&amp;rsquo;&lt;/p>
 &lt;p>然后继续往下看子节点，直到找到具体的微博链接：&lt;/p>
 &lt;p>&lt;img src="https://naizi.moe/pic/2019-01-05-weibo-feed-adver/2019-01-05_17-47.png"
 loading="lazy"
-alt="信息流HTML"
+alt="信息流 HTML"
 >&lt;/p>
 &lt;p>获取此节点的 xpath：&lt;code>&amp;quot;//div[@feedtype]//a[@action-history='rec=1']/@action-data&amp;quot;&lt;/code>&lt;/p>
 &lt;p>结合正则表达式提取链接：&lt;/p>

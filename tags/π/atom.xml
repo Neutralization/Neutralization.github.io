@@ -5,7 +5,7 @@ loading="lazy"
 alt="国士无双"
 >&lt;/p>
 &lt;p>大家云集响应，因为之前正好写过&lt;a class="link" href="https://github.com/Neutralization/majsoul-generator" target="_blank" rel="noopener"
->生成器&lt;/a>，趁此机会我就说群友要啥我就帮群友 PS，都可以做。后来群友觉得正经的役没意思，想搞点不一样的，说要搞个圆周率。这就有意思了。话题很自然的转到了那能不能胡牌的问题上，因为只有数字，先默认牌型是清一色，一试，发现小数点后最开始的14位数字就真的能凑成一副胡牌：&lt;/p>
+>生成器&lt;/a>，趁此机会我就说群友要啥我就帮群友 PS，都可以做。后来群友觉得正经的役没意思，想搞点不一样的，说要搞个圆周率。这就有意思了。话题很自然的转到了那能不能胡牌的问题上，因为只有数字，先默认牌型是清一色，一试，发现小数点后最开始的 14 位数字就真的能凑成一副胡牌：&lt;/p>
 &lt;blockquote>
 &lt;p>3.&lt;code>14159265358979&lt;/code> -&amp;gt; 234 678 555 999 11&lt;/p>
 &lt;/blockquote>
@@ -26,7 +26,7 @@ alt="国士无双"
 &lt;p>&lt;img src="https://naizi.moe/pic/2021-03-17-mahjong-in-pai/screenshot.jpg"
 loading="lazy"
 alt="开端"
->&lt;/p></description></item><item><title>来一场圆周率的飞花令</title><link>https://naizi.moe/2019/11/26/%E6%9D%A5%E4%B8%80%E5%9C%BA%E5%9C%86%E5%91%A8%E7%8E%87%E7%9A%84%E9%A3%9E%E8%8A%B1%E4%BB%A4/</link><pubDate>Tue, 26 Nov 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/11/26/%E6%9D%A5%E4%B8%80%E5%9C%BA%E5%9C%86%E5%91%A8%E7%8E%87%E7%9A%84%E9%A3%9E%E8%8A%B1%E4%BB%A4/</guid><description>&lt;p>逛微博看到了一些有意思的东西：山东卫视《国学小名士》第三季的节目，进行了一场 π(圆周率)的飞花令。&lt;/p>
+>&lt;/p></description></item><item><title>来一场圆周率的飞花令</title><link>https://naizi.moe/2019/11/26/%E6%9D%A5%E4%B8%80%E5%9C%BA%E5%9C%86%E5%91%A8%E7%8E%87%E7%9A%84%E9%A3%9E%E8%8A%B1%E4%BB%A4/</link><pubDate>Tue, 26 Nov 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/11/26/%E6%9D%A5%E4%B8%80%E5%9C%BA%E5%9C%86%E5%91%A8%E7%8E%87%E7%9A%84%E9%A3%9E%E8%8A%B1%E4%BB%A4/</guid><description>&lt;p>逛微博看到了一些有意思的东西：山东卫视《国学小名士》第三季的节目，进行了一场 π(圆周率) 的飞花令。&lt;/p>
 &lt;p>节目里选手们接到了小数点后 204 位，那，能不能更长一点？&lt;/p>
 &lt;!-- raw HTML omitted -->
 &lt;h2 id="数据储备">数据储备&lt;/h2>
@@ -75,7 +75,8 @@ alt="开端"
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">with&lt;/span> open(&lt;span style="color:#e6db74">&amp;#39;step.json&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;w&amp;#39;&lt;/span>, encoding&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;utf-8-sig&amp;#39;&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> f:
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f&lt;span style="color:#f92672">.&lt;/span>write(json&lt;span style="color:#f92672">.&lt;/span>dumps(result, ensure_ascii&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">False&lt;/span>))
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="π-值计算">π 值计算&lt;/h2>
-&lt;p>无脑套用了一下别人的代码：http://z-rui.github.io/post/2015/06/pi-digits/&lt;/p>
+&lt;p>无脑套用了一下别人的代码：&lt;a class="link" href="http://z-rui.github.io/post/2015/06/pi-digits/" target="_blank" rel="noopener"
+>http://z-rui.github.io/post/2015/06/pi-digits/&lt;/a>&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">pidigits&lt;/span>():
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> q, r, t, u, i &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">180&lt;/span>, &lt;span style="color:#ae81ff">60&lt;/span>, &lt;span style="color:#ae81ff">168&lt;/span>, &lt;span style="color:#ae81ff">2&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">while&lt;/span> &lt;span style="color:#66d9ef">True&lt;/span>:

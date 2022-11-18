@@ -3,7 +3,7 @@
 &lt;p>想到既然 Windows 10 支持了 OpenSSH，家里和公司电脑又都装了 WSL，也许可以用 rsync/scp 来解决这个问题。&lt;/p>
 &lt;!-- raw HTML omitted -->
 &lt;h2 id="安装-openssh-server">安装 OpenSSH Server&lt;/h2>
-&lt;p>Windows 10(1809)虽然自带了 OpenSSH 的 Server 和 Client，但默认并没有安装。&lt;/p>
+&lt;p>Windows 10(1809) 虽然自带了 OpenSSH 的 Server 和 Client，但默认并没有安装。&lt;/p>
 &lt;p>参照&lt;a class="link" href="https://docs.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse" target="_blank" rel="noopener"
 >Microsoft 的文档&lt;/a>给两台电脑都安装 OpenSSH：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-PowerShell" data-lang="PowerShell">&lt;span style="display:flex;">&lt;span>Get-WindowsCapability -Online | ? Name &lt;span style="color:#f92672">-like&lt;/span> &lt;span style="color:#e6db74">&amp;#39;OpenSSH*&amp;#39;&lt;/span>
@@ -354,7 +354,7 @@
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">else&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Error: Video not found!\n&amp;#34;&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fi&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>RSS咕咕机</title><link>https://naizi.moe/2019/10/02/rss%E5%92%95%E5%92%95%E6%9C%BA/</link><pubDate>Wed, 02 Oct 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/10/02/rss%E5%92%95%E5%92%95%E6%9C%BA/</guid><description>&lt;p>之前从同事那里二手买了个咕咕机，当玩具玩。享受了几天使用 APP 打印各种沙雕照片和表情包带来的乐趣后，它毫无意外的开始吃灰，就和桌子旁边的树莓派一样染上历史的颜色。&lt;/p>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>RSS 咕咕机</title><link>https://naizi.moe/2019/10/02/rss-%E5%92%95%E5%92%95%E6%9C%BA/</link><pubDate>Wed, 02 Oct 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/10/02/rss-%E5%92%95%E5%92%95%E6%9C%BA/</guid><description>&lt;p>之前从同事那里二手买了个咕咕机，当玩具玩。享受了几天使用 APP 打印各种沙雕照片和表情包带来的乐趣后，它毫无意外的开始吃灰，就和桌子旁边的树莓派一样染上历史的颜色。&lt;/p>
 &lt;p>还是拿出来用用吧……&lt;/p>
 &lt;p>咕咕机 APP 里的一部分订阅号的确有点意思，比如订阅每天天气，早上 8 点自动打印一条天气内容之类的。那么拿来订阅微博更新好像也没什么不对的。&lt;/p>
 &lt;p>反正一天有 12 小时在公司，闲着也是闲着，不定时的来一段小纸条也不错。&lt;/p>
@@ -431,7 +431,7 @@
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> time
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">## bilibili&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>uname &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;白上吹雪Official&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>uname &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;白上吹雪 Official&amp;#39;&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>uid &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;332704117&amp;#39;&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">## memobird&lt;/span>
@@ -983,7 +983,7 @@ file &amp;lsquo;part3.flv&amp;rsquo;&lt;/p>
 &lt;p>然后继续往下看子节点，直到找到具体的微博链接：&lt;/p>
 &lt;p>&lt;img src="https://naizi.moe/pic/2019-01-05-weibo-feed-adver/2019-01-05_17-47.png"
 loading="lazy"
-alt="信息流HTML"
+alt="信息流 HTML"
 >&lt;/p>
 &lt;p>获取此节点的 xpath：&lt;code>&amp;quot;//div[@feedtype]//a[@action-history='rec=1']/@action-data&amp;quot;&lt;/code>&lt;/p>
 &lt;p>结合正则表达式提取链接：&lt;/p>

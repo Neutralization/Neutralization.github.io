@@ -38,7 +38,7 @@
 &lt;p>然后继续往下看子节点，直到找到具体的微博链接：&lt;/p>
 &lt;p>&lt;img src="https://naizi.moe/pic/2019-01-05-weibo-feed-adver/2019-01-05_17-47.png"
 loading="lazy"
-alt="信息流HTML"
+alt="信息流 HTML"
 >&lt;/p>
 &lt;p>获取此节点的 xpath：&lt;code>&amp;quot;//div[@feedtype]//a[@action-history='rec=1']/@action-data&amp;quot;&lt;/code>&lt;/p>
 &lt;p>结合正则表达式提取链接：&lt;/p>

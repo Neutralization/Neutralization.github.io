@@ -17,7 +17,7 @@
 &lt;p>想到既然 Windows 10 支持了 OpenSSH，家里和公司电脑又都装了 WSL，也许可以用 rsync/scp 来解决这个问题。&lt;/p>
 &lt;!-- raw HTML omitted -->
 &lt;h2 id="安装-openssh-server">安装 OpenSSH Server&lt;/h2>
-&lt;p>Windows 10(1809)虽然自带了 OpenSSH 的 Server 和 Client，但默认并没有安装。&lt;/p>
+&lt;p>Windows 10(1809) 虽然自带了 OpenSSH 的 Server 和 Client，但默认并没有安装。&lt;/p>
 &lt;p>参照&lt;a class="link" href="https://docs.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse" target="_blank" rel="noopener"
 >Microsoft 的文档&lt;/a>给两台电脑都安装 OpenSSH：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-PowerShell" data-lang="PowerShell">&lt;span style="display:flex;">&lt;span>Get-WindowsCapability -Online | ? Name &lt;span style="color:#f92672">-like&lt;/span> &lt;span style="color:#e6db74">&amp;#39;OpenSSH*&amp;#39;&lt;/span>

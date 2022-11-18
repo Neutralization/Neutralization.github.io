@@ -59,7 +59,7 @@ subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev&lt;
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git branch --set-upstream-to&lt;span style="color:#f92672">=&lt;/span>origin/master master
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
 &lt;li>
-&lt;p>修改路由IP地址&lt;/p>
+&lt;p>修改路由 IP 地址&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&amp;gt; sed -i &lt;span style="color:#e6db74">&amp;#39;s/192.168.1.1/192.168.2.1/g&amp;#39;&lt;/span> package/base-files/files/bin/config_generate
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
 &lt;/ol>
@@ -141,12 +141,12 @@ Editors ---&amp;gt;
 &lt;p>编译 run 了一万年，再不写点什么记下来，下次编译根本记不住了.jpg&lt;/p>
 &lt;p>后来参考学习了 P3TERX 的 &lt;a class="link" href="https://p3terx.com/archives/build-openwrt-with-github-actions.html" target="_blank" rel="noopener"
 >这篇文章&lt;/a> 利用 Github Action 进行编译，并且按照 &lt;a class="link" href="https://github.com/coolsnowwolf/lede/pull/7796" target="_blank" rel="noopener"
->LEDE的这个PR&lt;/a> 打开了缓存工具链，再也不用面对奇怪的环境问题和该参数重编又是四、五个小时的窘境了。&lt;/p></description></item><item><title>Windows 10 使用 OpenSSH + Rsync/SCP 同步文件</title><link>https://naizi.moe/2020/05/03/windows-10-%E4%BD%BF%E7%94%A8-openssh--rsync/scp-%E5%90%8C%E6%AD%A5%E6%96%87%E4%BB%B6/</link><pubDate>Sun, 03 May 2020 00:00:00 +0000</pubDate><guid>https://naizi.moe/2020/05/03/windows-10-%E4%BD%BF%E7%94%A8-openssh--rsync/scp-%E5%90%8C%E6%AD%A5%E6%96%87%E4%BB%B6/</guid><description>&lt;p>疫情期间在家工作一直使用公司的 VPN，于是在公司电脑开了共享用来传输文件。但不知道为什么，公司-&amp;gt;家方向传文件很顺畅，反方向传文件时就经常会出现进度条走到末尾就停住，要多等一段时间才能传输结束的问题。&lt;/p>
+>LEDE 的这个 PR&lt;/a> 打开了缓存工具链，再也不用面对奇怪的环境问题和该参数重编又是四、五个小时的窘境了。&lt;/p></description></item><item><title>Windows 10 使用 OpenSSH + Rsync/SCP 同步文件</title><link>https://naizi.moe/2020/05/03/windows-10-%E4%BD%BF%E7%94%A8-openssh--rsync/scp-%E5%90%8C%E6%AD%A5%E6%96%87%E4%BB%B6/</link><pubDate>Sun, 03 May 2020 00:00:00 +0000</pubDate><guid>https://naizi.moe/2020/05/03/windows-10-%E4%BD%BF%E7%94%A8-openssh--rsync/scp-%E5%90%8C%E6%AD%A5%E6%96%87%E4%BB%B6/</guid><description>&lt;p>疫情期间在家工作一直使用公司的 VPN，于是在公司电脑开了共享用来传输文件。但不知道为什么，公司-&amp;gt;家方向传文件很顺畅，反方向传文件时就经常会出现进度条走到末尾就停住，要多等一段时间才能传输结束的问题。&lt;/p>
 &lt;p>虽然可以考虑用 OneDrive 这类网盘来进行同步，但这样的同步不够实时，而且毕竟要从三方服务器绕一圈，上传速度波动也很大。&lt;/p>
 &lt;p>想到既然 Windows 10 支持了 OpenSSH，家里和公司电脑又都装了 WSL，也许可以用 rsync/scp 来解决这个问题。&lt;/p>
 &lt;!-- raw HTML omitted -->
 &lt;h2 id="安装-openssh-server">安装 OpenSSH Server&lt;/h2>
-&lt;p>Windows 10(1809)虽然自带了 OpenSSH 的 Server 和 Client，但默认并没有安装。&lt;/p>
+&lt;p>Windows 10(1809) 虽然自带了 OpenSSH 的 Server 和 Client，但默认并没有安装。&lt;/p>
 &lt;p>参照&lt;a class="link" href="https://docs.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse" target="_blank" rel="noopener"
 >Microsoft 的文档&lt;/a>给两台电脑都安装 OpenSSH：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-PowerShell" data-lang="PowerShell">&lt;span style="display:flex;">&lt;span>Get-WindowsCapability -Online | ? Name &lt;span style="color:#f92672">-like&lt;/span> &lt;span style="color:#e6db74">&amp;#39;OpenSSH*&amp;#39;&lt;/span>
@@ -230,14 +230,14 @@ Editors ---&amp;gt;
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>rsync -rtuv -e &lt;span style="color:#e6db74">&amp;#34;ssh -i ~/.ssh/client_rsa&amp;#34;&lt;/span> /mnt/d/testfile server_user@Server_ip:/mnt/d/ --rsync-path&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;wsl rsync&amp;#34;&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果一切正常，应该不会提示输入密码，然后你能在 Server 的 D 盘看到这个文件。&lt;/p>
 &lt;p>同样，对调 Client 和 Server 的身份再设定一次就可以双向操作了。&lt;/p>
-&lt;h2 id="eof">EOF&lt;/h2></description></item><item><title>Windows使用WSL配置crontab定时任务</title><link>https://naizi.moe/2020/01/25/windows%E4%BD%BF%E7%94%A8wsl%E9%85%8D%E7%BD%AEcrontab%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/</link><pubDate>Sat, 25 Jan 2020 00:00:00 +0000</pubDate><guid>https://naizi.moe/2020/01/25/windows%E4%BD%BF%E7%94%A8wsl%E9%85%8D%E7%BD%AEcrontab%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/</guid><description>&lt;p>有些 python 脚本任务对于树莓派来说还是负担太重了。毕竟性能上限摆在那里，也不能靠一个小小的 pi 承担太多。&lt;/p>
+&lt;h2 id="eof">EOF&lt;/h2></description></item><item><title>Windows 使用 WSL 配置 crontab 定时任务</title><link>https://naizi.moe/2020/01/25/windows-%E4%BD%BF%E7%94%A8-wsl-%E9%85%8D%E7%BD%AE-crontab-%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/</link><pubDate>Sat, 25 Jan 2020 00:00:00 +0000</pubDate><guid>https://naizi.moe/2020/01/25/windows-%E4%BD%BF%E7%94%A8-wsl-%E9%85%8D%E7%BD%AE-crontab-%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/</guid><description>&lt;p>有些 python 脚本任务对于树莓派来说还是负担太重了。毕竟性能上限摆在那里，也不能靠一个小小的 pi 承担太多。&lt;/p>
 &lt;p>借此机会正好尝试一下 WSL(Windows Subsystem for Linux).&lt;/p>
 &lt;!-- raw HTML omitted -->
 &lt;h2 id="安装-wsl">安装 WSL&lt;/h2>
 &lt;p>安装 WSL 并没有想象中的复杂。进入控制面板-&amp;gt;程序和功能-&amp;gt;启用或关闭 Windows 功能，勾选&lt;code>适用于Linux的Windows子系统&lt;/code>，等待安装完毕，然后重启系统。&lt;/p>
 &lt;p>&lt;img src="https://naizi.moe/pic/2020-01-25-wsl-crontab/Snipaste_2020-01-25_19-14-26.png"
 loading="lazy"
-alt="适用于Linux的Windows子系统"
+alt="适用于 Linux 的 Windows 子系统"
 >&lt;/p>
 &lt;p>重启完毕，开始菜单选择 MicrosoftStore，搜索 linux 就能够找到可供使用的 linux 发行版，我这里选择了 Ubuntu18.04LTS。&lt;/p>
 &lt;p>&lt;img src="https://naizi.moe/pic/2020-01-25-wsl-crontab/Snipaste_2020-01-25_02-08-03.png"
