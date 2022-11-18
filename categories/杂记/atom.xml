@@ -54,7 +54,7 @@ alt="【初音ミク】宇宙大规模 11 次元构造体【ATOLS】"
 &lt;p>不同于我最初承认 ATOLS 玩的一手好标题，在 MAD 周刊上我反而以字符论标题优劣，不应是正确的解法。&lt;/p>
 &lt;p>于是决定同哔哩哔哩周刊一样通过前端截图来解决这个问题。同时考虑到排版影响，部分 MAD 标题常用全角符号，导致标题的起始像素位置其实并不顶格，便在脚本中加入了一个粗略的判断，进行一个 X 轴的移位使得视觉上显得更对齐一些。&lt;/p>
 &lt;p>但 Emoji 还是给我捣了乱，Emoji 因为都是全角宽度，无法判断像素位置是否顶格，这个问题只能留到之后再寻找合适的解法了。&lt;/p>
-&lt;h3 id="update-20111003">Update 2011/10/03&lt;/h3>
+&lt;h3 id="update-20221003">Update 2022/10/03&lt;/h3>
 &lt;p>成了，生成图片然后切左右透明像素就是了，&lt;a class="link" href="https://github.com/Neutralization/MADRankingScripts/commit/100cb976e83db6e9f45575e43742b2bed3ca598b#diff-627c0a0588769c50e32e1fc457e9c787835f1d5ad8ff6845142d32b63589b1ff" target="_blank" rel="noopener"
 >问题解决&lt;/a>（&lt;/p>
 &lt;h2 id="未尽之事">未尽之事&lt;/h2>
