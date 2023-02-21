@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>H⁺ + OH⁻ → H₂O</title><link>https://naizi.moe/</link><description>Recent content on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Fri, 18 Nov 2022 09:27:59 +0000</lastBuildDate><atom:link href="https://naizi.moe/atom.xml" rel="self" type="application/rss+xml"/><item><title>Search</title><link>https://naizi.moe/search/</link><pubDate>Fri, 18 Nov 2022 09:27:59 +0000</pubDate><guid>https://naizi.moe/search/</guid><description/></item><item><title>记录一些和 Unicode 不断作斗争的日子</title><link>https://naizi.moe/2022/08/09/%E8%AE%B0%E5%BD%95%E4%B8%80%E4%BA%9B%E5%92%8C-unicode-%E4%B8%8D%E6%96%AD%E4%BD%9C%E6%96%97%E4%BA%89%E7%9A%84%E6%97%A5%E5%AD%90/</link><pubDate>Tue, 09 Aug 2022 00:00:00 +0000</pubDate><guid>https://naizi.moe/2022/08/09/%E8%AE%B0%E5%BD%95%E4%B8%80%E4%BA%9B%E5%92%8C-unicode-%E4%B8%8D%E6%96%AD%E4%BD%9C%E6%96%97%E4%BA%89%E7%9A%84%E6%97%A5%E5%AD%90/</guid><description>&lt;p>最开始给哔哩哔哩周刊写&lt;a class="link" href="https://github.com/Neutralization/BiliBiliRankingScripts" target="_blank" rel="noopener"
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>H⁺ + OH⁻ → H₂O</title><link>https://naizi.ch/</link><description>Recent content on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 21 Feb 2023 11:14:57 +0000</lastBuildDate><atom:link href="https://naizi.ch/atom.xml" rel="self" type="application/rss+xml"/><item><title>Search</title><link>https://naizi.ch/search/</link><pubDate>Tue, 21 Feb 2023 11:14:57 +0000</pubDate><guid>https://naizi.ch/search/</guid><description/></item><item><title>记录一些和 Unicode 不断作斗争的日子</title><link>https://naizi.ch/2022/08/09/%E8%AE%B0%E5%BD%95%E4%B8%80%E4%BA%9B%E5%92%8C-unicode-%E4%B8%8D%E6%96%AD%E4%BD%9C%E6%96%97%E4%BA%89%E7%9A%84%E6%97%A5%E5%AD%90/</link><pubDate>Tue, 09 Aug 2022 00:00:00 +0000</pubDate><guid>https://naizi.ch/2022/08/09/%E8%AE%B0%E5%BD%95%E4%B8%80%E4%BA%9B%E5%92%8C-unicode-%E4%B8%8D%E6%96%AD%E4%BD%9C%E6%96%97%E4%BA%89%E7%9A%84%E6%97%A5%E5%AD%90/</guid><description>&lt;p>最开始给哔哩哔哩周刊写&lt;a class="link" href="https://github.com/Neutralization/BiliBiliRankingScripts" target="_blank" rel="noopener"
 >&lt;code>自动化脚本&lt;/code>&lt;/a>的时候，还不觉得生成图片能遇到什么坑。毕竟之前也用过 Pillow 库，算是比较熟悉了。而且遇到的都是些在普通不过的正常文本。&lt;/p>
 &lt;p>直到躲不开的 emoji 开始出现了。&lt;/p>
 &lt;h2 id="一些普通的-emoji">一些普通的 Emoji&lt;/h2>
@@ -19,7 +19,7 @@
 >✥我҉͛̀̈̈̾̓̀͂̊͝的模҉̖̭̱͍̩͕͓̋̓͋̈̑͋̉͢͞ͅ样吓҈̎̍̅̒̎͂̈́̚͞.到你҈̛́̐̄́̃͗̓͒͒͊̿͛̒了？～❤✥&lt;/a>&lt;/p>
 &lt;p>只能承认它杀死了比赛。但其实类似的标题并不是第一次见，在更早之前，我算是见过它的一位大前辈：&lt;/p>
 &lt;p>&lt;a class="link" href="https://www.nicovideo.jp/watch/sm28869680" target="_blank" rel="noopener"
->&lt;img src="https://naizi.moe/pic/2022-08-09-fight-with-unicode/Snipaste_2022-08-10_16-32-58.png"
+>&lt;img src="https://naizi.ch/pic/2022-08-09-fight-with-unicode/Snipaste_2022-08-10_16-32-58.png"
 loading="lazy"
 alt="【初音ミク】宇宙大规模 11 次元构造体【ATOLS】"
 >&lt;/a>&lt;/p>
@@ -60,7 +60,7 @@ alt="【初音ミク】宇宙大规模 11 次元构造体【ATOLS】"
 &lt;h2 id="未尽之事">未尽之事&lt;/h2>
 &lt;p>计划将哔哩哔哩周刊的图片生成也改为前端截图的方式。且不谈特殊字符的问题，前端这种方便可视化调整的形式，应该会对代码修改更友好一些，虽然想来是不会有什么改版和修改了。&lt;/p>
 &lt;p>而且通过 CSS，还能够实现一些 Pillow 做不到的文本样式效果，更好的还原 PSD 的设计样式。&lt;/p>
-&lt;p>曾经还想过写 Photoshop 脚本来做图，虽然还没试验过 Photoshop，考虑到前述 AfterEffects 文本图层的问题，以及前端截图确实更灵活，也就不再考虑了。&lt;/p></description></item><item><title>OpenWrt 折腾笔记</title><link>https://naizi.moe/2021/10/05/openwrt-%E6%8A%98%E8%85%BE%E7%AC%94%E8%AE%B0/</link><pubDate>Tue, 05 Oct 2021 00:00:00 +0000</pubDate><guid>https://naizi.moe/2021/10/05/openwrt-%E6%8A%98%E8%85%BE%E7%AC%94%E8%AE%B0/</guid><description>&lt;h2 id="准备工作">准备工作&lt;/h2>
+&lt;p>曾经还想过写 Photoshop 脚本来做图，虽然还没试验过 Photoshop，考虑到前述 AfterEffects 文本图层的问题，以及前端截图确实更灵活，也就不再考虑了。&lt;/p></description></item><item><title>OpenWrt 折腾笔记</title><link>https://naizi.ch/2021/10/05/openwrt-%E6%8A%98%E8%85%BE%E7%AC%94%E8%AE%B0/</link><pubDate>Tue, 05 Oct 2021 00:00:00 +0000</pubDate><guid>https://naizi.ch/2021/10/05/openwrt-%E6%8A%98%E8%85%BE%E7%AC%94%E8%AE%B0/</guid><description>&lt;h2 id="准备工作">准备工作&lt;/h2>
 &lt;ol>
 &lt;li>
 &lt;p>安装 WSL，不再赘述。&lt;/p>
@@ -203,7 +203,7 @@ Editors ---&amp;gt;
 &lt;p>编译 run 了一万年，再不写点什么记下来，下次编译根本记不住了.jpg&lt;/p>
 &lt;p>后来参考学习了 P3TERX 的 &lt;a class="link" href="https://p3terx.com/archives/build-openwrt-with-github-actions.html" target="_blank" rel="noopener"
 >这篇文章&lt;/a> 利用 Github Action 进行编译，并且按照 &lt;a class="link" href="https://github.com/coolsnowwolf/lede/pull/7796" target="_blank" rel="noopener"
->LEDE 的这个 PR&lt;/a> 打开了缓存工具链，再也不用面对奇怪的环境问题和该参数重编又是四、五个小时的窘境了。&lt;/p></description></item><item><title>升级 3D 打印机固件及远程打印方案</title><link>https://naizi.moe/2021/08/28/%E5%8D%87%E7%BA%A7-3d-%E6%89%93%E5%8D%B0%E6%9C%BA%E5%9B%BA%E4%BB%B6%E5%8F%8A%E8%BF%9C%E7%A8%8B%E6%89%93%E5%8D%B0%E6%96%B9%E6%A1%88/</link><pubDate>Sat, 28 Aug 2021 00:00:00 +0000</pubDate><guid>https://naizi.moe/2021/08/28/%E5%8D%87%E7%BA%A7-3d-%E6%89%93%E5%8D%B0%E6%9C%BA%E5%9B%BA%E4%BB%B6%E5%8F%8A%E8%BF%9C%E7%A8%8B%E6%89%93%E5%8D%B0%E6%96%B9%E6%A1%88/</guid><description>&lt;p>Ender 3 不愧是创想三维家的经典款 3D 打印机，一直没关注产品消息，不知道什么时候已经出了 V2 款了。&lt;/p>
+>LEDE 的这个 PR&lt;/a> 打开了缓存工具链，再也不用面对奇怪的环境问题和该参数重编又是四、五个小时的窘境了。&lt;/p></description></item><item><title>升级 3D 打印机固件及远程打印方案</title><link>https://naizi.ch/2021/08/28/%E5%8D%87%E7%BA%A7-3d-%E6%89%93%E5%8D%B0%E6%9C%BA%E5%9B%BA%E4%BB%B6%E5%8F%8A%E8%BF%9C%E7%A8%8B%E6%89%93%E5%8D%B0%E6%96%B9%E6%A1%88/</link><pubDate>Sat, 28 Aug 2021 00:00:00 +0000</pubDate><guid>https://naizi.ch/2021/08/28/%E5%8D%87%E7%BA%A7-3d-%E6%89%93%E5%8D%B0%E6%9C%BA%E5%9B%BA%E4%BB%B6%E5%8F%8A%E8%BF%9C%E7%A8%8B%E6%89%93%E5%8D%B0%E6%96%B9%E6%A1%88/</guid><description>&lt;p>Ender 3 不愧是创想三维家的经典款 3D 打印机，一直没关注产品消息，不知道什么时候已经出了 V2 款了。&lt;/p>
 &lt;p>买当然是不会买的，原来的版本还是挺好用，购买的时候正好京东打折，当时 1k 出头的价格还是很香的。&lt;/p>
 &lt;p>买来时间也有点久了，考虑升级一下固件，但是官方并没有提供这一款的后续固件升级，也没有相关教程。搜索了一下发现还需要自行刷入 bootloader 后才能刷写固件，看来是当时就没有考虑用户侧的后续升级。&lt;/p>
 &lt;p>升级固件的想法主要是因为看到了 OctoPrint，一个利用树莓派控制和实时监控 3D 打印机的项目。&lt;/p>
@@ -228,12 +228,12 @@ Editors ---&amp;gt;
 >https://octopi.local/&lt;/a> ，如果摄像头正常的话，就能看到打印状态了。&lt;/p>
 &lt;p>界面里可以一览无余的看到打印机当前的喷嘴和热床温度，打印状态，Gcode 图示等等。也可以直接通过网页上传 Gcode 文件直接打印，由于是通过 USB 连接到打印机，免去了反复插拔 SD 卡传输文件的步骤，真的是方便了很多。&lt;/p>
 &lt;p>OctoPrint 还提供视频录制，开启后可以录制打印过程中的摄像头画面，生成延时视频。&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/pic/2021-08-28-upgrade-3d-printer/Snipaste_2021-08-28_14-55-44.png"
+&lt;p>&lt;img src="https://naizi.ch/pic/2021-08-28-upgrade-3d-printer/Snipaste_2021-08-28_14-55-44.png"
 loading="lazy"
 alt="Timelapse"
->&lt;/p></description></item><item><title>圆周率里的麻将</title><link>https://naizi.moe/2021/03/17/%E5%9C%86%E5%91%A8%E7%8E%87%E9%87%8C%E7%9A%84%E9%BA%BB%E5%B0%86/</link><pubDate>Wed, 17 Mar 2021 00:00:00 +0000</pubDate><guid>https://naizi.moe/2021/03/17/%E5%9C%86%E5%91%A8%E7%8E%87%E9%87%8C%E7%9A%84%E9%BA%BB%E5%B0%86/</guid><description>&lt;p>2 月的时候，群友看 VTB 直播雀魂，发现主播为了防止互动的时候窥屏看到手牌，PS 了一张看起来像手牌的图来挡住真实的手牌。&lt;/p>
+>&lt;/p></description></item><item><title>圆周率里的麻将</title><link>https://naizi.ch/2021/03/17/%E5%9C%86%E5%91%A8%E7%8E%87%E9%87%8C%E7%9A%84%E9%BA%BB%E5%B0%86/</link><pubDate>Wed, 17 Mar 2021 00:00:00 +0000</pubDate><guid>https://naizi.ch/2021/03/17/%E5%9C%86%E5%91%A8%E7%8E%87%E9%87%8C%E7%9A%84%E9%BA%BB%E5%B0%86/</guid><description>&lt;p>2 月的时候，群友看 VTB 直播雀魂，发现主播为了防止互动的时候窥屏看到手牌，PS 了一张看起来像手牌的图来挡住真实的手牌。&lt;/p>
 &lt;p>群友受此启发，纷纷讨论自己也要这么玩，PS 各种役种的牌扮老虎，比如大家都喜欢的国士无双：&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/pic/2021-03-17-mahjong-in-pai/19m19p19s1234567z_1p.png"
+&lt;p>&lt;img src="https://naizi.ch/pic/2021-03-17-mahjong-in-pai/19m19p19s1234567z_1p.png"
 loading="lazy"
 alt="国士无双"
 >&lt;/p>
@@ -256,10 +256,10 @@ alt="国士无双"
 &lt;p>&lt;code>九莲宝灯&lt;/code>在第 32452 位小数，数列是&lt;code>9 2 1 9 5 1 9 6 7 5 1 4 8 3&lt;/code>，牌型是&lt;code>111 234 55 678 999&lt;/code>，还是个最漂亮的九莲宝灯。&lt;/p>
 &lt;p>&lt;code>四暗刻绿一色&lt;/code>在第 162552 位小数，数列是&lt;code>4 2 4 3 3 3 4 8 8 2 2 6 6 6&lt;/code>，牌型是&lt;code>222 333 444 666 88&lt;/code>，显然这还是个纯绿一色。&lt;/p>
 &lt;p>最后回顾下一切的开端：&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/pic/2021-03-17-mahjong-in-pai/screenshot.jpg"
+&lt;p>&lt;img src="https://naizi.ch/pic/2021-03-17-mahjong-in-pai/screenshot.jpg"
 loading="lazy"
 alt="开端"
->&lt;/p></description></item><item><title>自动化制作周刊哔哩哔哩排行榜</title><link>https://naizi.moe/2021/03/07/%E8%87%AA%E5%8A%A8%E5%8C%96%E5%88%B6%E4%BD%9C%E5%91%A8%E5%88%8A%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E6%8E%92%E8%A1%8C%E6%A6%9C/</link><pubDate>Sun, 07 Mar 2021 00:00:00 +0000</pubDate><guid>https://naizi.moe/2021/03/07/%E8%87%AA%E5%8A%A8%E5%8C%96%E5%88%B6%E4%BD%9C%E5%91%A8%E5%88%8A%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E6%8E%92%E8%A1%8C%E6%A6%9C/</guid><description>&lt;p>总结一下周刊哔哩哔哩排行榜制作流程自动化过程中遇到的一些问题。&lt;/p>
+>&lt;/p></description></item><item><title>自动化制作周刊哔哩哔哩排行榜</title><link>https://naizi.ch/2021/03/07/%E8%87%AA%E5%8A%A8%E5%8C%96%E5%88%B6%E4%BD%9C%E5%91%A8%E5%88%8A%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E6%8E%92%E8%A1%8C%E6%A6%9C/</link><pubDate>Sun, 07 Mar 2021 00:00:00 +0000</pubDate><guid>https://naizi.ch/2021/03/07/%E8%87%AA%E5%8A%A8%E5%8C%96%E5%88%B6%E4%BD%9C%E5%91%A8%E5%88%8A%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E6%8E%92%E8%A1%8C%E6%A6%9C/</guid><description>&lt;p>总结一下周刊哔哩哔哩排行榜制作流程自动化过程中遇到的一些问题。&lt;/p>
 &lt;p>之前的周刊制作过程中，组员各自领取不同部分的制作任务，每一部分的内容格式包含在不同的 yml 文件中。&lt;/p>
 &lt;p>通常先把 yml 中的 av 号取出，去下载对应的视频到本地，然后人工浏览选择实际制作时选取的片段，记录下片段的开始时间，修改 yml 中的对应字段。然后上传修改完成的 yml，转换成之后导入 Vegas 时需要的 xml 文件。&lt;/p>
 &lt;p>由于旧流程的局限性，没有考虑到视频尺寸的适配，因此在导入 Vegas 后，往往要手动对齐所有视频。另外由于不同部分的效果不一致（比如是否有过渡场景），也没有在 yml 中进行区分，往往还要再手动调整。工作量本质不大，但其实都是可以进行优化的场景。&lt;/p>
@@ -330,7 +330,7 @@ alt="开端"
 >在 Github 已开源&lt;/a>。如果你不知道周刊哔哩哔哩排行榜，你也可以选择&lt;a class="link" href="https://space.bilibili.com/398300398" target="_blank" rel="noopener"
 >关注了解一下&lt;/a>。&lt;/p>
 &lt;h2 id="eof">EOF&lt;/h2>
-&lt;p>powershell 真香（&lt;/p></description></item><item><title>试做了一个明日方舟的小夜灯</title><link>https://naizi.moe/2021/01/12/%E8%AF%95%E5%81%9A%E4%BA%86%E4%B8%80%E4%B8%AA%E6%98%8E%E6%97%A5%E6%96%B9%E8%88%9F%E7%9A%84%E5%B0%8F%E5%A4%9C%E7%81%AF/</link><pubDate>Tue, 12 Jan 2021 00:00:00 +0000</pubDate><guid>https://naizi.moe/2021/01/12/%E8%AF%95%E5%81%9A%E4%BA%86%E4%B8%80%E4%B8%AA%E6%98%8E%E6%97%A5%E6%96%B9%E8%88%9F%E7%9A%84%E5%B0%8F%E5%A4%9C%E7%81%AF/</guid><description>&lt;p>之前也有在尝试用 3D 打印做奇怪的东西，建模一直在用的是 AutoDesk 家的线上工具&lt;a class="link" href="https://www.tinkercad.com/" target="_blank" rel="noopener"
+&lt;p>powershell 真香（&lt;/p></description></item><item><title>试做了一个明日方舟的小夜灯</title><link>https://naizi.ch/2021/01/12/%E8%AF%95%E5%81%9A%E4%BA%86%E4%B8%80%E4%B8%AA%E6%98%8E%E6%97%A5%E6%96%B9%E8%88%9F%E7%9A%84%E5%B0%8F%E5%A4%9C%E7%81%AF/</link><pubDate>Tue, 12 Jan 2021 00:00:00 +0000</pubDate><guid>https://naizi.ch/2021/01/12/%E8%AF%95%E5%81%9A%E4%BA%86%E4%B8%80%E4%B8%AA%E6%98%8E%E6%97%A5%E6%96%B9%E8%88%9F%E7%9A%84%E5%B0%8F%E5%A4%9C%E7%81%AF/</guid><description>&lt;p>之前也有在尝试用 3D 打印做奇怪的东西，建模一直在用的是 AutoDesk 家的线上工具&lt;a class="link" href="https://www.tinkercad.com/" target="_blank" rel="noopener"
 >Tinkercad&lt;/a>，属于那种拖拖拽拽就能拼出差不多模型的工具，还挺好用。&lt;/p>
 &lt;p>这次尝试做小夜灯，原本是打算做成游戏关卡结算时的三星标志，后来想了想，为了更显而易见的突出方舟元素，用了游戏里医疗干员的标志。主要因为医疗干员的标志几何对称性很好，估摸着可以偷懒。&lt;/p>
 &lt;p>软件用了同事推荐的&lt;a class="link" href="https://www.openscad.org/" target="_blank" rel="noopener"
@@ -339,16 +339,16 @@ alt="开端"
 &lt;!-- raw HTML omitted -->
 &lt;p>放两张成果图，使用的是创想三维的 Ender-3 打印机。冬天材料热涨冷缩比较严重结果留下了两道印子，有点可惜。&lt;/p>
 &lt;p>电池盒是圣诞节的时候那种细绳装饰灯的电池，考虑到亮度和分散光源，接了一个 COB 灯板。&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/pic/2021-01-12-arknight-lamp/battery.jpg"
+&lt;p>&lt;img src="https://naizi.ch/pic/2021-01-12-arknight-lamp/battery.jpg"
 loading="lazy"
 alt="lamp"
 >&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/pic/2021-01-12-arknight-lamp/lamp.jpg"
+&lt;p>&lt;img src="https://naizi.ch/pic/2021-01-12-arknight-lamp/lamp.jpg"
 loading="lazy"
 alt="lamp"
 >&lt;/p>
 &lt;p>工程文件放在&lt;a class="link" href="https://github.com/Neutralization/Arknights-lamp" target="_blank" rel="noopener"
->github&lt;/a>上了。&lt;/p></description></item><item><title>Python 使用 USB 热敏打印机</title><link>https://naizi.moe/2020/07/07/python-%E4%BD%BF%E7%94%A8-usb-%E7%83%AD%E6%95%8F%E6%89%93%E5%8D%B0%E6%9C%BA/</link><pubDate>Tue, 07 Jul 2020 00:00:00 +0000</pubDate><guid>https://naizi.moe/2020/07/07/python-%E4%BD%BF%E7%94%A8-usb-%E7%83%AD%E6%95%8F%E6%89%93%E5%8D%B0%E6%9C%BA/</guid><description>&lt;p>通过使用 python-escpos 库，就可以和常见的 USB 热敏打印机通信来进行打印，不再赘述具体方法。&lt;/p>
+>github&lt;/a>上了。&lt;/p></description></item><item><title>Python 使用 USB 热敏打印机</title><link>https://naizi.ch/2020/07/07/python-%E4%BD%BF%E7%94%A8-usb-%E7%83%AD%E6%95%8F%E6%89%93%E5%8D%B0%E6%9C%BA/</link><pubDate>Tue, 07 Jul 2020 00:00:00 +0000</pubDate><guid>https://naizi.ch/2020/07/07/python-%E4%BD%BF%E7%94%A8-usb-%E7%83%AD%E6%95%8F%E6%89%93%E5%8D%B0%E6%9C%BA/</guid><description>&lt;p>通过使用 python-escpos 库，就可以和常见的 USB 热敏打印机通信来进行打印，不再赘述具体方法。&lt;/p>
 &lt;p>但是 python-escpos 库并不是为 Windows 写的，实际在使用的时候就会出现许多的问题。&lt;/p>
 &lt;p>一个常见的错误是&lt;/p>
 &lt;blockquote>
@@ -362,7 +362,7 @@ alt="lamp"
 &lt;/blockquote>
 &lt;p>所幸在 python-escpos 的 Github &lt;a class="link" href="https://github.com/python-escpos/python-escpos/issues/316" target="_blank" rel="noopener"
 >issue316&lt;/a>中有人提供了解决方式。直接修改源代码，删去对应的异常捕捉，就能够正常使用了。&lt;/p>
-&lt;p>此处留档以备不时之需。&lt;/p></description></item><item><title>Windows 10 使用 OpenSSH + Rsync/SCP 同步文件</title><link>https://naizi.moe/2020/05/03/windows-10-%E4%BD%BF%E7%94%A8-openssh--rsync/scp-%E5%90%8C%E6%AD%A5%E6%96%87%E4%BB%B6/</link><pubDate>Sun, 03 May 2020 00:00:00 +0000</pubDate><guid>https://naizi.moe/2020/05/03/windows-10-%E4%BD%BF%E7%94%A8-openssh--rsync/scp-%E5%90%8C%E6%AD%A5%E6%96%87%E4%BB%B6/</guid><description>&lt;p>疫情期间在家工作一直使用公司的 VPN，于是在公司电脑开了共享用来传输文件。但不知道为什么，公司-&amp;gt;家方向传文件很顺畅，反方向传文件时就经常会出现进度条走到末尾就停住，要多等一段时间才能传输结束的问题。&lt;/p>
+&lt;p>此处留档以备不时之需。&lt;/p></description></item><item><title>Windows 10 使用 OpenSSH + Rsync/SCP 同步文件</title><link>https://naizi.ch/2020/05/03/windows-10-%E4%BD%BF%E7%94%A8-openssh--rsync/scp-%E5%90%8C%E6%AD%A5%E6%96%87%E4%BB%B6/</link><pubDate>Sun, 03 May 2020 00:00:00 +0000</pubDate><guid>https://naizi.ch/2020/05/03/windows-10-%E4%BD%BF%E7%94%A8-openssh--rsync/scp-%E5%90%8C%E6%AD%A5%E6%96%87%E4%BB%B6/</guid><description>&lt;p>疫情期间在家工作一直使用公司的 VPN，于是在公司电脑开了共享用来传输文件。但不知道为什么，公司-&amp;gt;家方向传文件很顺畅，反方向传文件时就经常会出现进度条走到末尾就停住，要多等一段时间才能传输结束的问题。&lt;/p>
 &lt;p>虽然可以考虑用 OneDrive 这类网盘来进行同步，但这样的同步不够实时，而且毕竟要从三方服务器绕一圈，上传速度波动也很大。&lt;/p>
 &lt;p>想到既然 Windows 10 支持了 OpenSSH，家里和公司电脑又都装了 WSL，也许可以用 rsync/scp 来解决这个问题。&lt;/p>
 &lt;!-- raw HTML omitted -->
@@ -373,16 +373,16 @@ alt="lamp"
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-PowerShell" data-lang="PowerShell">&lt;span style="display:flex;">&lt;span>Get-WindowsCapability -Online | ? Name &lt;span style="color:#f92672">-like&lt;/span> &lt;span style="color:#e6db74">&amp;#39;OpenSSH*&amp;#39;&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># This should return the following output:&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Name &lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> OpenSSH.Client~~~~0.0.1.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Name &lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> OpenSSH.Client~~~~&lt;span style="color:#ae81ff">0.0&lt;/span>.1.0
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>State &lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> NotPresent
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Name &lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> OpenSSH.Server~~~~0.0.1.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Name &lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> OpenSSH.Server~~~~&lt;span style="color:#ae81ff">0.0&lt;/span>.1.0
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>State &lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> NotPresent
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Install the OpenSSH Client&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Add-WindowsCapability -Online -Name OpenSSH.Client~~~~&lt;span style="color:#ae81ff">0.0&lt;/span>.1.0
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Install the OpenSSH Server&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Add-WindowsCapability -Online -Name OpenSSH.Server~~~~&lt;span style="color:#ae81ff">0.0&lt;/span>.1.0
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Both of these should return the following output:&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Path &lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>
@@ -396,7 +396,7 @@ alt="lamp"
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Get-NetFirewallRule -Name *ssh*
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># There should be a firewall rule named &amp;#34;OpenSSH-Server-In-TCP&amp;#34;, which should be enabled&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># If the firewall does not exist, create one&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>New-NetFirewallRule -Name sshd -DisplayName &lt;span style="color:#e6db74">&amp;#39;OpenSSH Server (sshd)&amp;#39;&lt;/span> -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>New-NetFirewallRule -Name sshd -DisplayName &lt;span style="color:#e6db74">&amp;#39;OpenSSH Server (sshd)&amp;#39;&lt;/span> -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort &lt;span style="color:#ae81ff">22&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>这时候就可以从其中一台电脑向另一台发起 SSH 连接了。&lt;/p>
 &lt;h2 id="生成-ssh-密钥并部署">生成 SSH 密钥并部署&lt;/h2>
 &lt;p>考虑到之后计划使用 rsync 传输，与 Linux 类似，我们可以使用密钥登陆的方式来避免每次都要输入密码。&lt;/p>
@@ -451,17 +451,17 @@ alt="lamp"
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>rsync -rtuv -e &lt;span style="color:#e6db74">&amp;#34;ssh -i ~/.ssh/client_rsa&amp;#34;&lt;/span> /mnt/d/testfile server_user@Server_ip:/mnt/d/ --rsync-path&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;wsl rsync&amp;#34;&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果一切正常，应该不会提示输入密码，然后你能在 Server 的 D 盘看到这个文件。&lt;/p>
 &lt;p>同样，对调 Client 和 Server 的身份再设定一次就可以双向操作了。&lt;/p>
-&lt;h2 id="eof">EOF&lt;/h2></description></item><item><title>Windows 使用 WSL 配置 crontab 定时任务</title><link>https://naizi.moe/2020/01/25/windows-%E4%BD%BF%E7%94%A8-wsl-%E9%85%8D%E7%BD%AE-crontab-%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/</link><pubDate>Sat, 25 Jan 2020 00:00:00 +0000</pubDate><guid>https://naizi.moe/2020/01/25/windows-%E4%BD%BF%E7%94%A8-wsl-%E9%85%8D%E7%BD%AE-crontab-%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/</guid><description>&lt;p>有些 python 脚本任务对于树莓派来说还是负担太重了。毕竟性能上限摆在那里，也不能靠一个小小的 pi 承担太多。&lt;/p>
+&lt;h2 id="eof">EOF&lt;/h2></description></item><item><title>Windows 使用 WSL 配置 crontab 定时任务</title><link>https://naizi.ch/2020/01/25/windows-%E4%BD%BF%E7%94%A8-wsl-%E9%85%8D%E7%BD%AE-crontab-%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/</link><pubDate>Sat, 25 Jan 2020 00:00:00 +0000</pubDate><guid>https://naizi.ch/2020/01/25/windows-%E4%BD%BF%E7%94%A8-wsl-%E9%85%8D%E7%BD%AE-crontab-%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/</guid><description>&lt;p>有些 python 脚本任务对于树莓派来说还是负担太重了。毕竟性能上限摆在那里，也不能靠一个小小的 pi 承担太多。&lt;/p>
 &lt;p>借此机会正好尝试一下 WSL(Windows Subsystem for Linux).&lt;/p>
 &lt;!-- raw HTML omitted -->
 &lt;h2 id="安装-wsl">安装 WSL&lt;/h2>
 &lt;p>安装 WSL 并没有想象中的复杂。进入控制面板-&amp;gt;程序和功能-&amp;gt;启用或关闭 Windows 功能，勾选&lt;code>适用于Linux的Windows子系统&lt;/code>，等待安装完毕，然后重启系统。&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/pic/2020-01-25-wsl-crontab/Snipaste_2020-01-25_19-14-26.png"
+&lt;p>&lt;img src="https://naizi.ch/pic/2020-01-25-wsl-crontab/Snipaste_2020-01-25_19-14-26.png"
 loading="lazy"
 alt="适用于 Linux 的 Windows 子系统"
 >&lt;/p>
 &lt;p>重启完毕，开始菜单选择 MicrosoftStore，搜索 linux 就能够找到可供使用的 linux 发行版，我这里选择了 Ubuntu18.04LTS。&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/pic/2020-01-25-wsl-crontab/Snipaste_2020-01-25_02-08-03.png"
+&lt;p>&lt;img src="https://naizi.ch/pic/2020-01-25-wsl-crontab/Snipaste_2020-01-25_02-08-03.png"
 loading="lazy"
 alt="MicrosoftStore"
 >&lt;/p>
@@ -483,14 +483,14 @@ alt="MicrosoftStore"
 &lt;p>C:\Windows\System32\wsl.exe sudo /etc/init.d/cron start&lt;/p>
 &lt;/blockquote>
 &lt;p>这样我们就能够保证 crontab 在每次 Windows 启动后常驻后台了。一切正常的话重启 Windows，在任务管理器能看到一个名称为 cron 的进程。&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/pic/2020-01-25-wsl-crontab/Snipaste_2020-01-25_19-16-06.png"
+&lt;p>&lt;img src="https://naizi.ch/pic/2020-01-25-wsl-crontab/Snipaste_2020-01-25_19-16-06.png"
 loading="lazy"
 alt="任务管理器"
 >&lt;/p>
 &lt;h2 id="使用-crontab">使用 crontab&lt;/h2>
 &lt;p>剩下的操作和在 linux 里使用 crontab 没有区别，唯一需要注意的是文件的路径。&lt;/p>
 &lt;p>在 WSL 中，Windows 的 C 盘被挂载在&lt;code>/mnt/c&lt;/code>目录下，D\E\F 以此类推，需要注意对应修改。&lt;/p>
-&lt;h2 id="eof">EOF&lt;/h2></description></item><item><title>来一场圆周率的飞花令</title><link>https://naizi.moe/2019/11/26/%E6%9D%A5%E4%B8%80%E5%9C%BA%E5%9C%86%E5%91%A8%E7%8E%87%E7%9A%84%E9%A3%9E%E8%8A%B1%E4%BB%A4/</link><pubDate>Tue, 26 Nov 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/11/26/%E6%9D%A5%E4%B8%80%E5%9C%BA%E5%9C%86%E5%91%A8%E7%8E%87%E7%9A%84%E9%A3%9E%E8%8A%B1%E4%BB%A4/</guid><description>&lt;p>逛微博看到了一些有意思的东西：山东卫视《国学小名士》第三季的节目，进行了一场 π(圆周率) 的飞花令。&lt;/p>
+&lt;h2 id="eof">EOF&lt;/h2></description></item><item><title>来一场圆周率的飞花令</title><link>https://naizi.ch/2019/11/26/%E6%9D%A5%E4%B8%80%E5%9C%BA%E5%9C%86%E5%91%A8%E7%8E%87%E7%9A%84%E9%A3%9E%E8%8A%B1%E4%BB%A4/</link><pubDate>Tue, 26 Nov 2019 00:00:00 +0000</pubDate><guid>https://naizi.ch/2019/11/26/%E6%9D%A5%E4%B8%80%E5%9C%BA%E5%9C%86%E5%91%A8%E7%8E%87%E7%9A%84%E9%A3%9E%E8%8A%B1%E4%BB%A4/</guid><description>&lt;p>逛微博看到了一些有意思的东西：山东卫视《国学小名士》第三季的节目，进行了一场 π(圆周率) 的飞花令。&lt;/p>
 &lt;p>节目里选手们接到了小数点后 204 位，那，能不能更长一点？&lt;/p>
 &lt;!-- raw HTML omitted -->
 &lt;h2 id="数据储备">数据储备&lt;/h2>
@@ -531,7 +531,7 @@ alt="任务管理器"
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> x &lt;span style="color:#f92672">in&lt;/span> file:
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> y &lt;span style="color:#f92672">in&lt;/span> x[&lt;span style="color:#e6db74">&amp;#39;paragraphs&amp;#39;&lt;/span>]:
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> z &lt;span style="color:#f92672">in&lt;/span> [&lt;span style="color:#e6db74">&amp;#39;一&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;二&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;三&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;四&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;五&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;六&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;七&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;八&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;九&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;零&amp;#39;&lt;/span>]:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 　 &lt;span style="color:#66d9ef">if&lt;/span> re&lt;span style="color:#f92672">.&lt;/span>search(z, y):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#960050;background-color:#1e0010">　&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> re&lt;span style="color:#f92672">.&lt;/span>search(z, y):
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> result[z] &lt;span style="color:#f92672">=&lt;/span> result&lt;span style="color:#f92672">.&lt;/span>get(z) &lt;span style="color:#f92672">+&lt;/span> [
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#ae81ff">\n\t\t\t\t&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">/&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#f92672">.&lt;/span>format(y, x[&lt;span style="color:#e6db74">&amp;#39;author&amp;#39;&lt;/span>], x[&lt;span style="color:#e6db74">&amp;#39;title&amp;#39;&lt;/span>])
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ]
@@ -598,7 +598,7 @@ alt="任务管理器"
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> n &lt;span style="color:#f92672">&amp;gt;&lt;/span> &lt;span style="color:#ae81ff">1000&lt;/span>:
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f&lt;span style="color:#f92672">.&lt;/span>close()
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> sys&lt;span style="color:#f92672">.&lt;/span>exit()
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="eof">EOF&lt;/h2></description></item><item><title>哔哩哔哩下载工具 三</title><link>https://naizi.moe/2019/11/16/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7-%E4%B8%89/</link><pubDate>Sat, 16 Nov 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/11/16/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7-%E4%B8%89/</guid><description>&lt;p>有生之年我最后居然是用 Shell 来填了分 P 的 TODO……&lt;/p>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="eof">EOF&lt;/h2></description></item><item><title>哔哩哔哩下载工具 三</title><link>https://naizi.ch/2019/11/16/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7-%E4%B8%89/</link><pubDate>Sat, 16 Nov 2019 00:00:00 +0000</pubDate><guid>https://naizi.ch/2019/11/16/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7-%E4%B8%89/</guid><description>&lt;p>有生之年我最后居然是用 Shell 来填了分 P 的 TODO……&lt;/p>
 &lt;!-- raw HTML omitted -->
 &lt;h2 id="curl---命令行下的文件传输工具">cURL - 命令行下的文件传输工具&lt;/h2>
 &lt;p>cURL 这个工具太过强大，我也不知道该怎么去解释它比较好。几乎所有的网络访问，上传下载，都能够使用 cURL 来完成。&lt;/p>
@@ -865,7 +865,7 @@ alt="任务管理器"
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">else&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Error: Video not found!\n&amp;#34;&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fi&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>配置 Cmder 整合 Cygwin 与 Github</title><link>https://naizi.moe/2019/10/19/%E9%85%8D%E7%BD%AE-cmder-%E6%95%B4%E5%90%88-cygwin-%E4%B8%8E-github/</link><pubDate>Sat, 19 Oct 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/10/19/%E9%85%8D%E7%BD%AE-cmder-%E6%95%B4%E5%90%88-cygwin-%E4%B8%8E-github/</guid><description>&lt;p>记录下折腾 Cmder 的过程。&lt;/p>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>配置 Cmder 整合 Cygwin 与 Github</title><link>https://naizi.ch/2019/10/19/%E9%85%8D%E7%BD%AE-cmder-%E6%95%B4%E5%90%88-cygwin-%E4%B8%8E-github/</link><pubDate>Sat, 19 Oct 2019 00:00:00 +0000</pubDate><guid>https://naizi.ch/2019/10/19/%E9%85%8D%E7%BD%AE-cmder-%E6%95%B4%E5%90%88-cygwin-%E4%B8%8E-github/</guid><description>&lt;p>记录下折腾 Cmder 的过程。&lt;/p>
 &lt;p>虽然群友安利了许久的 WSL 和 Powershell，但对于前两者的 GUI 我实在看不下去。也许他们真的很棒，但好用的工具似乎注定了不能拥有好看的 UI。&lt;/p>
 &lt;p>而我，还是倾向于 UI 舒服的。毕竟只要它真的不是功能上缺胳膊少腿儿，剩下的事情，大部分都可以克服。&lt;/p>
 &lt;p>再说了，不多折腾折腾，不多踩几个坑，多 Google 和 Stackoverflow 一下，你怎么会知道原来世界上还能有这种问题呢.jpg&lt;/p>
@@ -975,7 +975,7 @@ target="_blank" rel="noopener"
 &lt;p>如果之前已经生成了 SSH KEY 的话，需要手动复制到&lt;code>C:\cygwin64\home\&amp;lt;user name&amp;gt;\.ssh&lt;/code>或者直接指定 ssh key 才能让 git 识别到。&lt;/p>
 &lt;/li>
 &lt;/ul>
-&lt;h2 id="eof">EOF&lt;/h2></description></item><item><title>jojo，python 的能力是有极限的</title><link>https://naizi.moe/2019/10/18/jojopython-%E7%9A%84%E8%83%BD%E5%8A%9B%E6%98%AF%E6%9C%89%E6%9E%81%E9%99%90%E7%9A%84/</link><pubDate>Fri, 18 Oct 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/10/18/jojopython-%E7%9A%84%E8%83%BD%E5%8A%9B%E6%98%AF%E6%9C%89%E6%9E%81%E9%99%90%E7%9A%84/</guid><description>&lt;p>&amp;ndash;&amp;gt; jojo，python 的能力是有极限的。&lt;/p>
+&lt;h2 id="eof">EOF&lt;/h2></description></item><item><title>jojo，python 的能力是有极限的</title><link>https://naizi.ch/2019/10/18/jojopython-%E7%9A%84%E8%83%BD%E5%8A%9B%E6%98%AF%E6%9C%89%E6%9E%81%E9%99%90%E7%9A%84/</link><pubDate>Fri, 18 Oct 2019 00:00:00 +0000</pubDate><guid>https://naizi.ch/2019/10/18/jojopython-%E7%9A%84%E8%83%BD%E5%8A%9B%E6%98%AF%E6%9C%89%E6%9E%81%E9%99%90%E7%9A%84/</guid><description>&lt;p>&amp;ndash;&amp;gt; jojo，python 的能力是有极限的。&lt;/p>
 &lt;p>&amp;ndash;&amp;gt; 我从短暂的人生当中学到一件事&amp;hellip;&amp;hellip;&lt;/p>
 &lt;p>&amp;ndash;&amp;gt; 越是玩弄代码，就越会发现 python 的不足&amp;hellip;&amp;hellip;&lt;/p>
 &lt;p>&amp;ndash;&amp;gt; 除非超越 python。&lt;/p>
@@ -1047,7 +1047,7 @@ target="_blank" rel="noopener"
 &lt;/ol>
 &lt;p>爽又死了。&lt;/p>
 &lt;h2 id="eof">EOF&lt;/h2>
-&lt;p>尝试在 windows 上（Cmder+Github）做类似的操作，发现远没有在虚拟机（Ubuntu）里执行快，垃圾微软.jpg&lt;/p></description></item><item><title>RSS 咕咕机</title><link>https://naizi.moe/2019/10/02/rss-%E5%92%95%E5%92%95%E6%9C%BA/</link><pubDate>Wed, 02 Oct 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/10/02/rss-%E5%92%95%E5%92%95%E6%9C%BA/</guid><description>&lt;p>之前从同事那里二手买了个咕咕机，当玩具玩。享受了几天使用 APP 打印各种沙雕照片和表情包带来的乐趣后，它毫无意外的开始吃灰，就和桌子旁边的树莓派一样染上历史的颜色。&lt;/p>
+&lt;p>尝试在 windows 上（Cmder+Github）做类似的操作，发现远没有在虚拟机（Ubuntu）里执行快，垃圾微软.jpg&lt;/p></description></item><item><title>RSS 咕咕机</title><link>https://naizi.ch/2019/10/02/rss-%E5%92%95%E5%92%95%E6%9C%BA/</link><pubDate>Wed, 02 Oct 2019 00:00:00 +0000</pubDate><guid>https://naizi.ch/2019/10/02/rss-%E5%92%95%E5%92%95%E6%9C%BA/</guid><description>&lt;p>之前从同事那里二手买了个咕咕机，当玩具玩。享受了几天使用 APP 打印各种沙雕照片和表情包带来的乐趣后，它毫无意外的开始吃灰，就和桌子旁边的树莓派一样染上历史的颜色。&lt;/p>
 &lt;p>还是拿出来用用吧……&lt;/p>
 &lt;p>咕咕机 APP 里的一部分订阅号的确有点意思，比如订阅每天天气，早上 8 点自动打印一条天气内容之类的。那么拿来订阅微博更新好像也没什么不对的。&lt;/p>
 &lt;p>反正一天有 12 小时在公司，闲着也是闲着，不定时的来一段小纸条也不错。&lt;/p>
@@ -1270,10 +1270,10 @@ target="_blank" rel="noopener"
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> __name__ &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#39;__main__&amp;#39;&lt;/span>:
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> main()
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="eof">EOF&lt;/h2>
-&lt;p>&lt;img src="https://naizi.moe/pic/2019-10-02-memobird-rss/2019-10-02_20-38.gif"
+&lt;p>&lt;img src="https://naizi.ch/pic/2019-10-02-memobird-rss/2019-10-02_20-38.gif"
 loading="lazy"
 alt="gugugu"
->&lt;/p></description></item><item><title>Archives</title><link>https://naizi.moe/archives/</link><pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/archives/</guid><description/></item><item><title>哔哩哔哩下载工具 二</title><link>https://naizi.moe/2019/04/30/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7-%E4%BA%8C/</link><pubDate>Tue, 30 Apr 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/04/30/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7-%E4%BA%8C/</guid><description>&lt;p>主要解决一些之前遇到的坑，填一些留下的 TODO。&lt;/p>
+>&lt;/p></description></item><item><title>Archives</title><link>https://naizi.ch/archives/</link><pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate><guid>https://naizi.ch/archives/</guid><description/></item><item><title>哔哩哔哩下载工具 二</title><link>https://naizi.ch/2019/04/30/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7-%E4%BA%8C/</link><pubDate>Tue, 30 Apr 2019 00:00:00 +0000</pubDate><guid>https://naizi.ch/2019/04/30/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7-%E4%BA%8C/</guid><description>&lt;p>主要解决一些之前遇到的坑，填一些留下的 TODO。&lt;/p>
 &lt;!-- raw HTML omitted -->
 &lt;h2 id="vegas-不支持-hevc-编码">Vegas 不支持 HEVC 编码&lt;/h2>
 &lt;p>思路很简单，对下载下来的&lt;code>m4s&lt;/code>先读一遍编码，看是不是 HEVC 格式的，如果是就在转码的时候用&lt;code>libx264&lt;/code>编码，不是就粗暴的 copy 视频流。&lt;/p>
@@ -1510,7 +1510,7 @@ file &amp;lsquo;part3.flv&amp;rsquo;&lt;/p>
 &lt;li>&lt;del>aria2 和 ffmpeg 的参数单独存文件方便修改，不然每次都要重新编译 exe。&lt;/del>&lt;/li>
 &lt;li>分 P 选择和清晰度选择&lt;/li>
 &lt;/ul>
-&lt;h2 id="eof">EOF&lt;/h2></description></item><item><title>哔哩哔哩下载工具</title><link>https://naizi.moe/2019/04/07/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7/</link><pubDate>Sun, 07 Apr 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/04/07/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7/</guid><description>&lt;p>给哔哩哔哩周刊组写的下载工具。每次都要下载十几个视频，一个个手动来实在是太麻烦了。&lt;/p>
+&lt;h2 id="eof">EOF&lt;/h2></description></item><item><title>哔哩哔哩下载工具</title><link>https://naizi.ch/2019/04/07/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7/</link><pubDate>Sun, 07 Apr 2019 00:00:00 +0000</pubDate><guid>https://naizi.ch/2019/04/07/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7/</guid><description>&lt;p>给哔哩哔哩周刊组写的下载工具。每次都要下载十几个视频，一个个手动来实在是太麻烦了。&lt;/p>
 &lt;p>看了下，发现下载最高清一路的视频源还是需要 cookie 认证，写不来登录，只能用 dirty 的方式读 cookie 文件了。&lt;/p>
 &lt;!-- raw HTML omitted -->
 &lt;h2 id="分析">分析&lt;/h2>
@@ -1636,7 +1636,7 @@ file &amp;lsquo;part3.flv&amp;rsquo;&lt;/p>
 &lt;li>aria2 和 ffmpeg 的参数单独存文件方便修改，不然每次都要重新编译 exe。&lt;/li>
 &lt;li>分 P 选择和清晰度选择&lt;/li>
 &lt;/ul>
-&lt;h2 id="eof">EOF&lt;/h2></description></item><item><title>没有 KMSCON 的第一天，想他</title><link>https://naizi.moe/2019/01/10/%E6%B2%A1%E6%9C%89-kmscon-%E7%9A%84%E7%AC%AC%E4%B8%80%E5%A4%A9%E6%83%B3%E4%BB%96/</link><pubDate>Thu, 10 Jan 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/01/10/%E6%B2%A1%E6%9C%89-kmscon-%E7%9A%84%E7%AC%AC%E4%B8%80%E5%A4%A9%E6%83%B3%E4%BB%96/</guid><description>&lt;p>因为树莓派用了官方系统，原本在 Arch 上利用&lt;a class="link" href="https://wiki.archlinux.org/index.php/KMSCON" target="_blank" rel="noopener"
+&lt;h2 id="eof">EOF&lt;/h2></description></item><item><title>没有 KMSCON 的第一天，想他</title><link>https://naizi.ch/2019/01/10/%E6%B2%A1%E6%9C%89-kmscon-%E7%9A%84%E7%AC%AC%E4%B8%80%E5%A4%A9%E6%83%B3%E4%BB%96/</link><pubDate>Thu, 10 Jan 2019 00:00:00 +0000</pubDate><guid>https://naizi.ch/2019/01/10/%E6%B2%A1%E6%9C%89-kmscon-%E7%9A%84%E7%AC%AC%E4%B8%80%E5%A4%A9%E6%83%B3%E4%BB%96/</guid><description>&lt;p>因为树莓派用了官方系统，原本在 Arch 上利用&lt;a class="link" href="https://wiki.archlinux.org/index.php/KMSCON" target="_blank" rel="noopener"
 >KMSCON&lt;/a>来回显中文字符的方式不可行了，沉痛悼念。&lt;/p>
 &lt;p>不会编译是罪魁祸首，而且包依赖关系看得头大，实在不想自己解决。&lt;/p>
 &lt;!-- raw HTML omitted -->
@@ -1661,7 +1661,7 @@ file &amp;lsquo;part3.flv&amp;rsquo;&lt;/p>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>这样便会在系统启动之后自动启动一个终端窗口，分配一个 pts 的设备，因为是第一个终端窗口所以一定是 pts/0&lt;/p>
 &lt;p>再把剩下的定时脚本输出全部重定向到 &lt;code>/dev/pts/0&lt;/code> 就行了&lt;/p>
 &lt;h2 id="eof">EOF&lt;/h2>
-&lt;p>感觉还是会有回到 Arch 的一天，Arch 真香。&lt;/p></description></item><item><title>微博信息流广告抓取</title><link>https://naizi.moe/2019/01/05/%E5%BE%AE%E5%8D%9A%E4%BF%A1%E6%81%AF%E6%B5%81%E5%B9%BF%E5%91%8A%E6%8A%93%E5%8F%96/</link><pubDate>Sat, 05 Jan 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/01/05/%E5%BE%AE%E5%8D%9A%E4%BF%A1%E6%81%AF%E6%B5%81%E5%B9%BF%E5%91%8A%E6%8A%93%E5%8F%96/</guid><description>&lt;p>微博注册了个小号，为了看看都是什么牛鬼蛇神在微博里推送信息流广告，尝试抓取一下。&lt;/p>
+&lt;p>感觉还是会有回到 Arch 的一天，Arch 真香。&lt;/p></description></item><item><title>微博信息流广告抓取</title><link>https://naizi.ch/2019/01/05/%E5%BE%AE%E5%8D%9A%E4%BF%A1%E6%81%AF%E6%B5%81%E5%B9%BF%E5%91%8A%E6%8A%93%E5%8F%96/</link><pubDate>Sat, 05 Jan 2019 00:00:00 +0000</pubDate><guid>https://naizi.ch/2019/01/05/%E5%BE%AE%E5%8D%9A%E4%BF%A1%E6%81%AF%E6%B5%81%E5%B9%BF%E5%91%8A%E6%8A%93%E5%8F%96/</guid><description>&lt;p>微博注册了个小号，为了看看都是什么牛鬼蛇神在微博里推送信息流广告，尝试抓取一下。&lt;/p>
 &lt;p>虽然有&lt;a class="link" href="https://github.com/tiansh/yaofang" target="_blank" rel="noopener"
 >YAWF（Yet Another Weibo Filter）&lt;/a>这样好用的脚本可以屏蔽广告，但屏蔽了就看不到了。&lt;/p>
 &lt;!-- raw HTML omitted -->
@@ -1699,7 +1699,7 @@ file &amp;lsquo;part3.flv&amp;rsquo;&lt;/p>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="css-筛选广告内容">CSS 筛选广告内容&lt;/h2>
 &lt;p>打开保存的 html，格式化一下代码，找到存在&lt;code>feedtype=&amp;quot;ad&amp;quot;&lt;/code>属性的节点（因为不是每次获取都会有信息流广告，所以可能需要获取很多次）。&lt;/p>
 &lt;p>然后继续往下看子节点，直到找到具体的微博链接：&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/pic/2019-01-05-weibo-feed-adver/2019-01-05_17-47.png"
+&lt;p>&lt;img src="https://naizi.ch/pic/2019-01-05-weibo-feed-adver/2019-01-05_17-47.png"
 loading="lazy"
 alt="信息流 HTML"
 >&lt;/p>
@@ -1747,10 +1747,10 @@ alt="信息流 HTML"
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> main()
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="eof">EOF&lt;/h2>
 &lt;p>就结果而言效果还不错，但也发现信息流广告里还会有一些关注了的博主的正常微博内容，可以考虑和自己的关注列表对比来筛除。&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/pic/2019-01-05-weibo-feed-adver/2019-01-05_18-03.png"
+&lt;p>&lt;img src="https://naizi.ch/pic/2019-01-05-weibo-feed-adver/2019-01-05_18-03.png"
 loading="lazy"
 alt="信息流广告"
->&lt;/p></description></item><item><title>从零开始 Raspberry Pi</title><link>https://naizi.moe/2018/12/08/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-raspberry-pi/</link><pubDate>Sat, 08 Dec 2018 00:00:00 +0000</pubDate><guid>https://naizi.moe/2018/12/08/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-raspberry-pi/</guid><description>&lt;p>为了让吃灰的树莓派重新开始工作，这回不瞎折腾了，直接用官方系统。&lt;/p>
+>&lt;/p></description></item><item><title>从零开始 Raspberry Pi</title><link>https://naizi.ch/2018/12/08/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-raspberry-pi/</link><pubDate>Sat, 08 Dec 2018 00:00:00 +0000</pubDate><guid>https://naizi.ch/2018/12/08/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-raspberry-pi/</guid><description>&lt;p>为了让吃灰的树莓派重新开始工作，这回不瞎折腾了，直接用官方系统。&lt;/p>
 &lt;!-- raw HTML omitted -->
 &lt;h2 id="安装">安装&lt;/h2>
 &lt;p>按照&lt;a class="link" href="https://www.raspberrypi.org/downloads/noobs/" target="_blank" rel="noopener"

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>aftereffects on H⁺ + OH⁻ → H₂O</title><link>https://naizi.moe/tags/aftereffects/</link><description>Recent content in aftereffects on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 09 Aug 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://naizi.moe/tags/aftereffects/atom.xml" rel="self" type="application/rss+xml"/><item><title>记录一些和 Unicode 不断作斗争的日子</title><link>https://naizi.moe/2022/08/09/%E8%AE%B0%E5%BD%95%E4%B8%80%E4%BA%9B%E5%92%8C-unicode-%E4%B8%8D%E6%96%AD%E4%BD%9C%E6%96%97%E4%BA%89%E7%9A%84%E6%97%A5%E5%AD%90/</link><pubDate>Tue, 09 Aug 2022 00:00:00 +0000</pubDate><guid>https://naizi.moe/2022/08/09/%E8%AE%B0%E5%BD%95%E4%B8%80%E4%BA%9B%E5%92%8C-unicode-%E4%B8%8D%E6%96%AD%E4%BD%9C%E6%96%97%E4%BA%89%E7%9A%84%E6%97%A5%E5%AD%90/</guid><description>&lt;p>最开始给哔哩哔哩周刊写&lt;a class="link" href="https://github.com/Neutralization/BiliBiliRankingScripts" target="_blank" rel="noopener"
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>aftereffects on H⁺ + OH⁻ → H₂O</title><link>https://naizi.ch/tags/aftereffects/</link><description>Recent content in aftereffects on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 09 Aug 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://naizi.ch/tags/aftereffects/atom.xml" rel="self" type="application/rss+xml"/><item><title>记录一些和 Unicode 不断作斗争的日子</title><link>https://naizi.ch/2022/08/09/%E8%AE%B0%E5%BD%95%E4%B8%80%E4%BA%9B%E5%92%8C-unicode-%E4%B8%8D%E6%96%AD%E4%BD%9C%E6%96%97%E4%BA%89%E7%9A%84%E6%97%A5%E5%AD%90/</link><pubDate>Tue, 09 Aug 2022 00:00:00 +0000</pubDate><guid>https://naizi.ch/2022/08/09/%E8%AE%B0%E5%BD%95%E4%B8%80%E4%BA%9B%E5%92%8C-unicode-%E4%B8%8D%E6%96%AD%E4%BD%9C%E6%96%97%E4%BA%89%E7%9A%84%E6%97%A5%E5%AD%90/</guid><description>&lt;p>最开始给哔哩哔哩周刊写&lt;a class="link" href="https://github.com/Neutralization/BiliBiliRankingScripts" target="_blank" rel="noopener"
 >&lt;code>自动化脚本&lt;/code>&lt;/a>的时候，还不觉得生成图片能遇到什么坑。毕竟之前也用过 Pillow 库，算是比较熟悉了。而且遇到的都是些在普通不过的正常文本。&lt;/p>
 &lt;p>直到躲不开的 emoji 开始出现了。&lt;/p>
 &lt;h2 id="一些普通的-emoji">一些普通的 Emoji&lt;/h2>
@@ -19,7 +19,7 @@
 >✥我҉͛̀̈̈̾̓̀͂̊͝的模҉̖̭̱͍̩͕͓̋̓͋̈̑͋̉͢͞ͅ样吓҈̎̍̅̒̎͂̈́̚͞.到你҈̛́̐̄́̃͗̓͒͒͊̿͛̒了？～❤✥&lt;/a>&lt;/p>
 &lt;p>只能承认它杀死了比赛。但其实类似的标题并不是第一次见，在更早之前，我算是见过它的一位大前辈：&lt;/p>
 &lt;p>&lt;a class="link" href="https://www.nicovideo.jp/watch/sm28869680" target="_blank" rel="noopener"
->&lt;img src="https://naizi.moe/pic/2022-08-09-fight-with-unicode/Snipaste_2022-08-10_16-32-58.png"
+>&lt;img src="https://naizi.ch/pic/2022-08-09-fight-with-unicode/Snipaste_2022-08-10_16-32-58.png"
 loading="lazy"
 alt="【初音ミク】宇宙大规模 11 次元构造体【ATOLS】"
 >&lt;/a>&lt;/p>

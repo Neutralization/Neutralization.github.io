@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>openscad on H⁺ + OH⁻ → H₂O</title><link>https://naizi.moe/tags/openscad/</link><description>Recent content in openscad on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 12 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://naizi.moe/tags/openscad/atom.xml" rel="self" type="application/rss+xml"/><item><title>试做了一个明日方舟的小夜灯</title><link>https://naizi.moe/2021/01/12/%E8%AF%95%E5%81%9A%E4%BA%86%E4%B8%80%E4%B8%AA%E6%98%8E%E6%97%A5%E6%96%B9%E8%88%9F%E7%9A%84%E5%B0%8F%E5%A4%9C%E7%81%AF/</link><pubDate>Tue, 12 Jan 2021 00:00:00 +0000</pubDate><guid>https://naizi.moe/2021/01/12/%E8%AF%95%E5%81%9A%E4%BA%86%E4%B8%80%E4%B8%AA%E6%98%8E%E6%97%A5%E6%96%B9%E8%88%9F%E7%9A%84%E5%B0%8F%E5%A4%9C%E7%81%AF/</guid><description>&lt;p>之前也有在尝试用 3D 打印做奇怪的东西，建模一直在用的是 AutoDesk 家的线上工具&lt;a class="link" href="https://www.tinkercad.com/" target="_blank" rel="noopener"
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>openscad on H⁺ + OH⁻ → H₂O</title><link>https://naizi.ch/tags/openscad/</link><description>Recent content in openscad on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 12 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://naizi.ch/tags/openscad/atom.xml" rel="self" type="application/rss+xml"/><item><title>试做了一个明日方舟的小夜灯</title><link>https://naizi.ch/2021/01/12/%E8%AF%95%E5%81%9A%E4%BA%86%E4%B8%80%E4%B8%AA%E6%98%8E%E6%97%A5%E6%96%B9%E8%88%9F%E7%9A%84%E5%B0%8F%E5%A4%9C%E7%81%AF/</link><pubDate>Tue, 12 Jan 2021 00:00:00 +0000</pubDate><guid>https://naizi.ch/2021/01/12/%E8%AF%95%E5%81%9A%E4%BA%86%E4%B8%80%E4%B8%AA%E6%98%8E%E6%97%A5%E6%96%B9%E8%88%9F%E7%9A%84%E5%B0%8F%E5%A4%9C%E7%81%AF/</guid><description>&lt;p>之前也有在尝试用 3D 打印做奇怪的东西，建模一直在用的是 AutoDesk 家的线上工具&lt;a class="link" href="https://www.tinkercad.com/" target="_blank" rel="noopener"
 >Tinkercad&lt;/a>，属于那种拖拖拽拽就能拼出差不多模型的工具，还挺好用。&lt;/p>
 &lt;p>这次尝试做小夜灯，原本是打算做成游戏关卡结算时的三星标志，后来想了想，为了更显而易见的突出方舟元素，用了游戏里医疗干员的标志。主要因为医疗干员的标志几何对称性很好，估摸着可以偷懒。&lt;/p>
 &lt;p>软件用了同事推荐的&lt;a class="link" href="https://www.openscad.org/" target="_blank" rel="noopener"
@@ -7,11 +7,11 @@
 &lt;!-- raw HTML omitted -->
 &lt;p>放两张成果图，使用的是创想三维的 Ender-3 打印机。冬天材料热涨冷缩比较严重结果留下了两道印子，有点可惜。&lt;/p>
 &lt;p>电池盒是圣诞节的时候那种细绳装饰灯的电池，考虑到亮度和分散光源，接了一个 COB 灯板。&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/pic/2021-01-12-arknight-lamp/battery.jpg"
+&lt;p>&lt;img src="https://naizi.ch/pic/2021-01-12-arknight-lamp/battery.jpg"
 loading="lazy"
 alt="lamp"
 >&lt;/p>
-&lt;p>&lt;img src="https://naizi.moe/pic/2021-01-12-arknight-lamp/lamp.jpg"
+&lt;p>&lt;img src="https://naizi.ch/pic/2021-01-12-arknight-lamp/lamp.jpg"
 loading="lazy"
 alt="lamp"
 >&lt;/p>

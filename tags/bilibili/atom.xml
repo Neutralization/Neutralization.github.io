@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>bilibili on H⁺ + OH⁻ → H₂O</title><link>https://naizi.moe/tags/bilibili/</link><description>Recent content in bilibili on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 07 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://naizi.moe/tags/bilibili/atom.xml" rel="self" type="application/rss+xml"/><item><title>自动化制作周刊哔哩哔哩排行榜</title><link>https://naizi.moe/2021/03/07/%E8%87%AA%E5%8A%A8%E5%8C%96%E5%88%B6%E4%BD%9C%E5%91%A8%E5%88%8A%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E6%8E%92%E8%A1%8C%E6%A6%9C/</link><pubDate>Sun, 07 Mar 2021 00:00:00 +0000</pubDate><guid>https://naizi.moe/2021/03/07/%E8%87%AA%E5%8A%A8%E5%8C%96%E5%88%B6%E4%BD%9C%E5%91%A8%E5%88%8A%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E6%8E%92%E8%A1%8C%E6%A6%9C/</guid><description>&lt;p>总结一下周刊哔哩哔哩排行榜制作流程自动化过程中遇到的一些问题。&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>bilibili on H⁺ + OH⁻ → H₂O</title><link>https://naizi.ch/tags/bilibili/</link><description>Recent content in bilibili on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 07 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://naizi.ch/tags/bilibili/atom.xml" rel="self" type="application/rss+xml"/><item><title>自动化制作周刊哔哩哔哩排行榜</title><link>https://naizi.ch/2021/03/07/%E8%87%AA%E5%8A%A8%E5%8C%96%E5%88%B6%E4%BD%9C%E5%91%A8%E5%88%8A%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E6%8E%92%E8%A1%8C%E6%A6%9C/</link><pubDate>Sun, 07 Mar 2021 00:00:00 +0000</pubDate><guid>https://naizi.ch/2021/03/07/%E8%87%AA%E5%8A%A8%E5%8C%96%E5%88%B6%E4%BD%9C%E5%91%A8%E5%88%8A%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E6%8E%92%E8%A1%8C%E6%A6%9C/</guid><description>&lt;p>总结一下周刊哔哩哔哩排行榜制作流程自动化过程中遇到的一些问题。&lt;/p>
 &lt;p>之前的周刊制作过程中，组员各自领取不同部分的制作任务，每一部分的内容格式包含在不同的 yml 文件中。&lt;/p>
 &lt;p>通常先把 yml 中的 av 号取出，去下载对应的视频到本地，然后人工浏览选择实际制作时选取的片段，记录下片段的开始时间，修改 yml 中的对应字段。然后上传修改完成的 yml，转换成之后导入 Vegas 时需要的 xml 文件。&lt;/p>
 &lt;p>由于旧流程的局限性，没有考虑到视频尺寸的适配，因此在导入 Vegas 后，往往要手动对齐所有视频。另外由于不同部分的效果不一致（比如是否有过渡场景），也没有在 yml 中进行区分，往往还要再手动调整。工作量本质不大，但其实都是可以进行优化的场景。&lt;/p>
@@ -69,7 +69,7 @@
 >在 Github 已开源&lt;/a>。如果你不知道周刊哔哩哔哩排行榜，你也可以选择&lt;a class="link" href="https://space.bilibili.com/398300398" target="_blank" rel="noopener"
 >关注了解一下&lt;/a>。&lt;/p>
 &lt;h2 id="eof">EOF&lt;/h2>
-&lt;p>powershell 真香（&lt;/p></description></item><item><title>哔哩哔哩下载工具 三</title><link>https://naizi.moe/2019/11/16/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7-%E4%B8%89/</link><pubDate>Sat, 16 Nov 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/11/16/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7-%E4%B8%89/</guid><description>&lt;p>有生之年我最后居然是用 Shell 来填了分 P 的 TODO……&lt;/p>
+&lt;p>powershell 真香（&lt;/p></description></item><item><title>哔哩哔哩下载工具 三</title><link>https://naizi.ch/2019/11/16/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7-%E4%B8%89/</link><pubDate>Sat, 16 Nov 2019 00:00:00 +0000</pubDate><guid>https://naizi.ch/2019/11/16/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7-%E4%B8%89/</guid><description>&lt;p>有生之年我最后居然是用 Shell 来填了分 P 的 TODO……&lt;/p>
 &lt;!-- raw HTML omitted -->
 &lt;h2 id="curl---命令行下的文件传输工具">cURL - 命令行下的文件传输工具&lt;/h2>
 &lt;p>cURL 这个工具太过强大，我也不知道该怎么去解释它比较好。几乎所有的网络访问，上传下载，都能够使用 cURL 来完成。&lt;/p>
@@ -336,7 +336,7 @@
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">else&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo -e &lt;span style="color:#e6db74">&amp;#34;-&amp;gt;Error: Video not found!\n&amp;#34;&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fi&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>哔哩哔哩下载工具 二</title><link>https://naizi.moe/2019/04/30/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7-%E4%BA%8C/</link><pubDate>Tue, 30 Apr 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/04/30/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7-%E4%BA%8C/</guid><description>&lt;p>主要解决一些之前遇到的坑，填一些留下的 TODO。&lt;/p>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>哔哩哔哩下载工具 二</title><link>https://naizi.ch/2019/04/30/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7-%E4%BA%8C/</link><pubDate>Tue, 30 Apr 2019 00:00:00 +0000</pubDate><guid>https://naizi.ch/2019/04/30/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7-%E4%BA%8C/</guid><description>&lt;p>主要解决一些之前遇到的坑，填一些留下的 TODO。&lt;/p>
 &lt;!-- raw HTML omitted -->
 &lt;h2 id="vegas-不支持-hevc-编码">Vegas 不支持 HEVC 编码&lt;/h2>
 &lt;p>思路很简单，对下载下来的&lt;code>m4s&lt;/code>先读一遍编码，看是不是 HEVC 格式的，如果是就在转码的时候用&lt;code>libx264&lt;/code>编码，不是就粗暴的 copy 视频流。&lt;/p>
@@ -573,7 +573,7 @@ file &amp;lsquo;part3.flv&amp;rsquo;&lt;/p>
 &lt;li>&lt;del>aria2 和 ffmpeg 的参数单独存文件方便修改，不然每次都要重新编译 exe。&lt;/del>&lt;/li>
 &lt;li>分 P 选择和清晰度选择&lt;/li>
 &lt;/ul>
-&lt;h2 id="eof">EOF&lt;/h2></description></item><item><title>哔哩哔哩下载工具</title><link>https://naizi.moe/2019/04/07/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7/</link><pubDate>Sun, 07 Apr 2019 00:00:00 +0000</pubDate><guid>https://naizi.moe/2019/04/07/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7/</guid><description>&lt;p>给哔哩哔哩周刊组写的下载工具。每次都要下载十几个视频，一个个手动来实在是太麻烦了。&lt;/p>
+&lt;h2 id="eof">EOF&lt;/h2></description></item><item><title>哔哩哔哩下载工具</title><link>https://naizi.ch/2019/04/07/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7/</link><pubDate>Sun, 07 Apr 2019 00:00:00 +0000</pubDate><guid>https://naizi.ch/2019/04/07/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7/</guid><description>&lt;p>给哔哩哔哩周刊组写的下载工具。每次都要下载十几个视频，一个个手动来实在是太麻烦了。&lt;/p>
 &lt;p>看了下，发现下载最高清一路的视频源还是需要 cookie 认证，写不来登录，只能用 dirty 的方式读 cookie 文件了。&lt;/p>
 &lt;!-- raw HTML omitted -->
 &lt;h2 id="分析">分析&lt;/h2>
