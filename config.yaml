@@ -7,6 +7,7 @@ title: H⁺ + OH⁻ → H₂O
 DefaultContentLanguage: zh-cn
 
 hasCJKLanguage: true
+buildfuture: true
 
 permalinks:
     post: /:year/:month/:day/:title/
