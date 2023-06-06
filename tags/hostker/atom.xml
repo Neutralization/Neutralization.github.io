@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>hostker on H⁺ + OH⁻ → H₂O</title><link>https://naizi.ch/tags/hostker/</link><description>Recent content in hostker on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 06 Jun 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://naizi.ch/tags/hostker/atom.xml" rel="self" type="application/rss+xml"/><item><title>给 OpenWrt 加上 DDNS</title><link>https://naizi.ch/2023/06/06/%E7%BB%99-openwrt-%E5%8A%A0%E4%B8%8A-ddns/</link><pubDate>Tue, 06 Jun 2023 00:00:00 +0000</pubDate><guid>https://naizi.ch/2023/06/06/%E7%BB%99-openwrt-%E5%8A%A0%E4%B8%8A-ddns/</guid><description>&lt;p>给家里的宽带申请了公网 IP，为了方便连回家绑了自己的一个域名。虽说一般也不会关掉路由器，为防万一还是简单做个 DDNS 确保 IP 地址能更新。&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;p>因为用的是主机壳的域名解析服务，先从&lt;a class="link" href="https://console.hostker.net/index.html#/Account" target="_blank" rel="noopener"
+>后台&lt;/a>拿到 API 密钥。&lt;/p>
+&lt;p>然后去域名解析管理添加一条新的 A 记录，指向家里路由的公网 IP 地址。&lt;/p>
+&lt;p>简单&lt;a class="link" href="https://gist.github.com/Neutralization/aaf154b058450bb05894291d1c53bb32" target="_blank" rel="noopener"
+>写个 bash 脚本&lt;/a>，搞定。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>domain&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;example.com&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>header&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;router&amp;#34;&lt;/span> &lt;span style="color:#75715e"># router.example.com &amp;lt;-&amp;gt; public ip address&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>email&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;*************************&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>token&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;*************************&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>trueip&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>ifconfig pppoe-wan | grep -Eo &lt;span style="color:#e6db74">&amp;#39;inet (addr:)?([0-9]*\.){3}[0-9]*&amp;#39;&lt;/span> | grep -Eo &lt;span style="color:#e6db74">&amp;#39;([0-9]*\.){3}[0-9]*&amp;#39;&lt;/span> | grep -v &lt;span style="color:#e6db74">&amp;#39;127.0.0.1&amp;#39;&lt;/span>&lt;span style="color:#66d9ef">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[&lt;/span> &lt;span style="color:#66d9ef">$(&lt;/span>cat /root/ip&lt;span style="color:#66d9ef">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> $trueip &lt;span style="color:#f92672">]&lt;/span>; &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">&amp;#34;pass&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> curl -sL -X POST &lt;span style="color:#e6db74">&amp;#34;https://i.hostker.com/api/dnsGetRecords&amp;#34;&lt;/span> -d &lt;span style="color:#e6db74">&amp;#34;token=&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>token&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;amp;email=&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>email&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;amp;domain=&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>domain&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span> -o records.json
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> recordid&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>jq -r &lt;span style="color:#e6db74">&amp;#39;.records[] | select(.header==&amp;#34;&amp;#39;&lt;/span>$header&lt;span style="color:#e6db74">&amp;#39;&amp;#34;).id&amp;#39;&lt;/span> records.json&lt;span style="color:#66d9ef">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> recordip&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>jq -r &lt;span style="color:#e6db74">&amp;#39;.records[] | select(.header==&amp;#34;&amp;#39;&lt;/span>$header&lt;span style="color:#e6db74">&amp;#39;&amp;#34;).data&amp;#39;&lt;/span> records.json&lt;span style="color:#66d9ef">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[&lt;/span> $trueip &lt;span style="color:#f92672">=&lt;/span> $recordip &lt;span style="color:#f92672">]&lt;/span>; &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo $recordip &amp;gt; /root/ip
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> curl -sL -X POST &lt;span style="color:#e6db74">&amp;#34;https://i.hostker.com/api/dnsEditRecord&amp;#34;&lt;/span> -d &lt;span style="color:#e6db74">&amp;#34;token=&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>token&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;amp;email=&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>email&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;amp;id=&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>recordid&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;amp;data=&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>trueip&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;amp;ttl=300&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>接着去 OpenWrt 添加一条计划任务：&lt;/p>
+&lt;blockquote>
+&lt;p>opkg update&lt;br>
+opkg install jq&lt;br>
+chmod +x /root/hostker_ddns.sh&lt;br>
+crontab -e&lt;/p>
+&lt;p>*/5 * * * * /root/hostker_ddns.sh&lt;/p>
+&lt;/blockquote></description></item></channel></rss>
