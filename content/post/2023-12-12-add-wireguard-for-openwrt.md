@@ -1,7 +1,6 @@
 ---
 title: "OpenWrt 使用 WireGuard 组网及局域网文件共享设置"
 date: 2023-12-12T15:00:29+08:00
-draft: true
 categories:
     - 杂记
 tags:
