@@ -120,6 +120,19 @@ Persistent Keep Alive: 25
 
 > echo '* * * * * /usr/bin/wireguard_watchdog' >> /etc/crontabs/root
 
+### 允许 WireGuard 通过防火墙
+
+Network -> Firewall -> Traffic Rules -> `Add`
+
+```text
+Name: Allow-WireGuard
+Protocol: UDP
+Source zone: WAN
+Destination zone: Device (input)
+Destination port: 50251
+Action: accept
+```
+
 ## 配置 DNS 解析和转发
 
 有了 WireGuard 后最方便的事情就是可以在家访问公司内网服务，只要通过位于内网路由的 DNS 来解析内网地址就行。
