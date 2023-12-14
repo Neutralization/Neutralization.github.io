@@ -72,7 +72,15 @@
 &lt;blockquote>
 &lt;p>echo &amp;lsquo;* * * * * /usr/bin/wireguard_watchdog&amp;rsquo; &amp;raquo; /etc/crontabs/root&lt;/p>
 &lt;/blockquote>
-&lt;h2 id="配置-dns-解析和转发">配置 DNS 解析和转发&lt;/h2>
+&lt;h3 id="允许-wireguard-通过防火墙">允许 WireGuard 通过防火墙&lt;/h3>
+&lt;p>Network -&amp;gt; Firewall -&amp;gt; Traffic Rules -&amp;gt; &lt;code>Add&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-text" data-lang="text">&lt;span style="display:flex;">&lt;span>Name: Allow-WireGuard
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Protocol: UDP
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Source zone: WAN
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Destination zone: Device (input)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Destination port: 50251
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Action: accept
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="配置-dns-解析和转发">配置 DNS 解析和转发&lt;/h2>
 &lt;p>有了 WireGuard 后最方便的事情就是可以在家访问公司内网服务，只要通过位于内网路由的 DNS 来解析内网地址就行。&lt;/p>
 &lt;p>在内网也可以访问家里的设备，两边设置不同的域即可，对应的域转发给对应的 DNS 来解析。&lt;/p>
 &lt;p>Network -&amp;gt; DHCP and DNS -&amp;gt; General Settings&lt;/p>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>H⁺ + OH⁻ → H₂O</title><link>https://naizi.ch/</link><description>Recent content on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 13 Dec 2023 10:00:21 +0000</lastBuildDate><atom:link href="https://naizi.ch/atom.xml" rel="self" type="application/rss+xml"/><item><title>Search</title><link>https://naizi.ch/search/</link><pubDate>Wed, 13 Dec 2023 10:00:21 +0000</pubDate><guid>https://naizi.ch/search/</guid><description/></item><item><title>OpenWrt 使用 WireGuard 组网及局域网文件共享设置</title><link>https://naizi.ch/2023/12/12/openwrt-%E4%BD%BF%E7%94%A8-wireguard-%E7%BB%84%E7%BD%91%E5%8F%8A%E5%B1%80%E5%9F%9F%E7%BD%91%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E8%AE%BE%E7%BD%AE/</link><pubDate>Tue, 12 Dec 2023 00:00:00 +0000</pubDate><guid>https://naizi.ch/2023/12/12/openwrt-%E4%BD%BF%E7%94%A8-wireguard-%E7%BB%84%E7%BD%91%E5%8F%8A%E5%B1%80%E5%9F%9F%E7%BD%91%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E8%AE%BE%E7%BD%AE/</guid><description>&lt;p>一直以来都是依靠群友/同事的帮助来配置当甩手掌柜，最近路由升级 OpenClash 又炸了，加上之前神秘的 DNS 转发失败的问题，决定从零开始自己重新配置一遍软路由，实践出真知。&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>H⁺ + OH⁻ → H₂O</title><link>https://naizi.ch/</link><description>Recent content on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Thu, 14 Dec 2023 04:03:45 +0000</lastBuildDate><atom:link href="https://naizi.ch/atom.xml" rel="self" type="application/rss+xml"/><item><title>Search</title><link>https://naizi.ch/search/</link><pubDate>Thu, 14 Dec 2023 04:03:45 +0000</pubDate><guid>https://naizi.ch/search/</guid><description/></item><item><title>OpenWrt 使用 WireGuard 组网及局域网文件共享设置</title><link>https://naizi.ch/2023/12/12/openwrt-%E4%BD%BF%E7%94%A8-wireguard-%E7%BB%84%E7%BD%91%E5%8F%8A%E5%B1%80%E5%9F%9F%E7%BD%91%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E8%AE%BE%E7%BD%AE/</link><pubDate>Tue, 12 Dec 2023 00:00:00 +0000</pubDate><guid>https://naizi.ch/2023/12/12/openwrt-%E4%BD%BF%E7%94%A8-wireguard-%E7%BB%84%E7%BD%91%E5%8F%8A%E5%B1%80%E5%9F%9F%E7%BD%91%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E8%AE%BE%E7%BD%AE/</guid><description>&lt;p>一直以来都是依靠群友/同事的帮助来配置当甩手掌柜，最近路由升级 OpenClash 又炸了，加上之前神秘的 DNS 转发失败的问题，决定从零开始自己重新配置一遍软路由，实践出真知。&lt;/p>
 &lt;h2 id="前期准备">前期准备&lt;/h2>
 &lt;p>硬件上用的是两台 FriendlyARM NanoPi R2S，闲鱼现在 200 出头就可以收到，主要是体积小巧，本来的需求也只是跑个 OpenWrt + WireGuard 组网，性能完全够用。家里的网络也没有千兆，不担心跑不满带宽的问题。&lt;/p>
 &lt;p>因为是要打算跟公司里的设备组网，显然公司是不会给你 IP / 端口转发的，所以家里的宽带需要申请公网 IP + 桥接。之前买了台小米的 Redmi AX6S 用作家里的软路由，但刷机不如 R2S 方便，就刷回原厂用作 AP 了。&lt;/p>
@@ -72,7 +72,15 @@
 &lt;blockquote>
 &lt;p>echo &amp;lsquo;* * * * * /usr/bin/wireguard_watchdog&amp;rsquo; &amp;raquo; /etc/crontabs/root&lt;/p>
 &lt;/blockquote>
-&lt;h2 id="配置-dns-解析和转发">配置 DNS 解析和转发&lt;/h2>
+&lt;h3 id="允许-wireguard-通过防火墙">允许 WireGuard 通过防火墙&lt;/h3>
+&lt;p>Network -&amp;gt; Firewall -&amp;gt; Traffic Rules -&amp;gt; &lt;code>Add&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-text" data-lang="text">&lt;span style="display:flex;">&lt;span>Name: Allow-WireGuard
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Protocol: UDP
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Source zone: WAN
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Destination zone: Device (input)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Destination port: 50251
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Action: accept
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="配置-dns-解析和转发">配置 DNS 解析和转发&lt;/h2>
 &lt;p>有了 WireGuard 后最方便的事情就是可以在家访问公司内网服务，只要通过位于内网路由的 DNS 来解析内网地址就行。&lt;/p>
 &lt;p>在内网也可以访问家里的设备，两边设置不同的域即可，对应的域转发给对应的 DNS 来解析。&lt;/p>
 &lt;p>Network -&amp;gt; DHCP and DNS -&amp;gt; General Settings&lt;/p>
