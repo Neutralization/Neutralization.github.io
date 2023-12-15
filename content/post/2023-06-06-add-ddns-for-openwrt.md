@@ -24,17 +24,32 @@ header="router" # router.example.com <-> public ip address
 email="*************************"
 token="*************************"
 trueip=$(ifconfig pppoe-wan | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1')
+echo "${trueip}"
 
-if [ $(cat /root/ip) = $trueip ]; then
+if [[ "${trueip}" = $(cat /root/ip) ]]; then
     echo "pass"
 else
-    curl -sL -X POST "https://i.hostker.com/api/dnsGetRecords" -d "token=${token}&email=${email}&domain=${domain}" -o records.json
-    recordid=$(jq -r '.records[] | select(.header=="'$header'").id' records.json)
-    recordip=$(jq -r '.records[] | select(.header=="'$header'").data' records.json)
-    if [ $trueip = $recordip ]; then
-        echo $recordip > /root/ip
+    getRecord="{\"action\": \"DomainDNS.getRecords\", \"domain\": \"${domain}\"}"
+    echo "${getRecord}"
+    sign=$(echo -n "${getRecord}" | openssl sha256 -hmac "${token}" | sed 's/^.* //')
+    echo "${sign}"
+    curl -sL -X POST "https://api.hostker.net/v2" -H 'Content-Type: application/json' -H "Sign: ${sign}" -H "Email: ${email}" -d "${getRecord}" -o records.json
+
+    recordip=$(jq -r '.result.records[] | select(.header=="'$header'").value' records.json)
+    echo "${recordip}"
+    if [[ "${trueip}" = "${recordip}" ]]; then
+        echo "${recordip}" > /root/ip
     else
-        curl -sL -X POST "https://i.hostker.com/api/dnsEditRecord" -d "token=${token}&email=${email}&id=${recordid}&data=${trueip}&ttl=300"
+        old_record=$(jq -c -r ".result.records[] | select(.header==\"${header}\")" records.json)
+        echo "${old_record}"
+        new_record="{\"type\":\"A\",\"ttl\":600,\"header\":\"${header}\",\"value\":\"${trueip}\"}"
+        echo "${new_record}"
+
+        upRecord="{\"action\": \"DomainDNS.updateRecord\", \"domain\": \"${domain}\", \"old_record\": ${old_record}, \"new_record\": ${new_record}}"
+        echo "${upRecord}"
+        sign=$(echo -n "${upRecord}" | openssl sha256 -hmac "${token}" | sed 's/^.* //')
+        echo "${sign}"
+        curl -sL -X POST "https://api.hostker.net/v2" -H 'Content-Type: application/json' -H "Sign: ${sign}" -H "Email: ${email}" -d "${upRecord}" -o resp.json
     fi
 fi
 ```
@@ -42,7 +57,7 @@ fi
 接着去 OpenWrt 添加一条计划任务：
 
 > opkg update  
-> opkg install jq  
+> opkg install openssl-util jq  
 > chmod +x /root/hostker_ddns.sh  
 > crontab -e  
 >  
