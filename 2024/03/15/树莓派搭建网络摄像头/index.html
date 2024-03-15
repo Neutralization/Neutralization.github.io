@@ -1,0 +1,126 @@
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content='年前迭代了 3D 打印机，换了拓竹的 A1 mini。感慨技术迭代是真的快，Ender 3 真的是完全落后时代了，打算（已经）拆了改造成 PET 回收装置。 对应着原'><title>树莓派搭建网络摄像头</title>
+<link rel=canonical href=https://naizi.ch/2024/03/15/%E6%A0%91%E8%8E%93%E6%B4%BE%E6%90%AD%E5%BB%BA%E7%BD%91%E7%BB%9C%E6%91%84%E5%83%8F%E5%A4%B4/><link rel=stylesheet href=/scss/style.min.ac77dcf8b111b51da39a92990f431923f210f3876d85798a2125667f96dc33a4.css><meta property='og:title' content='树莓派搭建网络摄像头'><meta property='og:description' content='年前迭代了 3D 打印机，换了拓竹的 A1 mini。感慨技术迭代是真的快，Ender 3 真的是完全落后时代了，打算（已经）拆了改造成 PET 回收装置。 对应着原'><meta property='og:url' content='https://naizi.ch/2024/03/15/%E6%A0%91%E8%8E%93%E6%B4%BE%E6%90%AD%E5%BB%BA%E7%BD%91%E7%BB%9C%E6%91%84%E5%83%8F%E5%A4%B4/'><meta property='og:site_name' content='H⁺ + OH⁻ → H₂O'><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='树莓派'><meta property='article:tag' content='nginx'><meta property='article:tag' content='hls'><meta property='article:published_time' content='2024-03-15T00:00:00+00:00'><meta property='article:modified_time' content='2024-03-15T16:35:00+08:00'><meta name=twitter:title content="树莓派搭建网络摄像头"><meta name=twitter:description content="年前迭代了 3D 打印机，换了拓竹的 A1 mini。感慨技术迭代是真的快，Ender 3 真的是完全落后时代了，打算（已经）拆了改造成 PET 回收装置。 对应着原"><link rel="shortcut icon" href=favicon.ico></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu82e0c24ba5ae9ac064fbc1f67d6c68ec_83458_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>1</span></figure><div class=site-meta><h1 class=site-name><a href=/>H⁺ + OH⁻ → H₂O</a></h1><h2 class=site-description>Neutralized</h2></div></header><ol class=social-menu><li><a href=https://space.bilibili.com/36736561 target=_blank title=bilibili><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-device-tv" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><rect x="3" y="7" width="18" height="13" rx="2"/><polyline points="16 3 12 7 8 3"/></svg></a></li><li><a href=https://github.com/Neutralization target=_blank title=GitHub><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/archives/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/search/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><div class=menu-bottom-section><li id=i18n-switch><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg>
+<select name=language onchange="window.location.href=this.selectedOptions[0].value"><option value=https://naizi.ch/ selected></option></select></li><li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></div></ol></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/%E6%9D%82%E8%AE%B0/>杂记</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/2024/03/15/%E6%A0%91%E8%8E%93%E6%B4%BE%E6%90%AD%E5%BB%BA%E7%BD%91%E7%BB%9C%E6%91%84%E5%83%8F%E5%A4%B4/>树莓派搭建网络摄像头</a></h2></div><footer class=article-time><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Mar 15, 2024</time></div></footer></div></header><section class=article-content><p>年前迭代了 3D 打印机，换了拓竹的 A1 mini。感慨技术迭代是真的快，Ender 3 真的是完全落后时代了，打算（已经）拆了改造成 PET 回收装置。</p><p>对应着原本担当<a class=link href=https://naizi.ch/2021/08/28/%e5%8d%87%e7%ba%a7-3d-%e6%89%93%e5%8d%b0%e6%9c%ba%e5%9b%ba%e4%bb%b6%e5%8f%8a%e8%bf%9c%e7%a8%8b%e6%89%93%e5%8d%b0%e6%96%b9%e6%a1%88/ target=_blank rel=noopener>远程控制作用的树莓派</a>又双叒叕闲置了，再次折腾点东西玩。</p><p>树莓派是 Raspberry Pi 3B+ ，现在已经算是老东西了。摄像头放弃了专用的排线摄像头，排线的物理距离太短还容易伤，换了另一个闲置的 USB 摄像头，型号是 Logitech C920。</p><p>主要参考了 <a class=link href=https://medium.com/@peer5/setting-up-hls-live-streaming-server-using-nginx-67f6b71758db target=_blank rel=noopener>Setting up HLS live streaming server using NGINX</a> 的设置过程。</p><h2 id=配置过程>配置过程</h2><h3 id=安装软件包>安装软件包</h3><blockquote><p>sudo apt-get update<br>sudo apt install nginx libnginx-mod-rtmp ffmpeg</p></blockquote><h3 id=nginx-配置>nginx 配置</h3><blockquote><p>sudo nano /etc/nginx/nginx.conf</p></blockquote><pre tabindex=0><code class=language-conf data-lang=conf>user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+include /etc/nginx/modules-enabled/*.conf;
+
+events {
+    worker_connections  1024;
+}
+
+rtmp {
+    server {
+        listen 1935;
+        chunk_size 4000;
+
+        application show {
+            live on;
+            hls on;
+            hls_path /tmp/hls/;
+            hls_fragment 3;
+            hls_playlist_length 60;
+        }
+    }
+}
+
+http {
+    sendfile off;
+    tcp_nopush on;
+    directio 512;
+    default_type application/octet-stream;
+
+    server {
+        listen 8080;
+
+        location / {
+            add_header &#39;Cache-Control&#39; &#39;no-cache&#39;;
+
+            add_header &#39;Access-Control-Allow-Origin&#39; &#39;*&#39; always;
+            add_header &#39;Access-Control-Expose-Headers&#39; &#39;Content-Length&#39;;
+
+            if ($request_method = &#39;OPTIONS&#39;) {
+                add_header &#39;Access-Control-Allow-Origin&#39; &#39;*&#39;;
+                add_header &#39;Access-Control-Max-Age&#39; 1728000;
+                add_header &#39;Content-Type&#39; &#39;text/plain charset=UTF-8&#39;;
+                add_header &#39;Content-Length&#39; 0;
+                return 204;
+            }
+
+            types {
+                application/dash+xml mpd;
+                application/vnd.apple.mpegurl m3u8;
+                video/mp2t ts;
+            }
+
+            root /tmp/;
+        }
+    }
+
+    server {
+        listen 80;
+        location / {
+            root /var/www/html/;
+        }
+    }
+}
+</code></pre><blockquote><p>sudo systemctl enable nginx<br>sudo nginx -t<br>sudo nginx -s reload</p></blockquote><h3 id=ffmpeg-推流配置>ffmpeg 推流配置</h3><blockquote><p>sudo nano /etc/systemd/system/ffmpeg_stream.service</p></blockquote><pre tabindex=0><code class=language-conf data-lang=conf>[Unit]
+Description=FFmpeg Streamer
+After=network.target
+
+[Service]
+ExecStart=/bin/bash -c &#39;while true; do ffmpeg -hide_banner -thread_queue_size 512 -s 1280x720 -i /dev/video0 -thread_queue_size 1024 -f lavfi -i anullsrc -codec:v h264_v4l2m2m -b:v 8096k -c:a aac -b:a 128k -r 24 -f flv rtmp://localhost/show/stream || continue; done&#39;
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+</code></pre><blockquote><p>sudo systemctl daemon-reload<br>sudo service ffmpeg_stream enable<br>sudo service ffmpeg_stream start</p></blockquote><h3 id=html-播放器页面>html 播放器页面</h3><blockquote><p>sudo nano /var/www/html/index.html</p></blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-html data-lang=html><span style=display:flex><span><span style=color:#75715e>&lt;!DOCTYPE html&gt;</span>
+</span></span><span style=display:flex><span>&lt;<span style=color:#f92672>html</span> <span style=color:#a6e22e>lang</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#34;en&#34;</span>&gt;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>&lt;<span style=color:#f92672>head</span>&gt;
+</span></span><span style=display:flex><span>    &lt;<span style=color:#f92672>meta</span> <span style=color:#a6e22e>charset</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#34;UTF-8&#34;</span>&gt;
+</span></span><span style=display:flex><span>    &lt;<span style=color:#f92672>title</span>&gt;Live Streaming&lt;/<span style=color:#f92672>title</span>&gt;
+</span></span><span style=display:flex><span>    &lt;<span style=color:#f92672>link</span> <span style=color:#a6e22e>href</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#34;//vjs.zencdn.net/8.3.0/video-js.min.css&#34;</span> <span style=color:#a6e22e>rel</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#34;stylesheet&#34;</span>&gt;
+</span></span><span style=display:flex><span>    &lt;<span style=color:#f92672>script</span> <span style=color:#a6e22e>src</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#34;//vjs.zencdn.net/8.3.0/video.min.js&#34;</span>&gt;&lt;/<span style=color:#f92672>script</span>&gt;
+</span></span><span style=display:flex><span>&lt;/<span style=color:#f92672>head</span>&gt;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>&lt;<span style=color:#f92672>body</span>&gt;
+</span></span><span style=display:flex><span>    &lt;<span style=color:#f92672>div</span> <span style=color:#a6e22e>style</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#34;margin: auto;width: 100%;padding: 0px;&#34;</span>&gt;
+</span></span><span style=display:flex><span>        &lt;<span style=color:#f92672>video</span> <span style=color:#a6e22e>id</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#34;my-player&#34;</span> <span style=color:#a6e22e>class</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#34;video-js vjs-default-skin&#34;</span> <span style=color:#a6e22e>controls</span> <span style=color:#a6e22e>preload</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#34;auto&#34;</span> <span style=color:#a6e22e>poster</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#34;poster.jpg&#34;</span>
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>data-setup</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#39;{&#34;fluid&#34;: true}&#39;</span>&gt;
+</span></span><span style=display:flex><span>            &lt;<span style=color:#f92672>source</span> <span style=color:#a6e22e>src</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#34;http://raspberry.home:8080/hls/stream.m3u8&#34;</span> <span style=color:#a6e22e>type</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#34;application/x-mpegURL&#34;</span>&gt;
+</span></span><span style=display:flex><span>            &lt;/<span style=color:#f92672>source</span>&gt;
+</span></span><span style=display:flex><span>            &lt;<span style=color:#f92672>p</span> <span style=color:#a6e22e>class</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#34;vjs-no-js&#34;</span>&gt;
+</span></span><span style=display:flex><span>                To view this video please enable JavaScript, and consider upgrading to a
+</span></span><span style=display:flex><span>                web browser that
+</span></span><span style=display:flex><span>                &lt;<span style=color:#f92672>a</span> <span style=color:#a6e22e>href</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#34;https://videojs.com/html5-video-support/&#34;</span> <span style=color:#a6e22e>target</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#34;_blank&#34;</span>&gt;
+</span></span><span style=display:flex><span>                    supports HTML5 video
+</span></span><span style=display:flex><span>                &lt;/<span style=color:#f92672>a</span>&gt;
+</span></span><span style=display:flex><span>            &lt;/<span style=color:#f92672>p</span>&gt;
+</span></span><span style=display:flex><span>        &lt;/<span style=color:#f92672>video</span>&gt;
+</span></span><span style=display:flex><span>    &lt;/<span style=color:#f92672>div</span>&gt;
+</span></span><span style=display:flex><span>    &lt;<span style=color:#f92672>script</span>&gt;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>player</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>videojs</span>(<span style=color:#e6db74>&#39;my-player&#39;</span>);
+</span></span><span style=display:flex><span>    &lt;/<span style=color:#f92672>script</span>&gt;
+</span></span><span style=display:flex><span>&lt;/<span style=color:#f92672>body</span>&gt;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>&lt;/<span style=color:#f92672>html</span>&gt;
+</span></span></code></pre></div><h2 id=eof>EOF</h2><p>至此摄像头架设完成。</p></section><footer class=article-footer><section class=article-tags><a href=/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/>树莓派</a>
+<a href=/tags/nginx/>Nginx</a>
+<a href=/tags/hls/>Hls</a></section><section class=article-lastmod><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<span>最后更新于 Mar 15, 2024 16:35 +0800</span></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/2021/08/28/%E5%8D%87%E7%BA%A7-3d-%E6%89%93%E5%8D%B0%E6%9C%BA%E5%9B%BA%E4%BB%B6%E5%8F%8A%E8%BF%9C%E7%A8%8B%E6%89%93%E5%8D%B0%E6%96%B9%E6%A1%88/><div class=article-details><h2 class=article-title>升级 3D 打印机固件及远程打印方案</h2></div></a></article><article><a href=/2019/01/10/%E6%B2%A1%E6%9C%89-kmscon-%E7%9A%84%E7%AC%AC%E4%B8%80%E5%A4%A9%E6%83%B3%E4%BB%96/><div class=article-details><h2 class=article-title>没有 KMSCON 的第一天，想他</h2></div></a></article><article><a href=/2018/12/08/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-raspberry-pi/><div class=article-details><h2 class=article-title>从零开始 Raspberry Pi</h2></div></a></article></div></div></aside><footer class=site-footer><section class=copyright>&copy;
+2018 -
+2024 H⁺ + OH⁻ → H₂O</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.12.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ul><li><a href=#配置过程>配置过程</a><ul><li><a href=#安装软件包>安装软件包</a></li><li><a href=#nginx-配置>nginx 配置</a></li><li><a href=#ffmpeg-推流配置>ffmpeg 推流配置</a></li><li><a href=#html-播放器页面>html 播放器页面</a></li></ul></li><li><a href=#eof>EOF</a></li></ul></nav></div></section></aside></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

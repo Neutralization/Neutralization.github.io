@@ -1,4 +1,150 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>H⁺ + OH⁻ → H₂O</title><link>https://naizi.ch/</link><description>Recent content on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Fri, 15 Dec 2023 08:05:59 +0000</lastBuildDate><atom:link href="https://naizi.ch/atom.xml" rel="self" type="application/rss+xml"/><item><title>Search</title><link>https://naizi.ch/search/</link><pubDate>Fri, 15 Dec 2023 08:05:59 +0000</pubDate><guid>https://naizi.ch/search/</guid><description/></item><item><title>OpenWrt 使用 WireGuard 组网及局域网文件共享设置</title><link>https://naizi.ch/2023/12/12/openwrt-%E4%BD%BF%E7%94%A8-wireguard-%E7%BB%84%E7%BD%91%E5%8F%8A%E5%B1%80%E5%9F%9F%E7%BD%91%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E8%AE%BE%E7%BD%AE/</link><pubDate>Tue, 12 Dec 2023 00:00:00 +0000</pubDate><guid>https://naizi.ch/2023/12/12/openwrt-%E4%BD%BF%E7%94%A8-wireguard-%E7%BB%84%E7%BD%91%E5%8F%8A%E5%B1%80%E5%9F%9F%E7%BD%91%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E8%AE%BE%E7%BD%AE/</guid><description>&lt;p>一直以来都是依靠群友/同事的帮助来配置当甩手掌柜，最近路由升级 OpenClash 又炸了，加上之前神秘的 DNS 转发失败的问题，决定从零开始自己重新配置一遍软路由，实践出真知。&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>H⁺ + OH⁻ → H₂O</title><link>https://naizi.ch/</link><description>Recent content on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Fri, 15 Mar 2024 08:53:25 +0000</lastBuildDate><atom:link href="https://naizi.ch/atom.xml" rel="self" type="application/rss+xml"/><item><title>Search</title><link>https://naizi.ch/search/</link><pubDate>Fri, 15 Mar 2024 08:53:25 +0000</pubDate><guid>https://naizi.ch/search/</guid><description/></item><item><title>树莓派搭建网络摄像头</title><link>https://naizi.ch/2024/03/15/%E6%A0%91%E8%8E%93%E6%B4%BE%E6%90%AD%E5%BB%BA%E7%BD%91%E7%BB%9C%E6%91%84%E5%83%8F%E5%A4%B4/</link><pubDate>Fri, 15 Mar 2024 00:00:00 +0000</pubDate><guid>https://naizi.ch/2024/03/15/%E6%A0%91%E8%8E%93%E6%B4%BE%E6%90%AD%E5%BB%BA%E7%BD%91%E7%BB%9C%E6%91%84%E5%83%8F%E5%A4%B4/</guid><description>&lt;p>年前迭代了 3D 打印机，换了拓竹的 A1 mini。感慨技术迭代是真的快，Ender 3 真的是完全落后时代了，打算（已经）拆了改造成 PET 回收装置。&lt;/p>
+&lt;p>对应着原本担当&lt;a class="link" href="https://naizi.ch/2021/08/28/%e5%8d%87%e7%ba%a7-3d-%e6%89%93%e5%8d%b0%e6%9c%ba%e5%9b%ba%e4%bb%b6%e5%8f%8a%e8%bf%9c%e7%a8%8b%e6%89%93%e5%8d%b0%e6%96%b9%e6%a1%88/" target="_blank" rel="noopener"
+>远程控制作用的树莓派&lt;/a>又双叒叕闲置了，再次折腾点东西玩。&lt;/p>
+&lt;p>树莓派是 Raspberry Pi 3B+ ，现在已经算是老东西了。摄像头放弃了专用的排线摄像头，排线的物理距离太短还容易伤，换了另一个闲置的 USB 摄像头，型号是 Logitech C920。&lt;/p>
+&lt;p>主要参考了 &lt;a class="link" href="https://medium.com/@peer5/setting-up-hls-live-streaming-server-using-nginx-67f6b71758db" target="_blank" rel="noopener"
+>Setting up HLS live streaming server using NGINX&lt;/a> 的设置过程。&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;h2 id="配置过程">配置过程&lt;/h2>
+&lt;h3 id="安装软件包">安装软件包&lt;/h3>
+&lt;blockquote>
+&lt;p>sudo apt-get update&lt;br>
+sudo apt install nginx libnginx-mod-rtmp ffmpeg&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="nginx-配置">nginx 配置&lt;/h3>
+&lt;blockquote>
+&lt;p>sudo nano /etc/nginx/nginx.conf&lt;/p>
+&lt;/blockquote>
+&lt;pre tabindex="0">&lt;code class="language-conf" data-lang="conf">user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+include /etc/nginx/modules-enabled/*.conf;
+events {
+worker_connections 1024;
+}
+rtmp {
+server {
+listen 1935;
+chunk_size 4000;
+application show {
+live on;
+hls on;
+hls_path /tmp/hls/;
+hls_fragment 3;
+hls_playlist_length 60;
+}
+}
+}
+http {
+sendfile off;
+tcp_nopush on;
+directio 512;
+default_type application/octet-stream;
+server {
+listen 8080;
+location / {
+add_header &amp;#39;Cache-Control&amp;#39; &amp;#39;no-cache&amp;#39;;
+add_header &amp;#39;Access-Control-Allow-Origin&amp;#39; &amp;#39;*&amp;#39; always;
+add_header &amp;#39;Access-Control-Expose-Headers&amp;#39; &amp;#39;Content-Length&amp;#39;;
+if ($request_method = &amp;#39;OPTIONS&amp;#39;) {
+add_header &amp;#39;Access-Control-Allow-Origin&amp;#39; &amp;#39;*&amp;#39;;
+add_header &amp;#39;Access-Control-Max-Age&amp;#39; 1728000;
+add_header &amp;#39;Content-Type&amp;#39; &amp;#39;text/plain charset=UTF-8&amp;#39;;
+add_header &amp;#39;Content-Length&amp;#39; 0;
+return 204;
+}
+types {
+application/dash+xml mpd;
+application/vnd.apple.mpegurl m3u8;
+video/mp2t ts;
+}
+root /tmp/;
+}
+}
+server {
+listen 80;
+location / {
+root /var/www/html/;
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;blockquote>
+&lt;p>sudo systemctl enable nginx&lt;br>
+sudo nginx -t&lt;br>
+sudo nginx -s reload&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="ffmpeg-推流配置">ffmpeg 推流配置&lt;/h3>
+&lt;blockquote>
+&lt;p>sudo nano /etc/systemd/system/ffmpeg_stream.service&lt;/p>
+&lt;/blockquote>
+&lt;pre tabindex="0">&lt;code class="language-conf" data-lang="conf">[Unit]
+Description=FFmpeg Streamer
+After=network.target
+[Service]
+ExecStart=/bin/bash -c &amp;#39;while true; do ffmpeg -hide_banner -thread_queue_size 512 -s 1280x720 -i /dev/video0 -thread_queue_size 1024 -f lavfi -i anullsrc -codec:v h264_v4l2m2m -b:v 8096k -c:a aac -b:a 128k -r 24 -f flv rtmp://localhost/show/stream || continue; done&amp;#39;
+Restart=always
+RestartSec=5
+[Install]
+WantedBy=multi-user.target
+&lt;/code>&lt;/pre>&lt;blockquote>
+&lt;p>sudo systemctl daemon-reload&lt;br>
+sudo service ffmpeg_stream enable&lt;br>
+sudo service ffmpeg_stream start&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="html-播放器页面">html 播放器页面&lt;/h3>
+&lt;blockquote>
+&lt;p>sudo nano /var/www/html/index.html&lt;/p>
+&lt;/blockquote>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&amp;lt;!DOCTYPE html&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#f92672">html&lt;/span> &lt;span style="color:#a6e22e">lang&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;en&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#f92672">head&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#f92672">meta&lt;/span> &lt;span style="color:#a6e22e">charset&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;UTF-8&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#f92672">title&lt;/span>&amp;gt;Live Streaming&amp;lt;/&lt;span style="color:#f92672">title&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#f92672">link&lt;/span> &lt;span style="color:#a6e22e">href&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;//vjs.zencdn.net/8.3.0/video-js.min.css&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">rel&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;stylesheet&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#f92672">script&lt;/span> &lt;span style="color:#a6e22e">src&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;//vjs.zencdn.net/8.3.0/video.min.js&amp;#34;&lt;/span>&amp;gt;&amp;lt;/&lt;span style="color:#f92672">script&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#f92672">head&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#f92672">body&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#f92672">div&lt;/span> &lt;span style="color:#a6e22e">style&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;margin: auto;width: 100%;padding: 0px;&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#f92672">video&lt;/span> &lt;span style="color:#a6e22e">id&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;my-player&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;video-js vjs-default-skin&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">controls&lt;/span> &lt;span style="color:#a6e22e">preload&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;auto&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">poster&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;poster.jpg&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">data-setup&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;{&amp;#34;fluid&amp;#34;: true}&amp;#39;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#f92672">source&lt;/span> &lt;span style="color:#a6e22e">src&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;http://raspberry.home:8080/hls/stream.m3u8&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">type&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;application/x-mpegURL&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#f92672">source&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#f92672">p&lt;/span> &lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;vjs-no-js&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> To view this video please enable JavaScript, and consider upgrading to a
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> web browser that
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#f92672">a&lt;/span> &lt;span style="color:#a6e22e">href&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;https://videojs.com/html5-video-support/&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">target&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;_blank&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> supports HTML5 video
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#f92672">a&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#f92672">p&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#f92672">video&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#f92672">div&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#f92672">script&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">player&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">videojs&lt;/span>(&lt;span style="color:#e6db74">&amp;#39;my-player&amp;#39;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;/&lt;span style="color:#f92672">script&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#f92672">body&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#f92672">html&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="eof">EOF&lt;/h2>
+&lt;p>至此摄像头架设完成。&lt;/p></description></item><item><title>Git 检测到存储库可能不安全的解决方法</title><link>https://naizi.ch/2024/03/12/git-%E6%A3%80%E6%B5%8B%E5%88%B0%E5%AD%98%E5%82%A8%E5%BA%93%E5%8F%AF%E8%83%BD%E4%B8%8D%E5%AE%89%E5%85%A8%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/</link><pubDate>Tue, 12 Mar 2024 00:00:00 +0000</pubDate><guid>https://naizi.ch/2024/03/12/git-%E6%A3%80%E6%B5%8B%E5%88%B0%E5%AD%98%E5%82%A8%E5%BA%93%E5%8F%AF%E8%83%BD%E4%B8%8D%E5%AE%89%E5%85%A8%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/</guid><description>&lt;p>因为经常折腾东西导致重新安装系统，也因此经常遇到类似如下问题：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>git status
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>fatal&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> detected dubious ownership &lt;span style="color:#66d9ef">in&lt;/span> repository at &lt;span style="color:#e6db74">&amp;#39;D:/Neutralization.github.io&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">&amp;#39;D:/Neutralization.github.io/.git&amp;#39;&lt;/span> is owned by&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (inconvertible) (S-&lt;span style="color:#ae81ff">1&lt;/span>-&lt;span style="color:#ae81ff">5&lt;/span>-&lt;span style="color:#ae81ff">21&lt;/span>-&lt;span style="color:#ae81ff">111&lt;/span>-&lt;span style="color:#ae81ff">111&lt;/span>-&lt;span style="color:#ae81ff">111&lt;/span>-&lt;span style="color:#ae81ff">1001&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>but the current user is&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> WORKGROUP/Neutralized (S-&lt;span style="color:#ae81ff">1&lt;/span>-&lt;span style="color:#ae81ff">5&lt;/span>-&lt;span style="color:#ae81ff">21&lt;/span>-&lt;span style="color:#ae81ff">222&lt;/span>-&lt;span style="color:#ae81ff">222&lt;/span>-&lt;span style="color:#ae81ff">222&lt;/span>-&lt;span style="color:#ae81ff">1002&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>To add an exception &lt;span style="color:#66d9ef">for&lt;/span> this directory, call&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> git config --global --add safe.directory D:/Neutralization.github.io
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>网上的建议一般是按照 git 的提示照做添加 &lt;code>safe.directory&lt;/code> ，或者就是文件夹右键 属性/安全/高级/更改所有者/☑替换子容器和对象的所有者 这样的一套操作。&lt;/p>
+&lt;p>其实完全可以简化为：&lt;/p>
+&lt;blockquote>
+&lt;p>sudo takeown /R /F .&lt;br>
+sudo icacls . /reset /q /t /c&lt;/p>
+&lt;/blockquote>
+&lt;p>留作记录。&lt;/p></description></item><item><title>OpenWrt 使用 WireGuard 组网及局域网文件共享设置</title><link>https://naizi.ch/2023/12/12/openwrt-%E4%BD%BF%E7%94%A8-wireguard-%E7%BB%84%E7%BD%91%E5%8F%8A%E5%B1%80%E5%9F%9F%E7%BD%91%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E8%AE%BE%E7%BD%AE/</link><pubDate>Tue, 12 Dec 2023 00:00:00 +0000</pubDate><guid>https://naizi.ch/2023/12/12/openwrt-%E4%BD%BF%E7%94%A8-wireguard-%E7%BB%84%E7%BD%91%E5%8F%8A%E5%B1%80%E5%9F%9F%E7%BD%91%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E8%AE%BE%E7%BD%AE/</guid><description>&lt;p>一直以来都是依靠群友/同事的帮助来配置当甩手掌柜，最近路由升级 OpenClash 又炸了，加上之前神秘的 DNS 转发失败的问题，决定从零开始自己重新配置一遍软路由，实践出真知。&lt;/p>
 &lt;h2 id="前期准备">前期准备&lt;/h2>
 &lt;p>硬件上用的是两台 FriendlyARM NanoPi R2S，闲鱼现在 200 出头就可以收到，主要是体积小巧，本来的需求也只是跑个 OpenWrt + WireGuard 组网，性能完全够用。家里的网络也没有千兆，不担心跑不满带宽的问题。&lt;/p>
 &lt;p>因为是要打算跟公司里的设备组网，显然公司是不会给你 IP / 端口转发的，所以家里的宽带需要申请公网 IP + 桥接。之前买了台小米的 Redmi AX6S 用作家里的软路由，但刷机不如 R2S 方便，就刷回原厂用作 AP 了。&lt;/p>

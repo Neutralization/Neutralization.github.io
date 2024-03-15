@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Git on H⁺ + OH⁻ → H₂O</title><link>https://naizi.ch/tags/git/</link><description>Recent content in Git on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 12 Mar 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://naizi.ch/tags/git/atom.xml" rel="self" type="application/rss+xml"/><item><title>Git 检测到存储库可能不安全的解决方法</title><link>https://naizi.ch/2024/03/12/git-%E6%A3%80%E6%B5%8B%E5%88%B0%E5%AD%98%E5%82%A8%E5%BA%93%E5%8F%AF%E8%83%BD%E4%B8%8D%E5%AE%89%E5%85%A8%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/</link><pubDate>Tue, 12 Mar 2024 00:00:00 +0000</pubDate><guid>https://naizi.ch/2024/03/12/git-%E6%A3%80%E6%B5%8B%E5%88%B0%E5%AD%98%E5%82%A8%E5%BA%93%E5%8F%AF%E8%83%BD%E4%B8%8D%E5%AE%89%E5%85%A8%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/</guid><description>&lt;p>因为经常折腾东西导致重新安装系统，也因此经常遇到类似如下问题：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>git status
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>fatal&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> detected dubious ownership &lt;span style="color:#66d9ef">in&lt;/span> repository at &lt;span style="color:#e6db74">&amp;#39;D:/Neutralization.github.io&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">&amp;#39;D:/Neutralization.github.io/.git&amp;#39;&lt;/span> is owned by&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (inconvertible) (S-&lt;span style="color:#ae81ff">1&lt;/span>-&lt;span style="color:#ae81ff">5&lt;/span>-&lt;span style="color:#ae81ff">21&lt;/span>-&lt;span style="color:#ae81ff">111&lt;/span>-&lt;span style="color:#ae81ff">111&lt;/span>-&lt;span style="color:#ae81ff">111&lt;/span>-&lt;span style="color:#ae81ff">1001&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>but the current user is&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> WORKGROUP/Neutralized (S-&lt;span style="color:#ae81ff">1&lt;/span>-&lt;span style="color:#ae81ff">5&lt;/span>-&lt;span style="color:#ae81ff">21&lt;/span>-&lt;span style="color:#ae81ff">222&lt;/span>-&lt;span style="color:#ae81ff">222&lt;/span>-&lt;span style="color:#ae81ff">222&lt;/span>-&lt;span style="color:#ae81ff">1002&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>To add an exception &lt;span style="color:#66d9ef">for&lt;/span> this directory, call&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> git config --global --add safe.directory D:/Neutralization.github.io
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>网上的建议一般是按照 git 的提示照做添加 &lt;code>safe.directory&lt;/code> ，或者就是文件夹右键 属性/安全/高级/更改所有者/☑替换子容器和对象的所有者 这样的一套操作。&lt;/p>
+&lt;p>其实完全可以简化为：&lt;/p>
+&lt;blockquote>
+&lt;p>sudo takeown /R /F .&lt;br>
+sudo icacls . /reset /q /t /c&lt;/p>
+&lt;/blockquote>
+&lt;p>留作记录。&lt;/p></description></item></channel></rss>
