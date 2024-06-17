@@ -281,16 +281,17 @@ services:
 
 ## FakeStandby
 
-为了不需要 Root 权限，Pixel 设置了不锁屏，但保持亮屏一是容易造成烧屏，二十造成无意义的耗电，为此可以安装 [FakeStandby](https://f-droid.org/packages/android.jonas.fakestandby/) 这款应用，通过显示黑屏实现伪锁屏待机。
+为了不需要 Root 权限，Pixel 设置了不锁屏，但保持亮屏一是容易造成烧屏，二是造成无意义的耗电，为此可以安装 [FakeStandby](https://f-droid.org/packages/android.jonas.fakestandby/) 这款应用，通过显示黑屏实现伪锁屏待机。
 
-FakeStandby
 ![FakeStandby](/pic/2024-06-15-immich-syncthing-google-photos/FakeStandby.png)
 
 # 导入 Google Photos
 
 最后，对于已经在 Google 相册中的照片，可以通过 Google 导出服务和 immich-go 工具便捷的导入 Immich。
 
-访问 https://takeout.google.com/settings/takeout/custom/photos 在要包含的数据中选择 `Google 相册`，继续，然后再目标位置选择`添加到 OneDrive`，文件类型选择`.zip`，大小选择`50GB`。
+访问 https://takeout.google.com/settings/takeout/custom/photos
+
+在要包含的数据中选择 `Google 相册`，继续，然后再目标位置选择`添加到 OneDrive`，文件类型选择`.zip`，大小选择`50GB`。
 
 视具体网络情况，选择通过 OneDrive 可以直连下载，节约大量的代理流量。
 
