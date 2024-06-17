@@ -14,6 +14,12 @@ tags:
 
 一个常见的错误是
 
+> usb.core.NoBackendError: No backend available
+
+下载安装 CH341SER.EXE 并重启
+
+> escpos.exceptions.USBNotFoundError: USB device not found
+
 > ValueError: No backend available
 
 根据[Stackoverflow](https://stackoverflow.com/questions/13773132/pyusb-on-windows-no-backend-available)上的解答，应该是缺少 dll 文件，按解答中提供的链接地址下载安装就行了。
