@@ -235,17 +235,17 @@ services:
 
 选择 Syncthing 的`设备`然后点击右上角`+`，添加设备
 
-![Synthing_device](/pic/2024-06-15-immich-syncthing-google-photos/Synthing_device.png)
+![Syncthing_device](/pic/2024-06-15-immich-syncthing-google-photos/Syncthing_device.png)
 
 回到 http://server.ipaddress:8384/ 登录，点击识别的设备标识，通过手机扫码或者直接输入完整设备标识字符串进行配对
 
-![Synthing_id](/pic/2024-06-15-immich-syncthing-google-photos/Synthing_id.png)
+![Syncthing_id](/pic/2024-06-15-immich-syncthing-google-photos/Syncthing_id.png)
 
 然后网页端会出现配对许可的提示，同意即可。
 
 接着编辑之前共享的目录，共享给配对的设备。
 
-![Synthing_share](/pic/2024-06-15-immich-syncthing-google-photos/Synthing_share.png)
+![Syncthing_share](/pic/2024-06-15-immich-syncthing-google-photos/Syncthing_share.png)
 
 回到手机，同意接收共享，将目录选为照相机的默认目录 `/storage/emulated/0/DCIM/Camera`，目录种类更改为仅接收。
 
