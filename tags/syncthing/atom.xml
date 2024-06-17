@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Syncthing on H⁺ + OH⁻ → H₂O</title><link>https://naizi.ch/tags/syncthing/</link><description>Recent content in Syncthing on H⁺ + OH⁻ → H₂O</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 15 Jun 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://naizi.ch/tags/syncthing/atom.xml" rel="self" type="application/rss+xml"/><item><title>自建 Immich 相册服务同步白嫖 Google Photos</title><link>https://naizi.ch/2024/06/15/%E8%87%AA%E5%BB%BA-immich-%E7%9B%B8%E5%86%8C%E6%9C%8D%E5%8A%A1%E5%90%8C%E6%AD%A5%E7%99%BD%E5%AB%96-google-photos/</link><pubDate>Sat, 15 Jun 2024 00:00:00 +0000</pubDate><guid>https://naizi.ch/2024/06/15/%E8%87%AA%E5%BB%BA-immich-%E7%9B%B8%E5%86%8C%E6%9C%8D%E5%8A%A1%E5%90%8C%E6%AD%A5%E7%99%BD%E5%AB%96-google-photos/</guid><description>&lt;p>Google Photos 有着 15GB 的免费空间上限，前几个月自己搞了 NAS 之后，看上了 Immich 相册，算是最贴近 Google Photos 界面的开源自建相册服务了，自己手头也正好还留着当初买的初代 Google Pixel，能够以原画质白嫖无限相册空间，相当于能够在本地备份的同时也拥有稳定的云备份。&lt;/p>
+&lt;p>考虑到稳定性，NAS 上并没有安装 APP 或者其他容器服务，单纯作为一个存储设备。Docker 服务都放在另一台小主机上运行。&lt;/p>
+&lt;p>计划是 TrueNAS 存储只提供 SMB 服务挂载，小主机上通过多个 Docker 分别部署 Immich 相册，以及用来同步照片到 Pixel 的 Syncthing 服务。另外手机肯定是7*24供电的状态，为了不用频繁物理操作，考虑部署 RustDesk 服务远程控制手机，同样采用 Docker 的方式部署在小主机上。&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;h1 id="软硬件配置">软硬件配置&lt;/h1>
+&lt;p>TrueNAS 服务器 CPU 是 N100， 16GB 内存， 16TB*2 HDD（Raid 1）&lt;/p>
+&lt;p>小主机 CPU 同样是 N100，24GB 内存，256GB SSD，Debian 系统&lt;/p>
+&lt;p>初代 Pixel，未 Root&lt;/p>
+&lt;h2 id="truenas-配置">TrueNAS 配置&lt;/h2>
+&lt;p>&lt;img src="https://naizi.ch/pic/2024-06-15-immich-syncthing-google-photos/TrueNAS_SMB.png"
+loading="lazy"
+alt="TrueNAS_SMB"
+>&lt;/p>
+&lt;p>非常简单，TrueNAS 上的配置就结束了，继续配置小主机。&lt;/p>
+&lt;h2 id="服务器配置">服务器配置&lt;/h2>
+&lt;p>首先为了让之后 Immich 从 NAS 上读写，需要把 SMB 开机自动挂载路径。SSH 登陆后执行：&lt;/p>
+&lt;blockquote>
+&lt;p>sudo apt install cifs-utils psmisc&lt;br>
+nano ~/.credentials&lt;/p>
+&lt;/blockquote>
+&lt;p>对应修改 SMB 共享的用户名和密码&lt;/p>
+&lt;pre tabindex="0">&lt;code class="language-conf" data-lang="conf">username=smbusername
+password=smbpassword
+&lt;/code>&lt;/pre>&lt;blockquote>
+&lt;p>sudo chown username .credentials&lt;br>
+sudo chmod 600 .credentials&lt;/p>
+&lt;/blockquote>
+&lt;p>测试挂载&lt;/p>
+&lt;blockquote>
+&lt;p>sudo mkdir /mnt/Immich&lt;br>
+sudo mount -t cifs -o credentials=~/.credentials //truenas.ipaddress/Immich /mnt/Immich&lt;/p>
+&lt;/blockquote>
+&lt;p>没有问题则暂时卸载&lt;/p>
+&lt;blockquote>
+&lt;p>sudo umount -t cifs /mnt/Immich&lt;/p>
+&lt;/blockquote>
+&lt;p>修改 &lt;code>/etc/fstab&lt;/code>&lt;/p>
+&lt;blockquote>
+&lt;p>sudo nano /etc/fstab&lt;/p>
+&lt;/blockquote>
+&lt;p>添加如下内容&lt;/p>
+&lt;pre tabindex="0">&lt;code class="language-conf" data-lang="conf"># Immich Storage
+//truenas.ipaddress/Immich /mnt/Immich cifs credentials=/home/username/.credentials 0 0
+&lt;/code>&lt;/pre>&lt;p>应用修改完成挂载&lt;/p>
+&lt;blockquote>
+&lt;p>sudo systemctl daemon-reload&lt;br>
+sudo mount -av&lt;/p>
+&lt;/blockquote>
+&lt;h1 id="docker-配置">Docker 配置&lt;/h1>
+&lt;h2 id="安装-dockerhttpsdocsdockercomengineinstalldebian">&lt;a class="link" href="https://docs.docker.com/engine/install/debian/" target="_blank" rel="noopener"
+>安装 Docker&lt;/a>&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>sudo apt-get update
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get install ca-certificates curl
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo install -m &lt;span style="color:#ae81ff">0755&lt;/span> -d /etc/apt/keyrings
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo chmod a+r /etc/apt/keyrings/docker.asc
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>echo &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#e6db74">&amp;#34;deb [arch=&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>dpkg --print-architecture&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74"> signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> &lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>. /etc/os-release &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> echo &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$VERSION_CODENAME&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74"> stable&amp;#34;&lt;/span> | &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> sudo tee /etc/apt/sources.list.d/docker.list &amp;gt; /dev/null
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get update
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="部署-immich">部署 Immich&lt;/h2>
+&lt;p>官方推荐采用 &lt;a class="link" href="https://v1.106.4.archive.immich.app/docs/install/docker-compose" target="_blank" rel="noopener"
+>Docker Compose&lt;/a> 的方式安装，跟着教程走并没有什么难度。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>mkdir ~/immich-app
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cd ~/immich-app
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>wget -O docker-compose.yml https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>wget -O .env https://github.com/immich-app/immich/releases/latest/download/example.env
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>wget -O hwaccel.transcoding.yml https://github.com/immich-app/immich/releases/latest/download/hwaccel.transcoding.yml
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>wget -O hwaccel.ml.yml https://github.com/immich-app/immich/releases/latest/download/hwaccel.ml.yml
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>编辑 &lt;code>.env&lt;/code> 文件，修改照片的上传路径&lt;/p>
+&lt;pre tabindex="0">&lt;code class="language-conf" data-lang="conf">TZ=Asis/Shanghai
+UPLOAD_LOCATION=/mnt/Immich
+DB_DATA_LOCATION=./postgres
+&lt;/code>&lt;/pre>&lt;p>数据库路径不变，之所以这样是因为数据库有频繁的读写，像 16T 容量的机械盘基本都是充气盘，会频繁的发出炒豆子的声音。&lt;br>
+换言之只要不是充气盘或者距离远听不见声音就无所谓了，可以改成 &lt;code>/mnt/Immich/postgres&lt;/code>&lt;/p>
+&lt;blockquote>
+&lt;p>docker compose up -d&lt;/p>
+&lt;/blockquote>
+&lt;p>启动容器后，访问 &lt;a class="link" href="http://server.ipaddress:2283/" target="_blank" rel="noopener"
+>http://server.ipaddress:2283/&lt;/a> 登录，在&lt;code>设置&lt;/code>/&lt;code>机器学习设置&lt;/code>/&lt;code>智能搜索&lt;/code>/&lt;code>CLIP模型&lt;/code>，修改为支持多语言的&lt;code>XLM-Roberta-Large-Vit-B-16Plus&lt;/code>。&lt;/p>
+&lt;p>为了便于管理，启用&lt;code>设置&lt;/code>/&lt;code>存储模板&lt;/code>功能。&lt;/p>
+&lt;p>在&lt;code>设置&lt;/code>/&lt;code>视频转码设置&lt;/code>中，&lt;code>支持的音频编解码器&lt;/code>勾选 AAC/MP3/Opus，&lt;code>支持的视频编解码器&lt;/code>勾选 H.264/HEVC/VP9/AV1，因为我现在的主力机都支持这些编码，没有必要转码。&lt;/p>
+&lt;h2 id="部署-syncthing">部署 Syncthing&lt;/h2>
+&lt;p>先建立需要的目录&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>sudo mkdir -p /var/syncthing/Immich
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>mkdir ~/syncthing
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cd ~/syncthing
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>nano docker-compose.yml
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>按照&lt;a class="link" href="https://github.com/syncthing/syncthing/blob/main/README-Docker.md" target="_blank" rel="noopener"
+>官方指导&lt;/a>编写 Dockerfile&lt;/p>
+&lt;h2 id="docker-composeyml">docker-compose.yml&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-dockerfile" data-lang="dockerfile">&lt;span style="display:flex;">&lt;span>---&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>services:&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> syncthing:&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> image: syncthing/syncthing&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> container_name: syncthing&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> hostname: Dorothy&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> environment:&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> - PUID&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">1000&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> - PGID&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">1000&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> volumes:&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> - /var/syncthing:/var/syncthing&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> - /mnt/Immich/library/admin:/var/syncthing/Immich&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> network_mode: host&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> restart: unless-stopped&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>docker compose up -d&lt;/p>
+&lt;/blockquote>
+&lt;p>启动容器后，访问 &lt;a class="link" href="http://server.ipaddress:8384/" target="_blank" rel="noopener"
+>http://server.ipaddress:8384/&lt;/a> 登录，添加文件夹&lt;/p>
+&lt;p>&lt;img src="https://naizi.ch/pic/2024-06-15-immich-syncthing-google-photos/Syncthing_Immich.png"
+loading="lazy"
+alt="Syncthing_Immich"
+>&lt;/p>
+&lt;p>在&lt;code>高级&lt;/code>书签中选择&lt;code>文件夹类型&lt;/code>为&lt;code>仅发送&lt;/code>&lt;/p>
+&lt;p>&lt;img src="https://naizi.ch/pic/2024-06-15-immich-syncthing-google-photos/Syncthing_Immich_extra.png"
+loading="lazy"
+alt="Syncthing_Immich_extra"
+>&lt;/p>
+&lt;p>这样 Syncthing 的初步配置就结束了&lt;/p>
+&lt;h2 id="部署-rustdesk">部署 RustDesk&lt;/h2>
+&lt;p>同样按照&lt;a class="link" href="https://rustdesk.com/docs/en/self-host/rustdesk-server-oss/docker/" target="_blank" rel="noopener"
+>官方指导&lt;/a>建立 Dockerfile&lt;/p>
+&lt;h2 id="docker-composeyml-1">docker-compose.yml&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-dockerfile" data-lang="dockerfile">&lt;span style="display:flex;">&lt;span>---&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>services:&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> hbbs:&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> container_name: hbbs&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> image: rustdesk/rustdesk-server:latest&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> command: hbbs&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> volumes:&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> - ./data:/root&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> network_mode: &lt;span style="color:#e6db74">&amp;#34;host&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> depends_on:&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> - hbbr&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> restart: always&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> hbbr:&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> container_name: hbbr&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> image: rustdesk/rustdesk-server:latest&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> command: hbbr&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> volumes:&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> - ./data:/root&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> network_mode: &lt;span style="color:#e6db74">&amp;#34;host&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> restart: always&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>启动服务&lt;/p>
+&lt;blockquote>
+&lt;p>docker compose up -d&lt;/p>
+&lt;/blockquote>
+&lt;p>获取服务端 API KEY&lt;/p>
+&lt;blockquote>
+&lt;p>docker container logs hbbs | grep Key&lt;/p>
+&lt;/blockquote>
+&lt;h1 id="配置-pixel-自动任务">配置 Pixel 自动任务&lt;/h1>
+&lt;p>首先安装 &lt;a class="link" href="https://f-droid.org/packages/com.nutomic.syncthingandroid/" target="_blank" rel="noopener"
+>Syncthing&lt;/a> 和 &lt;a class="link" href="https://f-droid.org/packages/com.carriez.flutter_hbb/" target="_blank" rel="noopener"
+>RustDesk&lt;/a> 的客户端&lt;/p>
+&lt;p>然后是用来实现自动任务的 &lt;a class="link" href="https://play.google.com/store/apps/details?id=net.dinglisch.android.taskerm" target="_blank" rel="noopener"
+>Tasker&lt;/a> 和 &lt;a class="link" href="https://play.google.com/store/apps/details?id=com.balda.touchtask" target="_blank" rel="noopener"
+>TouchTask&lt;/a>&lt;/p>
+&lt;h2 id="连接-rustdesk">连接 RustDesk&lt;/h2>
+&lt;p>修改对应的服务器 IP 地址和 KEY&lt;/p>
+&lt;p>&lt;img src="https://naizi.ch/pic/2024-06-15-immich-syncthing-google-photos/RustDesk.png"
+loading="lazy"
+alt="RustDesk"
+>&lt;/p>
+&lt;p>允许 IP 地址访问，保持后台服务，允许自启动&lt;/p>
+&lt;p>&lt;img src="https://naizi.ch/pic/2024-06-15-immich-syncthing-google-photos/RustDesk_Setting.png"
+loading="lazy"
+alt="RustDesk_Setting"
+>&lt;/p>
+&lt;p>设置固定密码，使用固定密码&lt;/p>
+&lt;p>&lt;img src="https://naizi.ch/pic/2024-06-15-immich-syncthing-google-photos/RustDesk_passwd.png"
+loading="lazy"
+alt="RustDesk_passwd"
+>&lt;/p>
+&lt;p>勾选全部权限后启动服务&lt;/p>
+&lt;p>&lt;img src="https://naizi.ch/pic/2024-06-15-immich-syncthing-google-photos/RustDesk_Service.png"
+loading="lazy"
+alt="RustDesk_Service"
+>&lt;/p>
+&lt;p>在自己的主机上也装好 Rustdesk，修改对应的服务器 IP 地址和 KEY 信息后，现在就可以接上充电线放在一边，通过电脑远程操作 Pixel 了。&lt;/p>
+&lt;h2 id="连接-syncthing">连接 Syncthing&lt;/h2>
+&lt;p>选择 Syncthing 的&lt;code>设备&lt;/code>然后点击右上角&lt;code>+&lt;/code>，添加设备&lt;/p>
+&lt;p>&lt;img src="https://naizi.ch/pic/2024-06-15-immich-syncthing-google-photos/Synthing_device.png"
+loading="lazy"
+alt="Synthing_device"
+>&lt;/p>
+&lt;p>回到 &lt;a class="link" href="http://server.ipaddress:8384/" target="_blank" rel="noopener"
+>http://server.ipaddress:8384/&lt;/a> 登录，点击识别的设备标识，通过手机扫码或者直接输入完整设备标识字符串进行配对&lt;/p>
+&lt;p>&lt;img src="https://naizi.ch/pic/2024-06-15-immich-syncthing-google-photos/Synthing_id.png"
+loading="lazy"
+alt="Synthing_id"
+>&lt;/p>
+&lt;p>然后网页端会出现配对许可的提示，同意即可。&lt;/p>
+&lt;p>接着编辑之前共享的目录，共享给配对的设备。&lt;/p>
+&lt;p>&lt;img src="https://naizi.ch/pic/2024-06-15-immich-syncthing-google-photos/Synthing_share.png"
+loading="lazy"
+alt="Synthing_share"
+>&lt;/p>
+&lt;p>回到手机，同意接收共享，将目录选为照相机的默认目录 &lt;code>/storage/emulated/0/DCIM/Camera&lt;/code>，目录种类更改为仅接收。&lt;/p>
+&lt;p>这样就实现了 Immich 从 NAS 往 Pixel 的单向同步，之后在 Pixel 上清除本地缓存时也不会导致 NAS 上的文件被同步删除，Pixel 也会自动将同步收到的照片上传至 Google Photos。&lt;/p>
+&lt;h2 id="配置-tasker">配置 Tasker&lt;/h2>
+&lt;p>为了避免手机存储满了之后无法继续同步文件，需要定期运行相册 APP 释放空间，这里就可以使用 Tasker 来完成。&lt;/p>
+&lt;p>主要的操作一共三种：&lt;/p>
+&lt;ol>
+&lt;li>&lt;code>+&lt;/code>/&lt;code>任务&lt;/code>/&lt;code>等待&lt;/code>&lt;/li>
+&lt;li>&lt;code>+&lt;/code>/&lt;code>程序&lt;/code>/&lt;code>启动应用/结束应用&lt;/code>&lt;/li>
+&lt;li>&lt;code>+&lt;/code>/&lt;code>插件&lt;/code>/&lt;code>TouchTask&lt;/code>/&lt;code>Actions&lt;/code>&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://naizi.ch/pic/2024-06-15-immich-syncthing-google-photos/Tasker_add_1.png"
+loading="lazy"
+alt="Tasker_add_1"
+>&lt;img src="https://naizi.ch/pic/2024-06-15-immich-syncthing-google-photos/Tasker_add_2.png"
+loading="lazy"
+alt="Tasker_add_2"
+>&lt;/p>
+&lt;p>&lt;img src="https://naizi.ch/pic/2024-06-15-immich-syncthing-google-photos/Tasker_add_3.png"
+loading="lazy"
+alt="Tasker_add_3"
+>&lt;img src="https://naizi.ch/pic/2024-06-15-immich-syncthing-google-photos/Tasker_add_4.png"
+loading="lazy"
+alt="Tasker_add_4"
+>&lt;/p>
+&lt;p>屏幕点击操作需要的坐标数据可以通过打开&lt;code>开发者选项&lt;/code>/&lt;code>输入&lt;/code>/&lt;code>指针位置&lt;/code>来获取&lt;/p>
+&lt;p>然后按照&lt;/p>
+&lt;p>等待/结束相册/启动相册/等待/点击头像/释放空间/确定释放/等待/启动Tasker（回前台）&lt;/p>
+&lt;p>的逻辑添加操作步骤即可&lt;/p>
+&lt;p>&lt;img src="https://naizi.ch/pic/2024-06-15-immich-syncthing-google-photos/Tasker.png"
+loading="lazy"
+alt="Tasker"
+>&lt;/p>
+&lt;p>之后添加配置文件，让任务定时执行&lt;/p>
+&lt;p>&lt;img src="https://naizi.ch/pic/2024-06-15-immich-syncthing-google-photos/Tasker_config.png"
+loading="lazy"
+alt="Tasker_config"
+>&lt;img src="https://naizi.ch/pic/2024-06-15-immich-syncthing-google-photos/Tasker_timer.png"
+loading="lazy"
+alt="Tasker_timer"
+>&lt;/p>
+&lt;h2 id="fakestandby">FakeStandby&lt;/h2>
+&lt;p>为了不需要 Root 权限，Pixel 设置了不锁屏，但保持亮屏一是容易造成烧屏，二十造成无意义的耗电，为此可以安装 &lt;a class="link" href="https://f-droid.org/packages/android.jonas.fakestandby/" target="_blank" rel="noopener"
+>FakeStandby&lt;/a> 这款应用，通过显示黑屏实现伪锁屏待机。&lt;/p>
+&lt;p>FakeStandby
+&lt;img src="https://naizi.ch/pic/2024-06-15-immich-syncthing-google-photos/FakeStandby.png"
+loading="lazy"
+alt="FakeStandby"
+>&lt;/p>
+&lt;h1 id="导入-google-photos">导入 Google Photos&lt;/h1>
+&lt;p>最后，对于已经在 Google 相册中的照片，可以通过 Google 导出服务和 immich-go 工具便捷的导入 Immich。&lt;/p>
+&lt;p>访问 &lt;a class="link" href="https://takeout.google.com/settings/takeout/custom/photos" target="_blank" rel="noopener"
+>https://takeout.google.com/settings/takeout/custom/photos&lt;/a> 在要包含的数据中选择 &lt;code>Google 相册&lt;/code>，继续，然后再目标位置选择&lt;code>添加到 OneDrive&lt;/code>，文件类型选择&lt;code>.zip&lt;/code>，大小选择&lt;code>50GB&lt;/code>。&lt;/p>
+&lt;p>视具体网络情况，选择通过 OneDrive 可以直连下载，节约大量的代理流量。&lt;/p>
+&lt;p>网页端登录 Immich，点击头像/&lt;code>账号设定&lt;/code>/&lt;code>API Keys&lt;/code>/&lt;code>新API Key&lt;/code>，复制下 Key 字符串。&lt;/p>
+&lt;p>Google 导出结束后，下载&lt;a class="link" href="https://github.com/simulot/immich-go" target="_blank" rel="noopener"
+>immich-go&lt;/a>，将解压的 exe 文件和 Google 导出的 zip 放在同一目录中，打开命令行 cd 到此目录并执行&lt;/p>
+&lt;blockquote>
+&lt;p>.\immich-go.exe -server=http://immich.ipaddress:2283 -key=API_KEY_STRING upload -google-photos takeout-*.zip&lt;/p>
+&lt;/blockquote>
+&lt;p>即可将过去的相册内容导入至 Immich。&lt;/p>
+&lt;h2 id="eof">EOF&lt;/h2>
+&lt;p>Google 目前的政策只有初代 Pixel 能够上传原始画质享有无限空间，后代的 Pixel 也只有最早的几代能够上传省空间画质且享有无限空间。&lt;/p>
+&lt;p>目前闲鱼 2~300 收一个初代 Pixel 还是合算的，不过哪天 Pixel 电池顶不住了，是换电池还是换机，亦或者直接抛弃 Google 相册，就见仁见智了。&lt;/p></description></item></channel></rss>

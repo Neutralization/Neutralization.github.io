@@ -64,6 +64,13 @@ alt="【初音ミク】宇宙大规模 11 次元构造体【ATOLS】"
 &lt;p>但是 python-escpos 库并不是为 Windows 写的，实际在使用的时候就会出现许多的问题。&lt;/p>
 &lt;p>一个常见的错误是&lt;/p>
 &lt;blockquote>
+&lt;p>usb.core.NoBackendError: No backend available&lt;/p>
+&lt;/blockquote>
+&lt;p>下载安装 CH341SER.EXE 并重启&lt;/p>
+&lt;blockquote>
+&lt;p>escpos.exceptions.USBNotFoundError: USB device not found&lt;/p>
+&lt;/blockquote>
+&lt;blockquote>
 &lt;p>ValueError: No backend available&lt;/p>
 &lt;/blockquote>
 &lt;p>根据&lt;a class="link" href="https://stackoverflow.com/questions/13773132/pyusb-on-windows-no-backend-available" target="_blank" rel="noopener"
