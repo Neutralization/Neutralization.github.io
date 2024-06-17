@@ -187,21 +187,21 @@ alt="RustDesk_Service"
 &lt;p>在自己的主机上也装好 Rustdesk，修改对应的服务器 IP 地址和 KEY 信息后，现在就可以接上充电线放在一边，通过电脑远程操作 Pixel 了。&lt;/p>
 &lt;h2 id="连接-syncthing">连接 Syncthing&lt;/h2>
 &lt;p>选择 Syncthing 的&lt;code>设备&lt;/code>然后点击右上角&lt;code>+&lt;/code>，添加设备&lt;/p>
-&lt;p>&lt;img src="https://naizi.ch/pic/2024-06-15-immich-syncthing-google-photos/Synthing_device.png"
+&lt;p>&lt;img src="https://naizi.ch/pic/2024-06-15-immich-syncthing-google-photos/Syncthing_device.png"
 loading="lazy"
-alt="Synthing_device"
+alt="Syncthing_device"
 >&lt;/p>
 &lt;p>回到 &lt;a class="link" href="http://server.ipaddress:8384/" target="_blank" rel="noopener"
 >http://server.ipaddress:8384/&lt;/a> 登录，点击识别的设备标识，通过手机扫码或者直接输入完整设备标识字符串进行配对&lt;/p>
-&lt;p>&lt;img src="https://naizi.ch/pic/2024-06-15-immich-syncthing-google-photos/Synthing_id.png"
+&lt;p>&lt;img src="https://naizi.ch/pic/2024-06-15-immich-syncthing-google-photos/Syncthing_id.png"
 loading="lazy"
-alt="Synthing_id"
+alt="Syncthing_id"
 >&lt;/p>
 &lt;p>然后网页端会出现配对许可的提示，同意即可。&lt;/p>
 &lt;p>接着编辑之前共享的目录，共享给配对的设备。&lt;/p>
-&lt;p>&lt;img src="https://naizi.ch/pic/2024-06-15-immich-syncthing-google-photos/Synthing_share.png"
+&lt;p>&lt;img src="https://naizi.ch/pic/2024-06-15-immich-syncthing-google-photos/Syncthing_share.png"
 loading="lazy"
-alt="Synthing_share"
+alt="Syncthing_share"
 >&lt;/p>
 &lt;p>回到手机，同意接收共享，将目录选为照相机的默认目录 &lt;code>/storage/emulated/0/DCIM/Camera&lt;/code>，目录种类更改为仅接收。&lt;/p>
 &lt;p>这样就实现了 Immich 从 NAS 往 Pixel 的单向同步，之后在 Pixel 上清除本地缓存时也不会导致 NAS 上的文件被同步删除，Pixel 也会自动将同步收到的照片上传至 Google Photos。&lt;/p>
