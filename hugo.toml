@@ -1,0 +1,179 @@
+baseURL = "https://naizi.ch"
+locale = "zh-CN"
+theme = "hugo-theme-stack"
+title = "H⁺ + OH⁻ → H₂O"
+defaultContentLanguage = "zh"
+hasCJKLanguage = true
+buildFuture = true
+
+[pagination]
+    pagerSize = 10
+
+[permalinks]
+    post = "/:year/:month/:day/:title/"
+    page = "/:slug/"
+
+[module.hugoVersion]
+    extended = true
+    min = "0.157.0"
+
+[frontmatter]
+    date = [":filename", ":default", ":fileModTime"]
+
+[outputFormats.RSS]
+    mediaType = "application/rss"
+    baseName = "atom"
+
+[markup.highlight]
+    noClasses = false
+
+[params]
+    mainSections = ["post"]
+    rssFullContent = true
+    favicon = "favicon.ico"
+
+[params.footer]
+    since = 2018
+    customText = ""
+
+[params.dateFormat]
+    published = ":date_full"
+    lastUpdated = ":date_full"
+
+[params.sidebar]
+    compact = false
+    emoji = 1
+    subtitle = "Neutralized"
+    avatar = "img/avatar.png"
+
+[params.article]
+    math = false
+    toc = true
+    readingTime = false
+
+[params.article.license]
+    enabled = false
+    default = "Licensed under CC BY-NC-SA 4.0"
+
+[params.comments]
+    enabled = false
+    provider = "disqus"
+
+[params.comments.disqusjs]
+    shortname = ""
+    apiUrl = ""
+    apiKey = ""
+    admin = ""
+    adminLabel = ""
+
+[params.comments.utterances]
+    repo = ""
+    issueTerm = "pathname"
+    label = ""
+
+[params.comments.remark42]
+    host = ""
+    site = ""
+    locale = ""
+
+[params.comments.vssue]
+    platform = ""
+    owner = ""
+    repo = ""
+    clientId = ""
+    clientSecret = ""
+    autoCreateIssue = false
+
+# Waline client configuration see: https://waline.js.org/en/reference/client.html
+[params.comments.waline]
+    serverURL = ""
+    lang = ""
+    visitor = ""
+    avatar = ""
+    emoji = ["https://cdn.jsdelivr.net/gh/walinejs/emojis/weibo"]
+    requiredMeta = ["name", "email", "url"]
+    placeholder = ""
+
+[params.comments.waline.locale]
+    admin = "Admin"
+
+[params.comments.twikoo]
+    envId = ""
+    region = ""
+    path = ""
+    lang = ""
+
+[params.comments.giscus]
+    repo = ""
+    repoID = ""
+    category = ""
+    categoryID = ""
+    mapping = ""
+    lightTheme = ""
+    darkTheme = ""
+    reactionsEnabled = 1
+    emitMetadata = 0
+    lang = ""
+
+[params.comments.gitalk]
+    owner = ""
+    admin = ""
+    repo = ""
+    clientID = ""
+    clientSecret = ""
+
+[params.comments.cusdis]
+    host = ""
+    id = ""
+
+[[params.widgets.homepage]]
+    type = "taxonomy"
+
+    [params.widgets.homepage.params]
+        taxonomy = "tags"
+        title = "标签云"
+        icon = "tag"
+        limit = 10
+
+[[params.widgets.page]]
+    type = "toc"
+
+[params.opengraph.twitter]
+    # Your Twitter username
+    site = ""
+    # Available values: summary, summary_large_image
+    card = "summary_large_image"
+
+[params.colorScheme]
+    # Display toggle
+    toggle = true
+    # Available values: auto, light, dark
+    default = "auto"
+
+[params.imageProcessing.thumbnail]
+    enabled = true
+
+[params.imageProcessing.content]
+    enabled = true
+
+# Custom menu
+# See https://docs.stack.jimmycai.com/configuration/custom-menu.html
+# To remove about, archive and search page menu item, remove `menu` field from their FrontMatter
+[menu]
+    main = []
+
+[[menu.social]]
+    identifier = "github"
+    name = "GitHub"
+    url = "https://github.com/Neutralization"
+
+    [menu.social.params]
+        icon = "brand-github"
+
+[[menu.social]]
+    identifier = "twitter"
+    name = "bilibili"
+    url = "https://space.bilibili.com/36736561"
+
+    [menu.social.params]
+        icon = "device-tv"
