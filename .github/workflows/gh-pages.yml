@@ -1,33 +1,46 @@
-name: github pages
+name: Deploy Hugo to GitHub Pages
 
 on:
   push:
     branches:
-      - hugo  # Set a branch to deploy
+      - hugo
   pull_request:
+    branches:
+      - hugo
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout source
+        uses: actions/checkout@v7
         with:
-          submodules: true  # Fetch Hugo themes (true OR recursive)
-          fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
+          submodules: recursive
+          fetch-depth: 0
+          persist-credentials: false
 
       - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v2
+        uses: peaceiris/actions-hugo@v3
         with:
           hugo-version: '0.166.0'
           extended: true
 
       - name: Build
-        run: hugo --minify
+        run: hugo --gc --minify --environment production
 
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        if: github.ref == 'refs/heads/hugo'
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/hugo'
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GPAGES_TOKEN }}
+          personal_token: ${{ secrets.GPAGES_TOKEN }}
           publish_branch: master
           publish_dir: ./public
